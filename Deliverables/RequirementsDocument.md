@@ -52,7 +52,9 @@ EZShop is a software application to:
 
 ## Interfaces
 \<describe here each interface in the context diagram>
-
+1. GUI Desktop Version
+2. Barcode reader
+3. Point of sale
 \<GUIs will be described graphically in a separate document>
 
 | Actor | Logical Interface | Physical Interface  |
