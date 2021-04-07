@@ -41,7 +41,10 @@ EZShop is a software application to:
 
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
-|   Stakeholder x..     |             | 
+|   Manager     |  Is the owner of the shop and the administrator of the system           | 
+| Cashier | Interact with customers, manages the inventory |
+| Customer | Buys products, can have a fidelity card |
+
 
 # Context Diagram and interfaces
 
@@ -49,13 +52,12 @@ EZShop is a software application to:
 \<Define here Context diagram using UML use case diagram>
 
 ```plantuml
-actor Administrator as a
-actor Owner as o
+actor Manager as a
+actor Cashier as o
 actor User as u
 a -up-|> u
 o -up-|> u
 u -> (EZShop)
-(EZShop) <- (POS)
 ```
 
 \<actors are a subset of stakeholders>
