@@ -67,15 +67,14 @@ u -> (EZShop)
 3. Point of sale 
 \<GUIs will be described graphically in a separate document>
 
-The administrator | GUI | Desktop
-The cashier | GUI | Desktop
-The owner | GUI | Desktop
-Point of sale | Protocol | Cable connection
-//Barcode
 
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| -----:|
-|   Actor x..     |  |  |
+|   The administrator     | GUI | Desktop |
+|   The cashier     | GUI | Desktop |
+|   The owner     | GUI | Desktop |
+|   Point of Sale     | Protocol | Cable connection |
+|   Barcode reader     | Protocol | Cable connection |
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
