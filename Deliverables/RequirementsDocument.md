@@ -66,10 +66,8 @@ u -> (EZShop)
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| -----:|
 |   The administrator     | GUI | Desktop |
-|   The cashier     | GUI | Desktop |
+|   The cashier     | GUI | Desktop,Point of Sale,  Barcode reader |
 |   The owner     | GUI | Desktop |
-|   Point of Sale     | Protocol | Cable connection |
-|   Barcode reader     | Protocol | Cable connection |
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
