@@ -78,6 +78,9 @@ u -> (EZShop)
 
 \<stories will be formalized later as scenarios in use cases>
 
+... I want to add items to the system and categorize them. I want to check the number of items that are currently in the shop. The shop should be connected to the inventory and update the number of items when it is necessary (for example selling something). I want the ability to generate reports on the items in the inventory. I want to add the suppliers as well and see the list of items that each supplier can provide.
+
+... I want to save customer’s contact info to inform them about future discounts. If the customer wants to have a fidelity card the store should register a card for them. The software also should notify the registered customers about discounts through Email and SMS.
 
 # Functional and non functional requirements
 
@@ -88,10 +91,28 @@ u -> (EZShop)
 \<they match to high level use cases>
 
 | ID        | Description  |
-| ------------- |:-------------:| 
-|  FR1     |  |
-|  FR2     |   |
-| FRx..  | | 
+| ------------- |:-------------| 
+|	FR1    	| Manage inventory |
+|	FR1.1	| Add items (manually or barcode)  |
+|	FR1.2	| Decrease/increase amount of items |
+|	FR1.3	| Modify info about items |
+|	FR1.4	| Add categories for items |
+|	FR1.5	| Search items |
+|	FR1.6	| Genrate reports about inventory |
+|	FR2		| Manage suppliers |
+|	FR2.1	| Add suppliers |
+|	FR2.2	| Remove suppliers |
+|	FR2.3	| List suppliers that can provide an item |
+|	FR3		| Manage customers |
+|	FR3.1	| Add customer (through fidelity card) |
+|	FR3.2	| Modify info about customers |
+|	FR3.3	| Delete customers |
+|	FR3.4	| List all customers |
+|	FR3.5	| Search customers |
+|	FR3.6	| Filter list of customers |
+|	FR3.7	| Notify customers about discounts |
+
+
 
 ## Non Functional Requirements
 
