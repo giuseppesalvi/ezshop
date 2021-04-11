@@ -92,57 +92,57 @@ u -> (EZShop)
 
 | ID        | Description  |
 | ------------- |:-------------| 
-|	FR1    	| Manage inventory |
-|	FR1.1	| Add items (manually or barcode)  |
-|	FR1.2	| Decrease/increase amount of items |
-|	FR1.3	| Modify info about items |
-|	FR1.4	| Add categories for items |
-|	FR1.5	| Search items |
-|	FR1.6	| Generate reports about inventory |
-|	FR2		| Manage suppliers |
-|	FR2.1	| Add suppliers |
-|	FR2.2	| Remove suppliers |
-|	FR2.3	| List suppliers that can provide an item |
-|	FR3		| Manage customers |
-|	FR3.1	| Add customer (through fidelity card) |
-|	FR3.2	| Modify info about customers |
-|	FR3.3	| Delete customers |
-|	FR3.4	| List all customers |
-|	FR3.5	| Search customers |
-|	FR3.6	| Filter list of customers |
-|	FR3.7	| Notify customers about discounts |
-|  FR4      | Handle Sales |
-|  FR4.1    | Start sale transaction |
-|  FR4.2    | End sale transaction |
-|  FR4.2.1  | Transaction - success |
-|  FR4.2.2  | Transaction - cancel |
-|  FR4.3    | Handle payment  |
-|  FR4.3.1  | Payment by cash  |
-|  FR4.3.2  | Payment by credit card  |
-|  FR4.3.3  | Payment by other methods  |
-|  FR5      | Handle Product  |
-|  FR5.1    | Read bar code  |
-|  FR5.2    |  Input quantity of product |
-|  FR5.3    | Retrieve name and description of product|
-|  FR5.4    | Cancel product from sale  |
-|  FR5.5    | Last product, compute total|
-|  FR5.6    | Display total amount due|
-|  FR5.7    | Print receipt|
-|  FR5.8    | Deduce stock amount from inventory |
-|  FR5.9    | Handle return|
-|  FR6      | Authorize and authenticate  |
-|  FR6.1    |  Log in |
-|  FR6.2    | Log out |
-| FR14 | Manage accounting |
-|  FR14.1 | Calculate income |
-|  FR14.2 | Record new expense |
-|   FR14.2.1 | Record new products order |
-|   FR14.2.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
-|   FR14.2.3 | Record employee payment |
-|   FR14.2.4 | Record taxes |
-|  FR14.3 | List expenses |
-|  FR14.4 | List incomes |
-|  FR14.5 | Show balance |
+|   FR1     | Authorize and authenticate  |
+|   FR1.1   | Log in |
+|   FR1.2   | Log out |
+|	FR2    	| Manage inventory |
+|	FR2.1	| Add items (manually or barcode)  |
+|	FR2.2	| Decrease/increase amount of items |
+|	FR2.3	| Modify info about items |
+|	FR2.4	| Add categories for items |
+|	FR2.5	| Search items |
+|	FR2.6	| Generate reports about inventory |
+|	FR3		| Manage suppliers |
+|	FR3.1	| Add suppliers |
+|	FR3.2	| Remove suppliers |
+|	FR3.3	| List suppliers that can provide an item |
+|	FR4		| Manage customers |
+|	FR4.1	| Add customer (through fidelity card) |
+|	FR4.2	| Modify info about customers |
+|	FR4.3	| Delete customers |
+|	FR4.4	| List all customers |
+|	FR4.5	| Search customers |
+|	FR4.6	| Filter list of customers |
+|	FR4.7	| Notify customers about discounts |
+|   FR5     | Handle Sales |
+|   FR5.1   | Start sale transaction |
+|   FR5.2   | End sale transaction |
+|   FR5.2.1 | Transaction - success |
+|   FR5.2.2 | Transaction - cancel |
+|   FR5.3   | Handle payment  |
+|   FR5.3.1 | Payment by cash  |
+|   FR5.3.2 | Payment by credit card  |
+|   FR5.3.3 | Payment by other methods  |
+|   FR6     | Handle Product  |
+|   FR6.1   | Read bar code  |
+|   FR6.2   |  Input quantity of product |
+|   FR6.3   | Retrieve name and description of product|
+|   FR6.4   | Cancel product from sale  |
+|   FR6.5   | Last product, compute total|
+|   FR6.6   | Display total amount due|
+|   FR6.7   | Print receipt|
+|   FR6.8   | Deduce stock amount from inventory |
+|   FR6.9   | Handle return|
+|   FR7     | Manage accounting |
+|   FR7.1   | Calculate income |
+|   FR7.2   | Record new expense |
+|   FR7.2.1 | Record new products order |
+|   FR7.2.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
+|   FR7.2.3 | Record employee payment |
+|   FR7.2.4 | Record taxes |
+|   FR7.3   | List expenses |
+|   FR7.4   | List incomes |
+|   FR7.5   | Show balance |
 
 
 
