@@ -111,7 +111,32 @@ u -> (EZShop)
 |	FR3.5	| Search customers |
 |	FR3.6	| Filter list of customers |
 |	FR3.7	| Notify customers about discounts |
-
+|  FR4     | Handle Sale transaction |
+|  FR4.1     | Start sale transaction |
+|  FR4.2     | End sale transaction |
+|  FR4.2.1     | Transaction - success |
+|  FR4.2.2     | Transaction - cancel |
+|  FR5     | Handle payment  |
+|  FR5.1     | Payment by cash  |
+|  FR5.2     | Payment by credit card  |
+|  FR5.3     | Payment by other methods  |
+|  FR6     | Handle Product  |
+|  FR6.1     | Read bar code  |
+|  FR6.2     |  Input quantity of product |
+|  FR6.3  | Retrieve name and description of product|
+|  FR6.4     | Cancel product from sale  |
+| FR7  | Deduce stock amount from inventory |
+|  FR8     | Handle Coupon  |
+|  FR8.1     | Read Coupon  |
+|  FR8.2     | Make discount  |
+| FR9  | Last product, compute total|
+| FR10  | Display total amount due|
+| FR11  | Print receipt|
+|  FR12     | Authorize and authenticate  |
+|  FR12.1    |  Log in |
+|  FR12.2     | Log out |
+| FR13  | Handle return|
+| FR13.1  | Issue a coupon of same amount|
 
 
 ## Non Functional Requirements
