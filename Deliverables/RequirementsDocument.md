@@ -44,7 +44,8 @@ EZShop is a software application to:
 |   Manager     |  Is the owner of the shop and the administrator of the system           | 
 | Cashier | Interact with customers, manages the inventory |
 | Customer | Buys products, can have a fidelity card |
-
+| PoS | The physical Point of Sale terminal |
+| Barcode reader |  Optical scanner that can read printed barcodes |
 
 # Context Diagram and interfaces
 
@@ -58,6 +59,8 @@ actor User as u
 a -up-|> u
 o -up-|> u
 u -> (EZShop)
+(EZShop) <- (PoS)
+(EZShop) <- (Barcode Reader)
 ```
 
 \<actors are a subset of stakeholders>
@@ -70,6 +73,8 @@ u -> (EZShop)
 |   The administrator     | GUI | Desktop |
 |   The cashier     | GUI | Desktop,Point of Sale,  Barcode reader |
 |   The owner     | GUI | Desktop |
+|	The PoS		| API 	| Ethernet |
+|	The barcode reader | API | USB | 
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
