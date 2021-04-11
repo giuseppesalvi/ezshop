@@ -137,21 +137,17 @@ u -> (EZShop)
 |  FR12.2     | Log out |
 | FR13  | Handle return|
 |  FR13.1  | Issue a coupon of same amount|
-| FR14 | Record new income |
-| FR15 | Record new expense |
-|  FR15.1 | Record new products order |
-|  FR15.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
-|  FR15.3 | Record employee payment |
-|  FR15.4 | Record taxes |
-| FR16 | List expenses |
-|  FR16.1 | List all expenses |
-|  FR16.2 | List expenses from a date to another one |
-| FR17 | List incomes |
-|  FR17.1 | List all incomes |
-|  FR17.2 | List incomes from a date to another one |
-| FR18 | Show balance (incomes - expenses) |
-|  FR18.1 | Total |
-|  FR18.2 | From a date to another one|
+| FR14 | Manage accounting |
+|  FR14.1 | Calculate income |
+|  FR14.2 | Record new expense |
+|   FR14.2.1 | Record new products order |
+|   FR14.2.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
+|   FR14.2.3 | Record employee payment |
+|   FR14.2.4 | Record taxes |
+|  FR14.3 | List expenses |
+|  FR14.4 | List incomes |
+|  FR14.5 | Show balance |
+
 
 
 ## Non Functional Requirements
