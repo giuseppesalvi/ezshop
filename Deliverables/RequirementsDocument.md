@@ -156,9 +156,10 @@ u -> (EZShop)
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
 |  NFR1     | Privacy  | Customer data must be encripted | FR3|
-|  NFR2     | |  | |
+|  NFR2     | Usability | The software must be user friendly | |
 |  NFR3     | | | |
 | NFRx .. | | | | 
+| Domain1 | Currency is Euro | | |
 
 
 # Use case diagram and use cases
