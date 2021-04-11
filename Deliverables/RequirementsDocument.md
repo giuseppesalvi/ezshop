@@ -117,12 +117,9 @@ u -> (EZShop)
 |   FR5     | Handle Sales |
 |   FR5.1   | Start sale transaction |
 |   FR5.2   | End sale transaction |
-|   FR5.2.1 | Transaction - success |
-|   FR5.2.2 | Transaction - cancel |
 |   FR5.3   | Handle payment  |
 |   FR5.3.1 | Payment by cash  |
 |   FR5.3.2 | Payment by credit card  |
-|   FR5.3.3 | Payment by other methods  |
 |   FR6     | Handle Product  |
 |   FR6.1   | Read bar code  |
 |   FR6.2   |  Input quantity of product |
@@ -131,7 +128,7 @@ u -> (EZShop)
 |   FR6.5   | Last product, compute total|
 |   FR6.6   | Display total amount due|
 |   FR6.7   | Print receipt|
-|   FR6.8   | Deduce stock amount from inventory |
+|   FR6.8   | Connect to inventory and deduce stock amount |
 |   FR6.9   | Handle return|
 |   FR7     | Manage accounting |
 |   FR7.1   | Calculate income |
