@@ -137,16 +137,21 @@ u -> (EZShop)
 |  FR12.2     | Log out |
 | FR13  | Handle return|
 | FR13.1  | Issue a coupon of same amount|
-| FR14 | Record new income
-| FR14.1 | Record products sale
-| FR15 | Record new expense
-| FR15.1 | Record new products order
-| FR15.2 | Record new shop expense (shop costs, rent, gas, light, garbage,...)
-| FR15.3 | Record employee payment
-| FR15.4 | Taxes
-| FR16 | List all expenses
-| FR17 | List all incomes
-| FR18 | Show balance (all expenses, all incomes + difference)
+| FR14 | Record new income |
+| FR15 | Record new expense |
+| FR15.1 | Record new products order |
+| FR15.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
+| FR15.3 | Record employee payment |
+| FR15.4 | Taxes |
+| FR16 | List expenses |
+| FR16.1 | List all expenses |
+| FR16.2 | List expenses from date1 to date1 |
+| FR17 | List incomes |
+| FR17.1 | List all incomes |
+| FR17.2 | List incomes from date1 to date1 |
+| FR18 | Show balance (Income - expenses) |
+| FR18.1 | Total |
+| FR18.2 | From date1 to date2 |
 
 
 ## Non Functional Requirements
@@ -156,10 +161,10 @@ u -> (EZShop)
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
 |  NFR1     | Privacy  | Customer data must be encripted | FR3|
-|  NFR2     | Usability | The software must be user friendly | |
+|  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | |
 |  NFR3     | | | |
 | NFRx .. | | | | 
-| Domain1 | Currency is Euro | | |
+| Domain1 | | Currency is Euro | |
 
 
 # Use case diagram and use cases
