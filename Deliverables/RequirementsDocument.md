@@ -98,7 +98,7 @@ u -> (EZShop)
 |	FR1.3	| Modify info about items |
 |	FR1.4	| Add categories for items |
 |	FR1.5	| Search items |
-|	FR1.6	| Genrate reports about inventory |
+|	FR1.6	| Generate reports about inventory |
 |	FR2		| Manage suppliers |
 |	FR2.1	| Add suppliers |
 |	FR2.2	| Remove suppliers |
@@ -120,7 +120,7 @@ u -> (EZShop)
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     |   |  | |
+|  NFR1     | Privacy  | Customer data must be encripted | FR3|
 |  NFR2     | |  | |
 |  NFR3     | | | |
 | NFRx .. | | | | 
