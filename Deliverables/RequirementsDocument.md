@@ -131,10 +131,10 @@ u -> (EZShop)
 |   FR6.8   | Connect to inventory and deduce stock amount |
 |   FR6.9   | Handle return|
 |   FR7     | Manage accounting |
-|   FR7.1   | Calculate income |
-|   FR7.2   | Record new expense |
-|   FR7.2.1 | Record new products order |
-|   FR7.2.2 | Record new shop expense (shop costs like rent, gas, light, garbage,...) |
+|   FR7.1   | Record income |
+|   FR7.2   | Record expense |
+|   FR7.2.1 | Record products order |
+|   FR7.2.2 | Record shop expense (shop costs like rent, gas, light, garbage,...) |
 |   FR7.2.3 | Record employee payment |
 |   FR7.2.4 | Record taxes |
 |   FR7.3   | List expenses |
