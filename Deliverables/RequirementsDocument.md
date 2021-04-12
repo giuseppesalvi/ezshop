@@ -41,11 +41,13 @@ EZShop is a software application to:
 
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
-|   Manager     |  Is the owner of the shop and the administrator of the system           | 
+| Manager     |  Is the owner of the shop and the administrator of the system           | 
 | Cashier | Interact with customers, manages the inventory |
 | Customer | Buys products, can have a fidelity card |
+| Supplier | Provides products to the shop |
 | PoS | The physical Point of Sale terminal |
 | Barcode reader |  Optical scanner that can read printed barcodes |
+| Gmail gateway | Mail service to send mails to customers|
 
 # Context Diagram and interfaces
 
@@ -56,11 +58,15 @@ EZShop is a software application to:
 actor Manager as a
 actor Cashier as o
 actor User as u
+actor Pos as p
+actor "Barcode reader" as b
+actor "Gmail gateway" as g
 a -up-|> u
 o -up-|> u
-u -> (EZShop)
-(EZShop) <- (PoS)
-(EZShop) <- (Barcode Reader)
+u --> (EZShop)
+p --> (EZShop)
+b --> (EZShop)
+g --> (EZShop)
 ```
 
 \<actors are a subset of stakeholders>
@@ -70,11 +76,11 @@ u -> (EZShop)
 \<GUIs will be described graphically in a separate document>
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| -----:|
-|   The administrator     | GUI | Desktop |
-|   The cashier     | GUI | Desktop,Point of Sale,  Barcode reader |
-|   The owner     | GUI | Desktop |
-|	The PoS		| API 	| Ethernet |
-|	The barcode reader | API | USB | 
+|   The Manager     | GUI | Desktop |
+|   The Cashier     | GUI | Desktop |
+|	The PoS		| API ... 	| Ethernet cable|
+|	The Barcode reader | API ... | USB connector type A | 
+|   The Gmail gateway | Gmail API | Ethernet cable|
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
@@ -97,7 +103,7 @@ u -> (EZShop)
 
 | ID        | Description  |
 | ------------- |:-------------| 
-|   FR1     | Authorize and authenticate  |
+|   FR1     | Authorize and authenticate |
 |   FR1.1   | Log in |
 |   FR1.2   | Log out |
 |	FR2    	| Manage inventory |
@@ -119,32 +125,25 @@ u -> (EZShop)
 |	FR4.5	| Search customers |
 |	FR4.6	| Filter list of customers |
 |	FR4.7	| Notify customers about discounts |
-|   FR5     | Handle Sales |
+|   FR5     | Manage sales transaction |
 |   FR5.1   | Start sale transaction |
 |   FR5.2   | End sale transaction |
-|   FR5.3   | Handle payment  |
-|   FR5.3.1 | Payment by cash  |
-|   FR5.3.2 | Payment by credit card  |
-|   FR6     | Handle Product  |
-|   FR6.1   | Read bar code  |
-|   FR6.2   |  Input quantity of product |
-|   FR6.3   | Retrieve name and description of product|
-|   FR6.4   | Cancel product from sale  |
-|   FR6.5   | Last product, compute total|
-|   FR6.6   | Display total amount due|
-|   FR6.7   | Print receipt|
-|   FR6.8   | Connect to inventory and deduce stock amount |
-|   FR6.9   | Handle return|
-|   FR7     | Manage accounting |
-|   FR7.1   | Record income |
-|   FR7.2   | Record expense |
-|   FR7.2.1 | Record products order |
-|   FR7.2.2 | Record shop expense (shop costs like rent, gas, light, garbage,...) |
-|   FR7.2.3 | Record employee payment |
-|   FR7.2.4 | Record taxes |
-|   FR7.3   | List expenses |
-|   FR7.4   | List incomes |
-|   FR7.5   | Show balance |
+|   FR5.3   | Handle product  |
+|   FR5.3.1 | Add product to the cart |
+|   FR5.3.2 | Delete product from cart  |
+|   FR5.3.3 | Input quantity of product |
+|   FR5.4   | Compute total|
+|   FR5.5   | Display total amount due|
+|   FR5.6   | Print receipt|
+|   FR5.7   | Handle payment  |
+|   FR5.7.1 | Payment by cash  |
+|   FR5.7.2 | Payment by credit card  |
+|   FR6     | Manage accounting |
+|   FR6.1   | Record income |
+|   FR6.2   | Record expense |
+|   FR6.3   | List expenses |
+|   FR6.4   | List incomes |
+|   FR6.5   | Show balance |
 
 
 
@@ -155,8 +154,8 @@ u -> (EZShop)
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
 |  NFR1     | Privacy  | Customer data must be encripted | FR3|
-|  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | |
-|  NFR3     | | | |
+|  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | all FR |
+|  NFR3     | Availability | Availability at least 99% of the time| all FR|
 | NFRx .. | | | | 
 |  Domain1 | | Currency is Euro | |
 
