@@ -174,82 +174,90 @@ o -up-|> u
 
 
 ## Use case diagram
-
 ```plantuml
-scale 1/2
-
+left to right direction
 actor Manager as m
 actor Cashier as c
 actor POS as p
 actor "Barcode reader" as b
 actor "Gmail gateway" as g
 
-left to right direction
 rectangle EZshop {
- 
-  (FR1 Authorize and authenticate) .down.> (FR1.1 Log in) :include
-  (FR1 Authorize and authenticate) .down.> (FR1.2 Log out) :include
-  (FR1 Authorize and authenticate) .down.> (FR1.3 Modify credentials) :include
-
-  (FR2 Manage inventory) .down.> (FR2.1 Add items) :include
-  (FR2 Manage inventory) .down.> (FR2.2 Decrease/increase amount of items) :include
-  (FR2 Manage inventory) .down.> (FR2.3 Modify info about items) :include
-  (FR2 Manage inventory) .down.> (FR2.4 Add categories for items) :include
-  (FR2 Manage inventory) .down.> (FR2.5 Search items) :include
-  (FR2 Manage inventory) .down.> (FR2.6 Generate reports about inventory) :include
-
-  (FR3 Manage suppliers) .down.> (FR3.1 Add suppliers) :include
-  (FR3 Manage suppliers) .down.> (FR3.2 Remove suppliers) :include
-  (FR3 Manage suppliers) .down.> (FR3.3 List suppliers that can provide an item) :include
-
-
-  (FR4 Manage customers) .down.> (FR4.1 Add customer) :include
-  (FR4 Manage customers) .down.> (FR4.2 Modify info about customers) :include
-  (FR4 Manage customers) .down.> (FR4.3 Delete customers) :include
-  (FR4 Manage customers) .down.> (FR4.4 List all customers) :include
-  (FR4 Manage customers) .down.> (FR4.5 Search customers) :include
-  (FR4 Manage customers) .down.> (FR4.6 Filter list of customers) :include
-  (FR4 Manage customers) .down.> (FR4.7 Notify customers about discounts) :include
- 
-  (FR5 Manage sales transaction) .down.> (FR5.1 Start sale transaction) :include
-  (FR5 Manage sales transaction) .down.> (FR5.2 End sale transaction) :include
-  (FR5 Manage sales transaction) .down.> (FR5.3 Handle product) :include
-  (FR5 Manage sales transaction) .down.> (FR5.3.1 Add product to the cart) :include
-  (FR5 Manage sales transaction) .down.> (FR5.3.2 Delete product from cart) :include
-  (FR5 Manage sales transaction) .down.> (FR5.3.3 Input quantity of product) :include
-  (FR5 Manage sales transaction) .down.> (FR5.4 Compute total) :include
-  (FR5 Manage sales transaction) .down.> (FR5.5 Display total amount due) :include
-  (FR5 Manage sales transaction) .down.> (FR5.6 Print receipt) :include
-  (FR5 Manage sales transaction) .down.> (FR5.7 Handle payment) :include
-  (FR5 Manage sales transaction) .down.> (FR5.7.1 Payment by cash) :include
-  (FR5 Manage sales transaction) .down.> (FR5.7.2 Payment by credit card) :include
-
-  (FR6 Manage accounting) .down.> (FR6.1 Record income) :include
-  (FR6 Manage accounting) .down.> (FR6.2 Record expense) :include
-  (FR6 Manage accounting) .down.> (FR6.3 List expenses) :include
-  (FR6 Manage accounting) .down.> (FR6.4 List incomes) :include
-  (FR6 Manage accounting) .down.> (FR6.5 Show balance) :include
-
-  (FR7 Manage cash register) .down.> (FR7.1 Open the cash register) :include
-  (FR7 Manage cash register) .down.> (FR7.2 Add money to the cash register) :include
-  (FR7 Manage cash register) .down.> (FR7.3 Take money from the cash register) :include
-  (FR7 Manage cash register) .down.> (FR7.4 Close the cash register) :include
-
   m --> (FR1 Authorize and authenticate)
-  c --> (FR1.1 Log in)
-  c --> (FR1.2 Log out)
   m --> (FR2 Manage inventory)
   m --> (FR3 Manage suppliers)
   m --> (FR4 Manage customers)
-  c --> (FR4.1 Add customer)
-  g <-- (FR4.7 Notify customers about discounts)
   m --> (FR5 Manage sales transaction)
-  c --> (FR5 Manage sales transaction)
   m --> (FR6 Manage accounting)
   m --> (FR7 Manage cash register)
-  c --> (FR7 Manage cash register)
+  (FR1 Authorize and authenticate) <-- c
+  (FR4 Manage customers) <--c
+  (FR5 Manage sales transaction) <-- c
+  (FR7 Manage cash register) <-- c
+  (FR4 Manage customers) --> g
+  (FR5 Manage sales transaction) --> b
+  (FR4 Manage customers) --> b
+  p <-- (FR5 Manage sales transaction)
 }
 
+```
+
+```plantuml
+left to right direction
+(FR2 Manage inventory) .down.> (FR2.1 Add items) :include
+(FR2 Manage inventory) .down.> (FR2.2 Decrease/increase amount of items) :include
+(FR2 Manage inventory) .down.> (FR2.3 Modify info about items) :include
+(FR2 Manage inventory) .down.> (FR2.4 Add categories for items) :include
+(FR2 Manage inventory) .down.> (FR2.5 Search items) :include
+(FR2 Manage inventory) .down.> (FR2.6 Generate reports about inventory) :include
+(FR1 Authorize and authenticate) .down.> (FR1.1 Log in) :include
+(FR1 Authorize and authenticate) .down.> (FR1.2 Log out) :include
+(FR1 Authorize and authenticate) .down.> (FR1.3 Modify credentials) :include
+```
+
+```plantuml
+left to right direction
+(FR4 Manage customers) .down.> (FR4.1 Add customer) :include
+(FR4 Manage customers) .down.> (FR4.2 Modify info about customers) :include
+(FR4 Manage customers) .down.> (FR4.3 Delete customers) :include
+(FR4 Manage customers) .down.> (FR4.4 List all customers) :include
+(FR4 Manage customers) .down.> (FR4.5 Search customers) :include
+(FR4 Manage customers) .down.> (FR4.6 Filter list of customers) :include
+(FR4 Manage customers) .down.> (FR4.7 Notify customers about discounts) :include
+(FR3 Manage suppliers) .down.> (FR3.1 Add suppliers) :include
+(FR3 Manage suppliers) .down.> (FR3.2 Remove suppliers) :include
+(FR3 Manage suppliers) .down.> (FR3.3 List suppliers that can provide an item) :include
+```
+
+
+```plantuml
+left to right direction
+(FR5 Manage sales transaction) .down.> (FR5.1 Start sale transaction) :include
+(FR5 Manage sales transaction) .down.> (FR5.2 End sale transaction) :include
+(FR5 Manage sales transaction) .down.> (FR5.3 Handle product) :include
+(FR5 Manage sales transaction) .down.> (FR5.3.1 Add product to the cart) :include
+(FR5 Manage sales transaction) .down.> (FR5.3.2 Delete product from cart) :include
+(FR5 Manage sales transaction) .down.> (FR5.3.3 Input quantity of product) :include
+(FR5 Manage sales transaction) .down.> (FR5.4 Compute total) :include
+(FR5 Manage sales transaction) .down.> (FR5.5 Display total amount due) :include
+(FR5 Manage sales transaction) .down.> (FR5.6 Print receipt) :include
+(FR5 Manage sales transaction) .down.> (FR5.7 Handle payment) :include
+(FR5 Manage sales transaction) .down.> (FR5.7.1 Payment by cash) :include
+(FR5 Manage sales transaction) .down.> (FR5.7.2 Payment by credit card) :include
+```
+
+
+```plantuml
+left to right direction
+(FR7 Manage cash register) .down.> (FR7.1 Open the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.2 Add money to the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.3 Take money from the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.4 Close the cash register) :include
+(FR6 Manage accounting) .down.> (FR6.1 Record income) :include
+(FR6 Manage accounting) .down.> (FR6.2 Record expense) :include
+(FR6 Manage accounting) .down.> (FR6.3 List expenses) :include
+(FR6 Manage accounting) .down.> (FR6.4 List incomes) :include
+(FR6 Manage accounting) .down.> (FR6.5 Show balance) :include
 ```
 ### Use case 1, UC1
 | Actors Involved        |  |
