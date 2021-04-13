@@ -144,6 +144,12 @@ o -up-|> u
 |   FR6.3   | List expenses |
 |   FR6.4   | List incomes |
 |   FR6.5   | Show balance |
+|   FR7     | Manage cash register |
+|   FR7.1   | Open the cash register |
+|   FR7.2   | Add money to the cash register |
+|   FR7.3   | Take money from the cash register |
+|   FR7.4   | Close the cash register |
+
 
 
 
