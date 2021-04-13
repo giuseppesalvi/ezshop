@@ -205,6 +205,22 @@ g --> (EZShop)
 ### Use case x, UCx
 ..
 
+### Use case 1, UC1 - Add customer
+| Actors Involved        |  Cashier |
+| ------------- |:-------------:| 
+|  Precondition     | Customer X does not have a fidelity card |  
+|  Post condition     | Customer info added in the system |
+|  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system, and attach to them a card ID, scanning with the barcode reader a new fidelity card |
+|  Variants     | - |
+
+### Use case 2, UC2 - Notify customers about discounts
+| Actors Involved        |  Manager |
+| ------------- |:-------------:| 
+|  Precondition     | Customer list is not empty |  
+|  Post condition     | Emails sent |
+|  Nominal Scenario     | The manager wants to send an email to notify customers of a particular discount |
+|  Variants     | Gmail server are offline |
+
 
 
 # Glossary
