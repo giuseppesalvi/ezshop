@@ -63,10 +63,10 @@ actor "Barcode reader" as b
 actor "Gmail gateway" as g
 a -up-|> u
 o -up-|> u
-u --> (EZShop)
-p --> (EZShop)
-b --> (EZShop)
-g --> (EZShop)
+(EZShop) <-left- u
+(EZShop) <-- p
+(EZShop) <-- b
+(EZShop) <-right- g
 ```
 
 \<actors are a subset of stakeholders>
