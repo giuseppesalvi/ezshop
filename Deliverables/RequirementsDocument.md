@@ -164,10 +164,27 @@ g --> (EZShop)
 
 
 ## Use case diagram
-\<define here UML Use case diagram UCD summarizing all use cases, and their relationships>
 
+```plantuml
+left to right direction
 
-\<next describe here each use case in the UCD>
+actor Admin
+actor Cashier
+actor POS
+actor "Barcode reader"
+actor "Gmail gateway"
+
+rectangle EZshop {
+Admin -- (FR5 Manage sales transaction)
+  Cashier -- (FR5 Manage sales transaction)
+  (FR5 Manage sales transaction) -- :POS:
+  (FR5 Manage sales transaction) -- :Barcode reader:
+
+  
+
+}
+
+```
 ### Use case 1, UC1
 | Actors Involved        |  |
 | ------------- |:-------------:| 
