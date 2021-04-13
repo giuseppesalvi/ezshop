@@ -175,11 +175,16 @@ actor "Barcode reader"
 actor "Gmail gateway"
 
 rectangle EZshop {
-Admin -- (FR5 Manage sales transaction)
+  Admin -- (FR1 Authorize and authenticate)
+  Admin -- (FR2 Manage inventory)
+  Admin -- (FR3 Manage suppliers)
+  Admin -- (FR4 Manage customers)
+  Admin -- (FR5 Manage sales transaction)
+  Admin -- (FR6 Manage accounting)
   Cashier -- (FR5 Manage sales transaction)
+  (FR4 Manage customers) -- :Gmail gateway:
   (FR5 Manage sales transaction) -- :POS:
   (FR5 Manage sales transaction) -- :Barcode reader:
-
   
 
 }
