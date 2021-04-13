@@ -103,30 +103,33 @@ o -up-|> u
 
 | ID        | Description  |
 | ------------- |:-------------| 
-|   FR1     | Authorize and authenticate |
+|   FR1     | Authorize and authenticate | * Mil
 |   FR1.1   | Log in |
 |   FR1.2   | Log out |
-|	FR2    	| Manage inventory |
+|   FR1.3   | Modify credentials |
+|	FR2    	| Manage inventory | *
 |	FR2.1	| Add items (manually or barcode)  |
 |	FR2.2	| Decrease/increase amount of items |
 |	FR2.3	| Modify info about items |
 |	FR2.4	| Add categories for items |
 |	FR2.5	| Search items |
 |	FR2.6	| Generate reports about inventory |
-|	FR3		| Manage suppliers |
+
+|	FR3		| Manage suppliers | Rob
 |	FR3.1	| Add suppliers |
 |	FR3.2	| Remove suppliers |
 |	FR3.3	| List suppliers that can provide an item |
-|	FR4		| Manage customers |
-|	FR4.1	| Add customer (through fidelity card) |
-|	FR4.2	| Modify info about customers |
-|	FR4.3	| Delete customers |
-|	FR4.4	| List all customers |
-|	FR4.5	| Search customers |
-|	FR4.6	| Filter list of customers |
-|	FR4.7	| Notify customers about discounts |
-|   FR5     | Manage sales transaction |
-|   FR5.1   | Start sale transaction |
+|	FR4		| Manage customers | *
+|	FR4.1	| Add customer (through fidelity card) | *
+|	FR4.2	| Modify info about customers | *C
+|	FR4.3	| Delete customers | *M
+|	FR4.4	| List all customers | *
+|	FR4.5	| Search customers | *M
+|	FR4.6	| Filter list of customers | *M
+|	FR4.7	| Notify customers about discounts | * M->G
+
+|   FR5     | Manage sales transaction | * Nae
+|   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
 |   FR5.3   | Handle product  |
 |   FR5.3.1 | Add product to the cart |
@@ -138,15 +141,16 @@ o -up-|> u
 |   FR5.7   | Handle payment  |
 |   FR5.7.1 | Payment by cash  |
 |   FR5.7.2 | Payment by credit card  |
-|   FR6     | Manage accounting |
+ 
+|   FR6     | Manage accounting | *M Giu
 |   FR6.1   | Record income |
 |   FR6.2   | Record expense |
 |   FR6.3   | List expenses |
 |   FR6.4   | List incomes |
 |   FR6.5   | Show balance |
-|   FR7     | Manage cash register |
+|   FR7     | Manage cash register | *M
 |   FR7.1   | Open the cash register |
-|   FR7.2   | Add money to the cash register |
+|   FR7.2   | Add money to the cash register | 
 |   FR7.3   | Take money from the cash register |
 |   FR7.4   | Close the cash register |
 
@@ -174,19 +178,20 @@ o -up-|> u
 ```plantuml
 left to right direction
 
-actor Admin
+actor Manager
 actor Cashier
 actor POS
 actor "Barcode reader"
 actor "Gmail gateway"
 
 rectangle EZshop {
-  Admin -- (FR1 Authorize and authenticate)
-  Admin -- (FR2 Manage inventory)
-  Admin -- (FR3 Manage suppliers)
-  Admin -- (FR4 Manage customers)
-  Admin -- (FR5 Manage sales transaction)
-  Admin -- (FR6 Manage accounting)
+  Manager -- (FR1 Authorize and authenticate)
+  Manager -- (FR2 Manage inventory)
+  Manager -- (FR3 Manage suppliers)
+  Manager -- (FR4 Manage customers)
+  Manager -- (FR5 Manage sales transaction)
+  Manager -- (FR6 Manage accounting)
+  Cashier -- (FR4 Manage customers)
   Cashier -- (FR5 Manage sales transaction)
   (FR4 Manage customers) -- :Gmail gateway:
   (FR5 Manage sales transaction) -- :POS:
