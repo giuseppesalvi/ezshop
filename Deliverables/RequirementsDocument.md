@@ -174,6 +174,7 @@ o -up-|> u
 
 
 ## Use case diagram
+### General use case diagram
 ```plantuml
 left to right direction
 actor Manager as m
@@ -201,22 +202,32 @@ rectangle EZshop {
 }
 
 ```
-
+### More in detail use case diagram 
+### (splitted in different plantuml diagrams for graphical reasons, actors are repeated in different diagrams because of this)
 ```plantuml
 left to right direction
+(FR1 Authorize and authenticate) .down.> (FR1.1 Log in) :include
+(FR1 Authorize and authenticate) .down.> (FR1.2 Log out) :include
+(FR1 Authorize and authenticate) .down.> (FR1.3 Modify credentials) :include
 (FR2 Manage inventory) .down.> (FR2.1 Add items) :include
 (FR2 Manage inventory) .down.> (FR2.2 Decrease/increase amount of items) :include
 (FR2 Manage inventory) .down.> (FR2.3 Modify info about items) :include
 (FR2 Manage inventory) .down.> (FR2.4 Add categories for items) :include
 (FR2 Manage inventory) .down.> (FR2.5 Search items) :include
 (FR2 Manage inventory) .down.> (FR2.6 Generate reports about inventory) :include
-(FR1 Authorize and authenticate) .down.> (FR1.1 Log in) :include
-(FR1 Authorize and authenticate) .down.> (FR1.2 Log out) :include
-(FR1 Authorize and authenticate) .down.> (FR1.3 Modify credentials) :include
+
+
+(FR1.1 Log in) <-- :Cashier:
+(FR1.2 Log out) <-- :Cashier:
+:Manager: --> (FR1 Authorize and authenticate)
+:Manager: --> (FR2 Manage inventory)
 ```
 
 ```plantuml
 left to right direction
+(FR3 Manage suppliers) .down.> (FR3.1 Add suppliers) :include
+(FR3 Manage suppliers) .down.> (FR3.2 Remove suppliers) :include
+(FR3 Manage suppliers) .down.> (FR3.3 List suppliers that can provide an item) :include
 (FR4 Manage customers) .down.> (FR4.1 Add customer) :include
 (FR4 Manage customers) .down.> (FR4.2 Modify info about customers) :include
 (FR4 Manage customers) .down.> (FR4.3 Delete customers) :include
@@ -224,9 +235,14 @@ left to right direction
 (FR4 Manage customers) .down.> (FR4.5 Search customers) :include
 (FR4 Manage customers) .down.> (FR4.6 Filter list of customers) :include
 (FR4 Manage customers) .down.> (FR4.7 Notify customers about discounts) :include
-(FR3 Manage suppliers) .down.> (FR3.1 Add suppliers) :include
-(FR3 Manage suppliers) .down.> (FR3.2 Remove suppliers) :include
-(FR3 Manage suppliers) .down.> (FR3.3 List suppliers that can provide an item) :include
+
+
+:Manager: --> (FR3 Manage suppliers)
+:Manager: --> (FR4 Manage customers)
+(FR4.1 Add customer) <-- :Cashier:
+(FR4.7 Notify customers about discounts) --> :Gmail gateway:
+(FR4.1 Add customer) --> :Barcode reader:
+  
 ```
 
 
@@ -244,21 +260,32 @@ left to right direction
 (FR5 Manage sales transaction) .down.> (FR5.7 Handle payment) :include
 (FR5 Manage sales transaction) .down.> (FR5.7.1 Payment by cash) :include
 (FR5 Manage sales transaction) .down.> (FR5.7.2 Payment by credit card) :include
+
+:Manager: --> (FR5 Manage sales transaction)
+:Cashier: --> (FR5 Manage sales transaction)
+(FR5.3.1 Add product to the cart) --> :Barcode reader:
+(FR5.7 Handle payment) --> :POS:
 ```
 
 
 ```plantuml
 left to right direction
-(FR7 Manage cash register) .down.> (FR7.1 Open the cash register) :include
-(FR7 Manage cash register) .down.> (FR7.2 Add money to the cash register) :include
-(FR7 Manage cash register) .down.> (FR7.3 Take money from the cash register) :include
-(FR7 Manage cash register) .down.> (FR7.4 Close the cash register) :include
 (FR6 Manage accounting) .down.> (FR6.1 Record income) :include
 (FR6 Manage accounting) .down.> (FR6.2 Record expense) :include
 (FR6 Manage accounting) .down.> (FR6.3 List expenses) :include
 (FR6 Manage accounting) .down.> (FR6.4 List incomes) :include
 (FR6 Manage accounting) .down.> (FR6.5 Show balance) :include
+(FR7 Manage cash register) .down.> (FR7.1 Open the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.2 Add money to the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.3 Take money from the cash register) :include
+(FR7 Manage cash register) .down.> (FR7.4 Close the cash register) :include
+
+
+:Manager: --> (FR6 Manage accounting)
+:Manager: --> (FR7 Manage cash register)
+:Cashier: --> (FR7 Manage cash register)
 ```
+
 ### Use case 1, UC1
 | Actors Involved        |  |
 | ------------- |:-------------:| 
