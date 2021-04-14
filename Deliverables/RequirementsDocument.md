@@ -1,6 +1,6 @@
 # Requirements Document 
 
-Authors: Giuseppe, Milad, Roberto, Naeem
+Authors: Giuseppe Salvi, Milad, Roberto, Naeem
 
 Date:
 
@@ -103,32 +103,30 @@ o -up-|> u
 
 | ID        | Description  |
 | ------------- |:-------------| 
-|   FR1     | Authorize and authenticate | * Mil
+|   FR1     | Authorize and authenticate |
 |   FR1.1   | Log in |
 |   FR1.2   | Log out |
 |   FR1.3   | Modify credentials |
-|	FR2    	| Manage inventory | *
-|	FR2.1	| Add items (manually or barcode)  |
-|	FR2.2	| Decrease/increase amount of items |
-|	FR2.3	| Modify info about items |
-|	FR2.4	| Add categories for items |
-|	FR2.5	| Search items |
-|	FR2.6	| Generate reports about inventory |
-
-|	FR3		| Manage suppliers | Rob
-|	FR3.1	| Add suppliers |
-|	FR3.2	| Remove suppliers |
-|	FR3.3	| List suppliers that can provide an item |
-|	FR4		| Manage customers | *
-|	FR4.1	| Add customer (through fidelity card) | *C
-|	FR4.2	| Modify info about customers | *
-|	FR4.3	| Delete customers | *M
-|	FR4.4	| List all customers | *
-|	FR4.5	| Search customers | *M
-|	FR4.6	| Filter list of customers | *M
-|	FR4.7	| Notify customers about discounts | * M->G
-
-|   FR5     | Manage sales transaction | * Nae
+|	  FR2    	| Manage inventory | 
+|	  FR2.1	  | Add items (manually or barcode)  |
+|	  FR2.2	  | Decrease/increase amount of items |
+|	  FR2.3	  | Modify info about items |
+|	  FR2.4	    | Add categories for items |
+|	  FR2.5	    | Search items |
+|	  FR2.6	    | Generate reports about inventory |
+|	  FR3		    | Manage suppliers | 
+|  	FR3.1	    | Add suppliers |
+|  	FR3.2	    | Remove suppliers |
+| 	FR3.3	    | List suppliers that can provide an item |
+|	  FR4		    | Manage customers | 
+|	  FR4.1	    | Add customer (through fidelity card) |
+| 	FR4.2	    | Modify info about customers |
+|	  FR4.3	    | Delete customers |
+|	  FR4.4	    | List all customers |
+|	  FR4.5	    | Search customers |
+|	  FR4.6	    | Filter list of customers |
+|	  FR4.7	    | Notify customers about discounts |
+|   FR5     | Manage sales transaction | 
 |   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
 |   FR5.3   | Handle product  |
@@ -141,14 +139,13 @@ o -up-|> u
 |   FR5.7   | Handle payment  |
 |   FR5.7.1 | Payment by cash  |
 |   FR5.7.2 | Payment by credit card  |
- 
-|   FR6     | Manage accounting | *M Giu
+|   FR6     | Manage accounting |
 |   FR6.1   | Record income |
 |   FR6.2   | Record expense |
 |   FR6.3   | List expenses |
 |   FR6.4   | List incomes |
-|   FR6.5   | Show balance |
-|   FR7     | Manage cash register | *
+|   FR6.5   | Show balance sheet |
+|   FR7     | Manage cash register |
 |   FR7.1   | Open the cash register |
 |   FR7.2   | Add money to the cash register | 
 |   FR7.3   | Take money from the cash register |
@@ -274,7 +271,7 @@ left to right direction
 (FR6 Manage accounting) .down.> (FR6.2 Record expense) :include
 (FR6 Manage accounting) .down.> (FR6.3 List expenses) :include
 (FR6 Manage accounting) .down.> (FR6.4 List incomes) :include
-(FR6 Manage accounting) .down.> (FR6.5 Show balance) :include
+(FR6 Manage accounting) .down.> (FR6.5 Show balance sheet) :include
 (FR7 Manage cash register) .down.> (FR7.1 Open the cash register) :include
 (FR7 Manage cash register) .down.> (FR7.2 Add money to the cash register) :include
 (FR7 Manage cash register) .down.> (FR7.3 Take money from the cash register) :include
@@ -572,6 +569,45 @@ left to right direction
 | 5 | Manage payment amount T by credit card|  FR5.7.2 |
 | 8 | No credit, Abort sale transaction |
 
+### Use case 1 - Record income, UC1
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | This income must not have been already recorded in the system |  
+|  Post condition     | The new income is recorded |
+|  Nominal Scenario     | The manager records a new income in the system, specifies the amount, the date and the type of income |
+|  Variants     | - |
+
+### Use case 2 - Record expense, UC2
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | This expense must not have been already recorded in the system |  
+|  Post condition     | The expense in recorded |
+|  Nominal Scenario     | The manager records a new expense in the system, specifies the amount, the date and the type of expense |
+|  Variants     | A scan of the expense is attached |
+
+### Use case 3 - List expenses, UC3
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The expenses are recorded in the system |  
+|  Post condition     | The list of expenses is shown |
+|  Nominal Scenario     | The manager wants to list the expenses recored in the system |
+|  Variants     | Filter the expenses and list only some of them, the list of expenses is empty |
+
+### Use case 4 - List incomes, UC4
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The incomes are recorded in the system |  
+|  Post condition     | The list of incomes is shown |
+|  Nominal Scenario     | The manager wants to list the incomes recorded in the system |
+|  Variants     | Filter the incomes and list only some of them, the list of incomes is empty |
+
+### Use case 5 - Show balance sheet, UC5
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The incomes and the expenses are recorded in the system |  
+|  Post condition     | The balance sheet is shown |
+|  Nominal Scenario     | The manager wants to see the balance sheet of the shop |
+|  Variants     | See the balance sheet for a period of time |
 
 
 
