@@ -78,8 +78,8 @@ o -up-|> u
 | ------------- |:-------------:| -----:|
 |   The Manager     | GUI | Desktop |
 |   The Cashier     | GUI | Desktop |
-|	The PoS		| myPOS API  	| Ethernet cable|
-|	The Barcode reader | API ... | USB connector type A | 
+|  	The PoS		 | myPOS API  	| Ethernet cable|
+|	  The Barcode reader | API ... | USB connector type A | 
 |   The Gmail gateway | Gmail API | Ethernet cable|
 
 # Stories and personas
@@ -111,21 +111,21 @@ o -up-|> u
 |	  FR2.1	  | Add items (manually or barcode)  |
 |	  FR2.2	  | Decrease/increase amount of items |
 |	  FR2.3	  | Modify info about items |
-|	  FR2.4	    | Add categories for items |
-|	  FR2.5	    | Search items |
-|	  FR2.6	    | Generate reports about inventory |
-|	  FR3		    | Manage suppliers | 
-|  	FR3.1	    | Add suppliers |
-|  	FR3.2	    | Remove suppliers |
-| 	FR3.3	    | List suppliers that can provide an item |
-|	  FR4		    | Manage customers | 
-|	  FR4.1	    | Add customer (through fidelity card) |
-| 	FR4.2	    | Modify info about customers |
-|	  FR4.3	    | Delete customers |
-|	  FR4.4	    | List all customers |
-|	  FR4.5	    | Search customers |
-|	  FR4.6	    | Filter list of customers |
-|	  FR4.7	    | Notify customers about discounts |
+|	  FR2.4	  | Add categories for items |
+|	  FR2.5   | Search items |
+|	  FR2.6   | Generate reports about inventory |
+|	  FR3	    | Manage suppliers | 
+|  	FR3.1   | Add suppliers |
+|  	FR3.2   | Remove suppliers |
+| 	FR3.3   | List suppliers that can provide an item |
+|	  FR4	    | Manage customers | 
+|	  FR4.1   | Add customer (through fidelity card) |
+| 	FR4.2   | Modify info about customers |
+|	  FR4.3   | Delete customers |
+|	  FR4.4   | List all customers |
+|	  FR4.5   | Search customers |
+|	  FR4.6   | Filter list of customers |
+|	  FR4.7   | Notify customers about discounts |
 |   FR5     | Manage sales transaction | 
 |   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
@@ -590,8 +590,8 @@ left to right direction
 | ------------- |:-------------:| 
 |  Precondition     | The expenses are recorded in the system |  
 |  Post condition     | The list of expenses is shown |
-|  Nominal Scenario     | The manager wants to list the expenses recored in the system |
-|  Variants     | Filter the expenses and list only some of them, the list of expenses is empty |
+|  Nominal Scenario     | The manager wants to see the list of expenses recored in the system |
+|  Variants     | See the expenses recorded in a period of time, the list of expenses is empty |
 
 ### Use case 4 - List incomes, UC4
 | Actors Involved        | Manager |
@@ -599,7 +599,7 @@ left to right direction
 |  Precondition     | The incomes are recorded in the system |  
 |  Post condition     | The list of incomes is shown |
 |  Nominal Scenario     | The manager wants to list the incomes recorded in the system |
-|  Variants     | Filter the incomes and list only some of them, the list of incomes is empty |
+|  Variants     | See the incomes recorded in a period of time, the list of incomes is empty |
 
 ### Use case 5 - Show balance sheet, UC5
 | Actors Involved        | Manager |
