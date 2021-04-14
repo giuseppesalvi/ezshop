@@ -324,84 +324,124 @@ left to right direction
 ..
 
 ### Use case 1, UC1 - Add supplier
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Supplier X is not present in the system |  
+|  Post condition     | Supplier X added in the system  |
+|  Nominal Scenario     | The manager adds the information of a new supplier in the system  |
+|  Variants     | - |
 
 ### Use case 2, UC2 - Remove supplier
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Supplier X is already present in the system |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager removes Supplier X form the system |
+|  Variants     | - |
 
 ### Use case 3, UC3 - List supplier that can provide an item
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Item X exists |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager retrives a list of suppliers that can provide the item X |
+|  Variants     | - |
 
 ### Use case 4, UC4 - Add customer
 | Actors Involved        |  Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity card |  
 |  Post condition     | Customer info added in the system |
-|  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system, and attach to them a card ID, scanning with the barcode reader a new fidelity card |
+|  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
 |  Variants     | - |
 
 ### Use case 5, UC5 - Modify info about customer
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Customer X already present in the system |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager selects customer X to modify his info; the manager modifies one or more fields|
+|  Variants     | - |
 
 ### Use case 6, UC6 - Delete customer
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Customer X already present in the system   |  
+|  Post condition     | Customer X deleted from the system |
+|  Nominal Scenario     | The manager selects customer X to delete it |
+|  Variants     | - |
 
 ### Use case 7, UC7 - List all customer
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Customer database is not empty |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager retrives a list of customer with a fidelity card |
+|  Variants     | - |
 
 ### Use case 8, UC8 - Search customer
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | - |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager retrives info of customer X |
+|  Variants     | Customer X is not present in the system |
+
+##### Scenario 8.1
+| Scenario | Customer X exists |
+| ------------- |:-------------:| 
+|  Precondition     | - |
+|  Post condition     | - |
+| Step#        | Description  |
+|  1     | Manager insert name X and surname Y in the appropriate fields |  
+|  2     | The System displays info about all customers with name X and surname Y |
+
+##### Scenario 8.2
+| Scenario | Customer X does not exist |
+| ------------- |:-------------:| 
+|  Precondition     | - |
+|  Post condition     | - |
+| Step#        | Description  |
+|  1     | Manager insert name X and surname Y in the appropriate fields |  
+|  2     | The System displays a message to inform that no customer has name X and surname Y|
 
 ### Use case 9, UC9 - Filter list of customer
-| Actors Involved        |  |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | Customer database is not empty |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager retrives the list of customer with a fidelity card; The manager applies a filter on a field |
+|  Variants     | - |
 
 ### Use case 10, UC2 - Notify customers about discounts
 | Actors Involved        |  Manager |
 | ------------- |:-------------:| 
-|  Precondition     | Customer list is not empty |  
+|  Precondition     | Customer database is not empty |  
 |  Post condition     | Emails sent |
-|  Nominal Scenario     | The manager wants to send an email to notify customers of a particular discount |
-|  Variants     | Gmail server are offline |
+|  Nominal Scenario     | The manager sends an email to notify customers of a particular discount |
+|  Variants     | Gmail server is offline |
+
+##### Scenario 10.1
+| Scenario | Gmail servers are online |
+| ------------- |:-------------:| 
+|  Precondition     | Customer database is not empty |
+|  Post condition     | Emails sent |
+| Step#        | Description  |
+|  1     | Manager retrives the list of customer |  
+|  2     | Manager applies (or not) filters to the list of customer|
+| 3 | Manager sends email to the customers in the list |
+| 4 | System display a success message |
+
+##### Scenario 10.2
+| Scenario | Gmail servers are offline |
+| ------------- |:-------------:| 
+|  Precondition     | Customer database is not empty |
+|  Post condition     | Emails sent |
+| Step#        | Description  |
+|  1     | Manager retrives the list of customer |  
+|  2     | Manager applies (or not) filters to the list of customer|
+| 3 | Manager sends email to the customers in the list |
+| 4 | System display an error message |
 
 
 
