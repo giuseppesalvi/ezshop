@@ -78,9 +78,9 @@ o -up-|> u
 | ------------- |:-------------:| -----:|
 |   The Manager     | GUI | Desktop |
 |   The Cashier     | GUI | Desktop |
-|  	The PoS		 | myPOS API  	| Ethernet cable|
+|  	The PoS		 | myPOS API (https://developers.mypos.eu/en)	| Ethernet cable|
 |	  The Barcode reader | API ... | USB connector type A | 
-|   The Gmail gateway | Gmail API | Ethernet cable|
+|   The Gmail gateway | Gmail API (https://developers.google.com/gmail/api) | Ethernet cable|
 
 # Stories and personas
 \<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
