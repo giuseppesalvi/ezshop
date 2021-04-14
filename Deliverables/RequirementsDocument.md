@@ -78,7 +78,7 @@ o -up-|> u
 | ------------- |:-------------:| -----:|
 |   The Manager     | GUI | Desktop |
 |   The Cashier     | GUI | Desktop |
-|	The PoS		| API ... 	| Ethernet cable|
+|	The PoS		| myPOS API  	| Ethernet cable|
 |	The Barcode reader | API ... | USB connector type A | 
 |   The Gmail gateway | Gmail API | Ethernet cable|
 
@@ -450,26 +450,25 @@ left to right direction
 |  Precondition     | Cash register added by Manager|  
 |  Post condition     |  |
 |  Nominal Scenario     |  |
-|  Variants     | Open or close cash register |
+|  Variants     | Open and close cash register |
 
-### Scenario 21.1
-| Scenario SC21.1 | Corresponds to UC21 |
-| ------------- |:-------------:|
+##### Scenario 21.1 - Open the cash register
+| Scenario SC21.1 | Corresponds to UC21 | |
+| ------------- |:-------------:|:-------------:|
 |  Precondition     | no money in cash register|  
 |  Post condition     | cash amount = added cash amount |
-| Step#        | Description  |
-| 1 | Open the cash register  |  
-| 2 | Add the money "amount" to Cash register |
-| 3 |  |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Open the cash register  | FR7.1 |
+| 2 | Add the money "amount" to Cash register | FR7.2 |
 
-### Scenario 21.2
-| Scenario SC21.2 | Corresponds to UC21 |
-| ------------- |:-------------:|
+##### Scenario 21.2 - Close the cash register
+| Scenario SC21.2 | Corresponds to UC21 ||
+| ------------- |:-------------:|:-------------:|
 |  Precondition     | some cash in cash register|  
 |  Post condition     | no money in cash register |
-| Step#        | Description  |  
-| 1 | Take the money out of Cash register |
-| 2 | Close the cash register  |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Take the money out of Cash register | FR7.3 |
+| 2 | Close the cash register  |  FR7.4 |
 
 ### Use case 22, UC22 - FR5 Sales transaction
 | Actors Involved        | Manager , Cashier |
@@ -477,60 +476,103 @@ left to right direction
 |  Precondition     | Open Cash register |  
 |  Post condition     | sale transaction completed |
 |  Nominal Scenario     |  |
-|  Variants     | sale Transaction successful or unsuccessful |
+|  Variants     | Sale product(s), payment by cash or by credit card, no credit abort sale,  barcode unreadable |
 
-## Relevant scenarios
-
-### Scenario 22.1
-| Scenario SC22.1 | Corresponds to UC22 |
-| ------------- |:-------------:|
+##### Scenario 22.1 - Sale 1 product and payment by cash
+| Scenario SC22.1 | Corresponds to UC22 ||
+| ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| Step#        | Description  |
-| 1 | Start a new sales transaction  |  
-| 2 | Read bar code X |
-| 3 | Retrieve name and price given barcode X |
-| 4 | Compute total T |
-| 5 | Manage payment amount T |
-| 6 | Deduce stock amount of product |
-| 7 | Print receipt |
-| 8 | Close transaction |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 | 
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Retrieve name and price given barcode X | FR2.5|
+| 4 | Compute total T | FR5.4 |
+| 5 | Manage payment amount T by cash |  FR5.7.1 |
+| 6 | Deduce stock amount of product |  FR2.2 |
+| 7 | Print receipt |  FR5.6 |
+| 8 | Close transaction | FR5.2 |
 
-### Scenario 22.2
-| Scenario SC22.2 | Corresponds to UC22 |
-| ------------- |:-------------:|
+##### Scenario 22.1 - Sale 1 product and payment by credit card
+| Scenario SC22.1 | Corresponds to UC22 ||
+| ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| Step#        | Description  |
-| 1 | Start a new sale transaction  |  
-| 2 | Read bar code X for first product|
-| 3 | Retrieve name and price given barcode X |
-| 4 | Read bar code X for n products|
-| 5 | Retrieve names and prices given barcode X |
-| 6 | Read bar code X for last product|
-| 7 | Retrieve name and price given barcode X |
-| 8 | Compute total T |
-| 9 | Manage payment amount T |
-| 10 | Deduce stock amount of product |
-| 11 | Print receipt |
-| 12 | Close transaction |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 | 
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Retrieve name and price given barcode X | FR2.5|
+| 4 | Compute total T | FR5.4 |
+| 5 | Manage payment amount T by credit card |  FR5.7.2 |
+| 6 | Deduce stock amount of product |  FR2.2 |
+| 7 | Print receipt |  FR5.6 |
+| 8 | Close transaction | FR5.2 |
 
-### Scenario 22.3
-| Scenario SC22.3 | Corresponds to UC22|
-| ------------- |:-------------:|
+##### Scenario 22.2 - Sale N products and payment by cash
+| Scenario SC22.2 | Corresponds to UC22 | |
+| ------------- |:-------------:|:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is saved and Receipt is generated |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 |  
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Retrieve name and price given barcode X | FR2.5|
+| 4 | Read bar code X for n products|  |
+| 5 | Retrieve names and prices given barcode X | |
+| 6 | Compute total T | FR5.4 |
+| 7 | Manage payment amount T by cash | FR5.7.1 |
+| 8 | Deduce stock amount of product |  FR2.2 |
+| 9 | Print receipt |  FR5.6 |
+| 10 | Close transaction | FR5.2 |
+
+##### Scenario 22.3 - Sale N products and payment by credit card
+| Scenario SC22.3 | Corresponds to UC22 | |
+| ------------- |:-------------:|:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is saved and Receipt is generated |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 |  
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Retrieve name and price given barcode X | FR2.5|
+| 4 | Read bar code X for n products|  |
+| 5 | Retrieve names and prices of n products given barcode X | |
+| 6 | Compute total T | FR5.4 |
+| 7 | Manage payment amount T by credit card | FR5.7.2 |
+| 8 | Deduce stock amount of product |  FR2.2 |
+| 9 | Print receipt |  FR5.6 |
+| 10 | Close transaction | FR5.2 |
+
+##### Scenario 22.4 - bar code unreadable
+| Scenario SC22.4 | Corresponds to UC22|  |
+| ------------- |:-------------:|:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is saved and Receipt is generated |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 | 
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Bar code not readable | 
+| 4 | Input bar code manually | 
+| 5 | Retrieve name and price given barcode X | FR2.5|
+| 6 | Compute total T | FR5.4 |
+| 7 | Manage payment amount T by cash | FR5.7.1 |
+| 8 | Deduce stock amount of product |  FR2.2 |
+| 9 | Print receipt |  FR5.6 |
+| 10 | Close transaction | FR5.2 |
+
+##### Scenario 22.5 - no credit in credit card, abort sale transaction
+| Scenario SC22.4 | Corresponds to UC22|  |
+| ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is aborted |
-| Step#        | Description  |
-| 1 | Start a new sale transaction  |  
-| 2 | Read bar code X for first product|
-| 3 | Retrieve name and price given barcode X |
-| 4 | Read bar code X for n products|
-| 5 | Retrieve names and prices given barcode X |
-| 6 | Read bar code X for last product|
-| 7 | Retrieve name and price given barcode X |
-| 8 | Compute total T |
-| 9 | Manage payment amount T |
-| 12 | Abort transaction |
+| **Step** | **Description** | **Requirement ID**|
+| 1 | Start a new sales transaction  |  FR5.1 | 
+| 2 | Read bar code X | FR5.3.1 |
+| 3 | Retrieve name and price given barcode X | FR2.5|
+| 4 | Compute total T | FR5.4 |
+| 5 | Manage payment amount T by credit card|  FR5.7.2 |
+| 8 | No credit, Abort sale transaction |
+
+
 
 
 # Glossary
@@ -575,11 +617,12 @@ node Application {
 
 node "Computer" as c
 node "Gmail Gateway" as gw
-
+node "myPOS" as mp
 
 Application -down- c
 EZShop -right- db
 EZShop -up- gw
+EZShop -up- mp
 ```
 
 
