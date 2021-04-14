@@ -413,10 +413,35 @@ left to right direction
 
 # System Design
 \<describe here system design>
+```plantuml
+class EZShop{
++F1 Authorize and authenticate()
++F2 Manage inventory()
++F3 Manage supplier()
++F4 Manage customer()
++F5 Manage sales()
++F6 Manage accounting()
++F7 Manage cash register()
+}
+class Computer
+class Printer
+class Software
+class "Cash register"
+EZShop o-- "Cash register"
+EZShop o-- Printer
+EZShop o-- Computer 
+Computer -- Software 
+```
+
 
 \<must be consistent with Context diagram>
 
 # Deployment Diagram 
 
 \<describe here deployment diagram >
+```plantuml
+artifact "EZShop software" as s
+node "Computer" as c
+s -- c
+```
 
