@@ -480,8 +480,18 @@ Computer -- Software
 
 \<describe here deployment diagram >
 ```plantuml
-artifact "EZShop software" as s
+node Application {
+    artifact EZShop
+}
+
 node "Computer" as c
-s -- c
+node "Gmail Gateway" as gw
+database "Shop database" as db
+
+Application -down- c
+EZShop -right- db
+EZShop -up- gw
 ```
+
+
 
