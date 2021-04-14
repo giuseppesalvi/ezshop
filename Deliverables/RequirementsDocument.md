@@ -296,7 +296,31 @@ left to right direction
 ### Use case x, UCx
 ..
 
-### Use case 1, UC1 - Add customer
+### Use case 1, UC1 - Add supplier
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 2, UC2 - Remove supplier
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 3, UC3 - List supplier that can provide an item
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 4, UC4 - Add customer
 | Actors Involved        |  Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity card |  
@@ -304,7 +328,47 @@ left to right direction
 |  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system, and attach to them a card ID, scanning with the barcode reader a new fidelity card |
 |  Variants     | - |
 
-### Use case 2, UC2 - Notify customers about discounts
+### Use case 5, UC5 - Modify info about customer
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 6, UC6 - Delete customer
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 7, UC7 - List all customer
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 8, UC8 - Search customer
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 9, UC9 - Filter list of customer
+| Actors Involved        |  |
+| ------------- |:-------------:| 
+|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
+|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
+|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
+|  Variants     | \<other executions, ex in case of errors> |
+
+### Use case 10, UC2 - Notify customers about discounts
 | Actors Involved        |  Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Customer list is not empty |  
