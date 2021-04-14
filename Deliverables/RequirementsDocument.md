@@ -1,6 +1,6 @@
 # Requirements Document 
 
-Authors:
+Authors: Giuseppe, Milad, Roberto, Naeem
 
 Date:
 
@@ -444,6 +444,94 @@ left to right direction
 | 4 | System display an error message |
 
 
+### Use case 21, UC21 - FR7 Manage Cash register
+| Actors Involved        | Manager, Cashier |
+| ------------- |:-------------:| 
+|  Precondition     | Cash register added by Manager|  
+|  Post condition     |  |
+|  Nominal Scenario     |  |
+|  Variants     | Open or close cash register |
+
+### Scenario 21.1
+| Scenario SC21.1 | Corresponds to UC21 |
+| ------------- |:-------------:|
+|  Precondition     | no money in cash register|  
+|  Post condition     | cash amount = added cash amount |
+| Step#        | Description  |
+| 1 | Open the cash register  |  
+| 2 | Add the money "amount" to Cash register |
+| 3 |  |
+
+### Scenario 21.2
+| Scenario SC21.2 | Corresponds to UC21 |
+| ------------- |:-------------:|
+|  Precondition     | some cash in cash register|  
+|  Post condition     | no money in cash register |
+| Step#        | Description  |  
+| 1 | Take the money out of Cash register |
+| 2 | Close the cash register  |
+
+### Use case 22, UC22 - FR5 Sales transaction
+| Actors Involved        | Manager , Cashier |
+| ------------- |:-------------:| 
+|  Precondition     | Open Cash register |  
+|  Post condition     | sale transaction completed |
+|  Nominal Scenario     |  |
+|  Variants     | sale Transaction successful or unsuccessful |
+
+## Relevant scenarios
+
+### Scenario 22.1
+| Scenario SC22.1 | Corresponds to UC22 |
+| ------------- |:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is saved and Receipt is generated |
+| Step#        | Description  |
+| 1 | Start a new sales transaction  |  
+| 2 | Read bar code X |
+| 3 | Retrieve name and price given barcode X |
+| 4 | Compute total T |
+| 5 | Manage payment amount T |
+| 6 | Deduce stock amount of product |
+| 7 | Print receipt |
+| 8 | Close transaction |
+
+### Scenario 22.2
+| Scenario SC22.2 | Corresponds to UC22 |
+| ------------- |:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is saved and Receipt is generated |
+| Step#        | Description  |
+| 1 | Start a new sale transaction  |  
+| 2 | Read bar code X for first product|
+| 3 | Retrieve name and price given barcode X |
+| 4 | Read bar code X for n products|
+| 5 | Retrieve names and prices given barcode X |
+| 6 | Read bar code X for last product|
+| 7 | Retrieve name and price given barcode X |
+| 8 | Compute total T |
+| 9 | Manage payment amount T |
+| 10 | Deduce stock amount of product |
+| 11 | Print receipt |
+| 12 | Close transaction |
+
+### Scenario 22.3
+| Scenario SC22.3 | Corresponds to UC22|
+| ------------- |:-------------:|
+|  Precondition     | Cashier is identified and authenticated |  
+|  Post condition     | Sale is aborted |
+| Step#        | Description  |
+| 1 | Start a new sale transaction  |  
+| 2 | Read bar code X for first product|
+| 3 | Retrieve name and price given barcode X |
+| 4 | Read bar code X for n products|
+| 5 | Retrieve names and prices given barcode X |
+| 6 | Read bar code X for last product|
+| 7 | Retrieve name and price given barcode X |
+| 8 | Compute total T |
+| 9 | Manage payment amount T |
+| 12 | Abort transaction |
+
 
 # Glossary
 
@@ -482,11 +570,12 @@ Computer -- Software
 ```plantuml
 node Application {
     artifact EZShop
+    database "database" as db
 }
 
 node "Computer" as c
 node "Gmail Gateway" as gw
-database "Shop database" as db
+
 
 Application -down- c
 EZShop -right- db
