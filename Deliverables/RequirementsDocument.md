@@ -1,6 +1,6 @@
 # Requirements Document 
 
-Authors: Giuseppe Salvi, Milad, Roberto, Naeem
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman 
 
 Date:
 
@@ -42,7 +42,7 @@ EZShop is a software application to:
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 | Manager     |  Is the manager / owner of the shop | 
-| Cashier | Interact with customers, manages the inventory |
+| Cashier | Interacts with customers |
 | Customer | Buys products, can have a fidelity card |
 | Supplier | Provides products to the shop |
 | PoS | The physical Point of Sale terminal |
@@ -77,7 +77,7 @@ actor "Gmail gateway" as g
 |   The Manager     | GUI | Desktop |
 |   The Cashier     | GUI | Desktop |
 |  	The PoS		 | myPOS API (https://developers.mypos.eu/en)	| Ethernet cable|
-|	  The Barcode reader | Barcode driver | USB connector type A | 
+|	  The Barcode reader | Barcode reader driver | USB connector type A | 
 |   The Gmail gateway | Gmail API (https://developers.google.com/gmail/api) | Ethernet cable|
 
 # Stories and personas
@@ -104,25 +104,25 @@ actor "Gmail gateway" as g
 |   FR1     | Authorize and authenticate |
 |   FR1.1   | Log in/Log out |
 |   FR1.2   | Change password |
-|	  FR2    	| Manage inventory | 
-|	  FR2.1	  | Add items (manually or barcode)  |
-|	  FR2.2	  | Decrease/increase amount of items |
-|	  FR2.3	  | Modify info about items |
-|	  FR2.4	  | Add categories for items |
-|	  FR2.5   | Search items |
-|	  FR2.6   | Generate reports about inventory |
-|	  FR3	    | Manage suppliers | 
+|	FR2    	| Manage inventory | 
+|	FR2.1	  | Add items (manually or barcode)  |
+|	FR2.2	  | Decrease/increase amount of items |
+|	FR2.3	  | Modify info about items |
+|	FR2.4	  | Add categories for items |
+|	FR2.5   | Search items |
+|	FR2.6   | Generate reports about inventory |
+|	FR3	    | Manage suppliers | 
 |  	FR3.1   | Add suppliers |
 |  	FR3.2   | Remove suppliers |
 | 	FR3.3   | List suppliers that can provide an item |
-|	  FR4	    | Manage customers | 
-|	  FR4.1   | Add customer (through fidelity card) |
+|	FR4	    | Manage customers | 
+|	FR4.1   | Add customer (through fidelity card) |
 | 	FR4.2   | Modify info about customers |
-|	  FR4.3   | Delete customers |
-|	  FR4.4   | List all customers |
-|	  FR4.5   | Search customers |
-|	  FR4.6   | Filter list of customers |
-|	  FR4.7   | Notify customers about discounts |
+|	FR4.3   | Delete customers |
+|	FR4.4   | List all customers |
+|	FR4.5   | Search customers |
+|	FR4.6   | Filter list of customers |
+|	FR4.7   | Notify customers about discounts |
 |   FR5     | Manage sales transaction | 
 |   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
@@ -157,7 +157,7 @@ actor "Gmail gateway" as g
 |  NFR1     | Privacy  | The system must not save credit card data | FR5.7.2 |
 |  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | all FR |
 |  NFR3     | Availability | Availability at least 99% of the time| all FR|
-|  NFR4     | Reliability  | Data integrity | FR.. |
+|  NFR4     | Reliability  | Data integrity | FR2, FR3, FR4, FR6 |
 |  NFR5     | Performance  | Response time < 0.5s | all FR |
 |  Domain1 | | Currency is Euro | |
 
