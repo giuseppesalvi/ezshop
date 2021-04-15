@@ -104,9 +104,8 @@ o -up-|> u
 | ID        | Description  |
 | ------------- |:-------------| 
 |   FR1     | Authorize and authenticate |
-|   FR1.1   | Log in |
-|   FR1.2   | Log out |
-|   FR1.3   | Modify credentials |
+|   FR1.1   | Log in/Log out |
+|   FR1.2   | Change password |
 |	  FR2    	| Manage inventory | 
 |	  FR2.1	  | Add items (manually or barcode)  |
 |	  FR2.2	  | Decrease/increase amount of items |
