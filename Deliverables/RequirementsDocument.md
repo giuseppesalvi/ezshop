@@ -323,25 +323,25 @@ left to right direction
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | The user is not logged in and enters correct credentials |  
-|  Post condition     | -  |
+|  Post condition     | The logged in user will get the set of allowed permissions  |
 |  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
-|  Variants     | - |
+|  Variants     | Wrong username/password |
 
 ### Use case 1, UC1 - Log out
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | The user is logged in  |  
-|  Post condition     | -  |
+|  Post condition     | - |
 |  Nominal Scenario     | The cashier or manager closes the software |
-|  Variants     | - |
+|  Variants     | if there is a sale in process, the user should close the sale |
 
 ### Use case 1, UC1 - Change password
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The user is logged in  |  
+|  Precondition     | The manager is logged in and selects the username to change the password  |  
 |  Post condition     | -  |
-|  Nominal Scenario     | The cashier or manager closes the software |
-|  Variants     | - |
+|  Nominal Scenario     | The manager loggs in and changes the password by selecting the username |
+|  Variants     | old password is not correct, new passwords don't match |
 
 ### Use case 1, UC1 - Add items to the inventory
 | Actors Involved        | Manager |
