@@ -56,14 +56,12 @@ EZShop is a software application to:
 
 ```plantuml
 actor Manager as a
-actor Cashier as o
-actor User as u
+actor Cashier as c
 actor Pos as p
 actor "Barcode reader" as b
 actor "Gmail gateway" as g
-a -up-|> u
-o -up-|> u
-(EZShop) <-left- u
+(EZShop) <-left- a
+(EZShop) <-left- c
 (EZShop) <-- p
 (EZShop) <-- b
 (EZShop) <-right- g
@@ -79,7 +77,7 @@ o -up-|> u
 |   The Manager     | GUI | Desktop |
 |   The Cashier     | GUI | Desktop |
 |  	The PoS		 | myPOS API (https://developers.mypos.eu/en)	| Ethernet cable|
-|	  The Barcode reader | API ... | USB connector type A | 
+|	  The Barcode reader | Barcode driver | USB connector type A | 
 |   The Gmail gateway | Gmail API (https://developers.google.com/gmail/api) | Ethernet cable|
 
 # Stories and personas
@@ -128,10 +126,7 @@ o -up-|> u
 |   FR5     | Manage sales transaction | 
 |   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
-|   FR5.3   | Handle product  |
-|   FR5.3.1 | Add product to the cart |
-|   FR5.3.2 | Delete product from cart  |
-|   FR5.3.3 | Input quantity of product |
+|   FR5.3   | Add / delete product |
 |   FR5.4   | Compute total|
 |   FR5.5   | Display total amount due|
 |   FR5.6   | Print receipt|
@@ -159,10 +154,11 @@ o -up-|> u
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     | Privacy  | Customer data must be encripted | FR3|
+|  NFR1     | Privacy  | The system must not save credit card data | FR5.7.2 |
 |  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | all FR |
 |  NFR3     | Availability | Availability at least 99% of the time| all FR|
-| NFRx .. | | | | 
+|  NFR4     | Reliability  | Data integrity | FR.. |
+|  NFR5     | Performance  | Response time < 0.5s | all FR |
 |  Domain1 | | Currency is Euro | |
 
 
