@@ -319,6 +319,79 @@ left to right direction
 ### Use case x, UCx
 ..
 
+### Use case 1, UC1 - Log in
+| Actors Involved        | Manager and Cashier |
+| ------------- |:-------------:| 
+|  Precondition     | The user is not logged in and enters correct credentials |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
+|  Variants     | - |
+
+### Use case 1, UC1 - Log out
+| Actors Involved        | Manager and Cashier |
+| ------------- |:-------------:| 
+|  Precondition     | The user is logged in  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The cashier or manager closes the software |
+|  Variants     | - |
+
+### Use case 1, UC1 - Change password
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The user is logged in  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The cashier or manager closes the software |
+|  Variants     | - |
+
+### Use case 1, UC1 - Add items to the inventory
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+### Use case 1, UC1 - Decrease/increase amount of items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+### Use case 1, UC1 - Modify info about items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+### Use case 1, UC1 - Add categories for items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+### Use case 1, UC1 - Search items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+### Use case 1, UC1 - Generate reports about inventory
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The manager scans the product with barcode reader |
+|  Variants     | - |
+
+
 ### Use case 1, UC1 - Add supplier
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
