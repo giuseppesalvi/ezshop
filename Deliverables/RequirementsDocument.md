@@ -52,7 +52,6 @@ EZShop is a software application to:
 # Context Diagram and interfaces
 
 ## Context Diagram
-\<Define here Context diagram using UML use case diagram>
 
 ```plantuml
 actor Manager as m
@@ -67,11 +66,9 @@ actor "Gmail gateway" as g
 (EZShop) <-down- g
 ```
 
-\<actors are a subset of stakeholders>
 
 ## Interfaces
-\<describe here each interface in the context diagram>
-\<GUIs will be described graphically in a separate document>
+
 | Actor | Logical Interface | Physical Interface  |
 | ------------- |:-------------:| -----:|
 |   The Manager     | GUI | Desktop |
@@ -81,23 +78,19 @@ actor "Gmail gateway" as g
 |   The Gmail gateway | Gmail API (https://developers.google.com/gmail/api) | Ethernet cable|
 
 # Stories and personas
-\<A Persona is a realistic impersonation of an actor. Define here a few personas and describe in plain text how a persona interacts with the system>
 
-\<Persona is-an-instance-of actor>
+George, 55, is the manager of a small food shop. He has described his needs here in a couple of sentences.
 
-\<stories will be formalized later as scenarios in use cases>
+I want the software to manage the sales. Adding items to the sale with the barcode reader or manually, this part should be fast and without delay. Then customer should be able to pay with cash or credit card. I need an accounting section to see all the sales and expenses during a specific period. I need to check my income each month, and it should be accurate.
 
-... I want to add items to the system and categorize them. I want to check the number of items that are currently in the shop. The shop should be connected to the inventory and update the number of items when it is necessary (for example selling something). I want the ability to generate reports on the items in the inventory. I want to add the suppliers as well and see the list of items that each supplier can provide.
+I want to add items to the system, categorize them, and check the number of items currently in the shop. The shop should be connected to the inventory and update the number of items when necessary (for example, selling something). I want the ability to generate reports on the items in the inventory. I need to add the suppliers and see the list of items that each supplier can provide.
 
-... I want to save customer’s contact info to inform them about future discounts. If the customer wants to have a fidelity card the store should register a card for them. The software also should notify the registered customers about discounts through Email and SMS.
+I want to save customer’s contact info for managing customers and notify them about future discounts later. If the customer wants to have a fidelity card, the software should register a card for them. The software also should notify the registered customers about discounts through email and SMS.
 
 # Functional and non functional requirements
 
 ## Functional Requirements
 
-\<In the form DO SOMETHING, or VERB NOUN, describe high level capabilities of the system>
-
-\<they match to high level use cases>
 
 | ID        | Description  |
 | ------------- |:-------------| 
@@ -146,11 +139,7 @@ actor "Gmail gateway" as g
 |   FR7.4   | Close the cash register |
 
 
-
-
 ## Non Functional Requirements
-
-\<Describe constraints on functional requirements>
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
