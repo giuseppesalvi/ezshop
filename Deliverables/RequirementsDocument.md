@@ -98,24 +98,27 @@ I want to save customer’s contact info for managing customers and notify them 
 |   FR1.1   | Log in/Log out |
 |   FR1.2   | Change password |
 |	FR2    	| Manage inventory | 
-|	FR2.1	  | Add items (manually or barcode)  |
-|	FR2.2	  | Decrease/increase amount of items |
-|	FR2.3	  | Modify info about items |
-|	FR2.4	  | Add categories for items |
-|	FR2.5   | Search items |
-|	FR2.6   | Generate reports about inventory |
+|	FR2.1	  | Add a item (manually or barcode)  |
+|	FR2.2	  | Delete an item |
+|	FR2.3	  | Decrease/Increase amount of items |
+|	FR2.4	  | Modify items |
+|	FR2.5	  | Add/Delete categories |
+|	FR2.6   | Search items |
+|	FR2.7   | Generate reports about items in the inventory |
+| 	FR2.8   | List suppliers that can provide an item |
 |	FR3	    | Manage suppliers | 
 |  	FR3.1   | Add suppliers |
-|  	FR3.2   | Remove suppliers |
-| 	FR3.3   | List suppliers that can provide an item |
+|  	FR3.2   | Delete suppliers |
+|  	FR3.3   | Modify suppliers |
+|  	FR3.4   | List all suppliers |
 |	FR4	    | Manage customers | 
-|	FR4.1   | Add customer (through fidelity card) |
-| 	FR4.2   | Modify info about customers |
+|	FR4.1   | Add customers |
+| 	FR4.2   | Modify customers |
 |	FR4.3   | Delete customers |
 |	FR4.4   | List all customers |
 |	FR4.5   | Search customers |
 |	FR4.6   | Filter list of customers |
-|	FR4.7   | Notify customers about discounts |
+|	FR4.7   | Notify customers with newsletter |
 |   FR5     | Manage sales transaction | 
 |   FR5.1   | Start sale transaction | 
 |   FR5.2   | End sale transaction |
@@ -127,8 +130,12 @@ I want to save customer’s contact info for managing customers and notify them 
 |   FR5.7.1 | Payment by cash  |
 |   FR5.7.2 | Payment by credit card  |
 |   FR6     | Manage accounting |
-|   FR6.1   | Record income |
-|   FR6.2   | Record expense |
+|   FR6.1   | Add/Record income |
+|   FR6.2   | Modify income |
+|   FR6.3   | Delete income |
+|   FR6.2   | Add/Record expense |
+|   FR6.2   | Modify expense |
+|   FR6.2   | Delete expense |
 |   FR6.3   | List expenses |
 |   FR6.4   | List incomes |
 |   FR6.5   | Show balance sheet |
