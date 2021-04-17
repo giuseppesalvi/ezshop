@@ -198,6 +198,7 @@ m --> (FR6 Manage accounting)
 
 m --> (FR7 Manage cash register)
 c --> (FR7 Manage cash register)
+c --> (FR2 Manage inventory)
 }
 ```
 
