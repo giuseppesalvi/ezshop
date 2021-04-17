@@ -202,13 +202,13 @@ c --> (FR2 Manage inventory)
 }
 ```
 
-### Use case 1, UC1
-| Actors Involved        |  |
+### Use case 1, UC1 - Log in
+| Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the UC can start> |  
-|  Post condition     | \<Boolean expression, must evaluate to true after UC is finished> |
-|  Nominal Scenario     | \<Textual description of actions executed by the UC> |
-|  Variants     | \<other executions, ex in case of errors> |
+|  Precondition     | The user is not logged in and enters correct credentials |  
+|  Post condition     | The logged in user will get the set of allowed permissions  |
+|  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
+|  Variants     | Wrong username/password |
 
 ##### Scenario 1.1 
 
@@ -228,24 +228,6 @@ c --> (FR2 Manage inventory)
 |  1     |  |  
 |  2     |  |
 |  ...     |  |
-
-##### Scenario 1.2
-
-##### Scenario 1.x
-
-### Use case 2, UC2
-..
-
-### Use case x, UCx
-..
-
-### Use case 1, UC1 - Log in
-| Actors Involved        | Manager and Cashier |
-| ------------- |:-------------:| 
-|  Precondition     | The user is not logged in and enters correct credentials |  
-|  Post condition     | The logged in user will get the set of allowed permissions  |
-|  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
-|  Variants     | Wrong username/password |
 
 ### Use case 1, UC1 - Log out
 | Actors Involved        | Manager and Cashier |
