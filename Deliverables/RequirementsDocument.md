@@ -349,9 +349,9 @@ c --> (FR2 Manage inventory)
 | Actors Involved        |  Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity card |  
-|  Post condition     | Customer info added in the system |
+|  Post condition     | Customer should be in the system, number of customers will increase by one |
 |  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
-|  Variants     | - |
+|  Variants     | required fileds are not entered, barcode is not valid |
 
 ### Use case 5, UC5 - Modify info about customer
 | Actors Involved        | Manager |
@@ -359,22 +359,22 @@ c --> (FR2 Manage inventory)
 |  Precondition     | Customer X already present in the system |  
 |  Post condition     | - |
 |  Nominal Scenario     | The manager selects customer X to modify his info; the manager modifies one or more fields|
-|  Variants     | - |
+|  Variants     | required fileds are not entered |
 
 ### Use case 6, UC6 - Delete customer
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X already present in the system   |  
-|  Post condition     | Customer X deleted from the system |
+|  Post condition     | Customer X deleted from the system, number of customers will decrease by one |
 |  Nominal Scenario     | The manager selects customer X to delete it |
 |  Variants     | - |
 
 ### Use case 7, UC7 - List all customer
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | Customer database is not empty |  
-|  Post condition     | - |
-|  Nominal Scenario     | The manager retrives a list of customer with a fidelity card |
+|  Precondition     | There is at least one customer registered in the system |  
+|  Post condition     | Number of customers shown are equal to number of customers in the system |
+|  Nominal Scenario     | The manager retrives a list of customers registered in the system |
 |  Variants     | - |
 
 ### Use case 8, UC8 - Search customer
@@ -382,7 +382,7 @@ c --> (FR2 Manage inventory)
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | - |
-|  Nominal Scenario     | The manager retrives info of customer X |
+|  Nominal Scenario     | The manager searches for a customer and possibly retrives a list of customers related to provided info |
 |  Variants     | Customer X is not present in the system |
 
 ##### Scenario 8.1
