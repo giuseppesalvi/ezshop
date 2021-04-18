@@ -626,7 +626,74 @@ c --> (FR2 Manage inventory)
 # Glossary
 
 \<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
+```plantuml
+class EZshop{}
 
+class Manager{
+}
+class Cashier{
+
+}
+class Shop{
+
+}
+class Inventory{}
+class Product{}
+class Customer{
+
+}
+class "Fidelity card"{}
+class Sale{}
+class Supplier{}
+class Order{}
+class "Cash register"{}
+class Pos{}
+class "Barcode reader"{}
+
+
+EZshop -down- "*" Manager : uses
+EZshop -down- "*" Cashier : uses
+Manager "*" -- "*" Shop : manages
+Cashier "*" -- "*" Shop : works in
+Shop -- Inventory : has
+Inventory -- "*" Product : contains
+Sale o-- "*" Product
+Cashier -- "*" Sale
+Customer -up- "*" Sale
+Customer -- "0...*" "Fidelity card"  : has
+Shop -- "0...*" "Fidelity card"
+Supplier -- "*" Product
+Order o-- "*" Product
+Manager -- "*" Order : orders
+Order "*" -- Supplier : receives 
+Shop -right- "*" "Cash register" : has
+Cashier -- "Cash register" : uses
+Manager -- "Cash register" : uses
+Cashier -- Pos 
+Customer -up- Pos
+"Barcode reader" -- "*" Product : scans
+"Barcode reader" -- "*" "Fidelity card" : reads
+Cashier -- "Barcode reader"
+
+```
+## Dictionary
+
+| Term | Description|
+| --------- | --------------|
+| Manager | Manages the shop, if the shop is small the owner of the shop can take his role |
+| Cashier | Handles payments and receipts in the shop, interacts with customers, manages the inventory|
+| Shop | The physical shop |
+| Inventory | A store inventory is a record of all the items available for use in the daily business operations. The store inventory increases with purchases and decreases with sales or consumption.|
+| Product | (or Item) An article or substance that is manufactured or refined for sale|
+| Item | see Product |
+| Customer | A person who buys products from the shop | 
+| Fidelity card | Is a plastic card that the shop gives to regular customers|
+| Sale | A sale is a transaction between the shop and the customers in which the buyer receives products in exchange for money |
+| Supplier | A supplier is a person or organization that provides something needed such as a product or service |
+| Order | It expresses the intention of the manager of the shop to buy products from the suppliers |
+| Cash register | A cash register is a machine in a shop or other business that records sales and into which money received is put|
+| Pos | POS Terminal is an electronic tool applied at retail places to conduct card payments. |
+| Barcode reader | A barcode reader (or barcode scanner) is an optical scanner that can read printed barcodes, decode the data contained in the barcode and send the data to a computer |
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
 # System Design
