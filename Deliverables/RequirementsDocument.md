@@ -272,7 +272,7 @@ c --> (FR2 Manage inventory)
 |  Variants     | Required fields are not provided, ID should be unique |
 
 ### Use case 6, UC6 - decrease quantity of items
-| Actors Involved        | Manager |
+| Actors Involved        | - |
 | ------------- |:-------------:| 
 |  Precondition     | number of items added to sales transaction < number of items in the inventory |  
 |  Post condition     | new quantity = previous quantity - number of items sold  |
@@ -284,42 +284,58 @@ c --> (FR2 Manage inventory)
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The category name should be unique  |  
-|  Post condition     | -  |
+|  Post condition     | new number of categories = previous number + 1   |
 |  Nominal Scenario     | The user opens the add category option and defines a name |
 |  Variants     | Category name is not unique (exist) |
 
 ### Use case 7, UC7 - Search items
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
+|  Precondition     | The user should provide the item description or scan with barcode  |  
+|  Post condition     | - |
+|  Nominal Scenario     | The user scans the product with barcode reader or enters the description |
+|  Variants     | The result is empty |
 
 ### Use case 8, UC8 - Generate reports about inventory
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
+|  Precondition     | In the list of items there is a result of search  |  
+|  Post condition     | - |
+|  Nominal Scenario     | The user will export the result, the export function will generate a file (PDF/XLS) |
+|  Variants     | The result is empty |
 
 
 ### Use case 1, UC1 - Add supplier
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Supplier X is not present in the system |  
-|  Post condition     | Supplier X added in the system  |
+|  Post condition     | Supplier X added in the system, and number of suppliers is increased  |
 |  Nominal Scenario     | The manager adds the information of a new supplier in the system  |
-|  Variants     | - |
+|  Variants     | Required fields are not entered |
 
 ### Use case 2, UC2 - Remove supplier
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Supplier X is already present in the system |  
-|  Post condition     | - |
+|  Post condition     | Supplier X is not in the system anymore, the number of suppliers is decreased |
 |  Nominal Scenario     | The manager removes Supplier X form the system |
 |  Variants     | - |
+
+### Use case 2, UC2 - Modify supplier
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | Supplier X is already present in the system |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager modifies Supplier X info |
+|  Variants     | Required fields are not entered |
+
+### Use case 4, UC4 - List of suppliers
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | - |  
+|  Post condition     | - |
+|  Nominal Scenario     | The manager retrives a list of suppliers |
+|  Variants     | The list is empty |
 
 ### Use case 3, UC3 - List supplier that can provide an item
 | Actors Involved        | Manager |
