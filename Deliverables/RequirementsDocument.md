@@ -206,7 +206,7 @@ c --> (FR2 Manage inventory)
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | The user is not logged in and enters correct credentials |  
-|  Post condition     | The logged in user must get the set of allowed permissions  |
+|  Post condition     | - |
 |  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
 |  Variants     | Wrong username/password |
 
@@ -215,32 +215,70 @@ c --> (FR2 Manage inventory)
 | ------------- |:-------------:| 
 |  Precondition     | The user X is logged in  |  
 |  Post condition     | - |
-|  Nominal Scenario     | The user X closes the software |
+|  Nominal Scenario     | The user X closes the software or logs out |
 |  Variants     | if there is a sale in process, the user X should save/close the sale |
 
 ### Use case 3, UC3 - Change password
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The manager is logged in and selects the username to change the password  |  
-|  Post condition     | -  |
+|  Post condition     | The new password is not equal to previous password  |
 |  Nominal Scenario     | The manager loggs in and changes the password by selecting the username |
 |  Variants     | old password is not correct, new passwords don't match |
 
 ### Use case 4, UC4 - Add items to the inventory
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique and valid  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The user scans the product with barcode reader |
-|  Variants     | Required fields are not provided, ID should be unique |
+|  Precondition     | The barcode is unique and valid |  
+|  Post condition     | Number of items in the system = number of item before adding + 1  |
+|  Nominal Scenario     | The user adds the product with barcode and defines quantity, price, and category of the item |
+|  Variants     | Required fields are not entered, ID/Barcode is not unique/valid |
 
-### Use case 5, UC5 - Modify info about items (increase/decrease quantity)
+##### Scenario 4.1
+| Scenario | Required fields are not entered |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique and valid |
+|  Post condition     | Number of items in the system = number of item before adding + 1 |
+| Step#        | Description  |
+|  1     | The user scans the product with barcode reader|
+|  2     | The user defines the Item description and quantity of product |
+|  3     | The user hits save item button, issue an error and list the required fields that are not entered |
+
+##### Scenario 4.2
+| Scenario | Barcode is not valid |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique and valid |
+|  Post condition     | Number of items in the system = number of item before adding + 1 |
+| Step#        | Description  |
+|  1     | The user scans the product with barcode reader|
+|  2     | The system cannot read the barcode's data, issues a warning about invalid barcode |
+
+##### Scenario 4.3
+| Scenario | ID is not unique |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique and valid |
+|  Post condition     | Number of items in the system = number of item before adding + 1 |
+| Step#        | Description  |
+|  1     | The user scans the product with barcode reader or adds the ID manually |
+|  2     | The user completes the form and adds the details |
+|  3     | The user hits save button, system finds the ID duplicate, so issues a warning with a proper message |
+
+### Use case 5, UC5 - Modify info about items
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The user should see the item on list of items  |  
-|  Post condition     | -  |
+|  Post condition     | ID is valid and unique  |
 |  Nominal Scenario     | The user finds the item on list of items and opens the item to modify the info |
 |  Variants     | Required fields are not provided, ID should be unique |
+
+### Use case 6, UC6 - decrease quantity of items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | number of items added to sales transaction < number of items in the inventory |  
+|  Post condition     | new quantity = previous quantity - number of items sold  |
+|  Nominal Scenario     | A product is added to the sales transaction and the shop will request a reduction for specific item and the inventory decreases that amount |
+|  Variants     | Number of items in the system is less than actual numbers to be added to the sales transaction |
+
 
 ### Use case 6, UC6 - Add categories for items
 | Actors Involved        | Manager |
