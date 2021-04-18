@@ -79,13 +79,13 @@ actor "Gmail gateway" as g
 
 # Stories and personas
 
-George, 55, is the manager of a small food shop. He has described his needs here in a couple of sentences.
+George, 55, is the manager of a small clothing shop. He has described his needs here in a couple of sentences.
 
 I want the software to manage the sales. Adding items to the sale with the barcode reader or manually, this part should be fast and without delay. Then customer should be able to pay with cash or credit card. I need an accounting section to see all the sales and expenses during a specific period. I need to check my income each month, and it should be accurate.
 
 I want to add items to the system, categorize them, and check the number of items currently in the shop. The shop should be connected to the inventory and update the number of items when necessary (for example, selling something). I want the ability to generate reports on the items in the inventory. I need to add the suppliers and see the list of items that each supplier can provide.
 
-I want to save customer’s contact info for managing customers and notify them about future discounts later. If the customer wants to have a fidelity card, the software should register a card for them. The software also should notify the registered customers about discounts through email and SMS.
+I want to save customer’s contact info for managing customers and notify them about future discounts later. If the customer wants to have a fidelity card, the software should register a card for them. The software also should notify the registered customers about discounts through email.
 
 # Functional and non functional requirements
 
@@ -216,15 +216,26 @@ c --> (FR2 Manage inventory)
 |  Precondition     | The user X is logged in  |  
 |  Post condition     | - |
 |  Nominal Scenario     | The user X closes the software or logs out |
-|  Variants     | if there is a sale in process, the user X should save/close the sale |
+|  Variants     | - |
 
 ### Use case 3, UC3 - Change password
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The manager is logged in and selects the username to change the password  |  
+|  Precondition     | The manager is logged in |  
 |  Post condition     | The new password is not equal to previous password  |
 |  Nominal Scenario     | The manager loggs in and changes the password by selecting the username |
-|  Variants     | old password is not correct, new passwords don't match |
+|  Variants     | current password is not correct, new passwords don't match |
+
+##### Scenario 3.1
+| Scenario | current password in not correct, new passwords don't match |
+| ------------- |:-------------:| 
+|  Precondition     | The manage is logged in |
+|  Post condition     | The new password is not equal to previous password  |
+| Step#        | Description  |
+|  1     | The manager loggs in |
+|  2     | The manager select the change password option |
+|  3     | The manager selects the user to change its password, and enters the current password and new passwords |
+|  4     | The system checks the passwords if the current password is not correct and new passwords don't match, issues a warning |
 
 ### Use case 4, UC4 - Add items to the inventory
 | Actors Involved        | Manager |
@@ -242,7 +253,7 @@ c --> (FR2 Manage inventory)
 | Step#        | Description  |
 |  1     | The user scans the product with barcode reader|
 |  2     | The user defines the Item description and quantity of product |
-|  3     | The user hits save item button, issue an error and list the required fields that are not entered |
+|  3     | The user hits save button, issue an error and list the required fields that are not entered |
 
 ##### Scenario 4.2
 | Scenario | Barcode is not valid |
