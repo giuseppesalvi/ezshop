@@ -206,38 +206,19 @@ c --> (FR2 Manage inventory)
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | The user is not logged in and enters correct credentials |  
-|  Post condition     | The logged in user will get the set of allowed permissions  |
+|  Post condition     | The logged in user must get the set of allowed permissions  |
 |  Nominal Scenario     | The cashier or manager opens the software and logs in by his/her credentials |
 |  Variants     | Wrong username/password |
 
-##### Scenario 1.1 
-
-\<describe here scenarios instances of UC1>
-
-\<a scenario is a sequence of steps that corresponds to a particular execution of one use case>
-
-\<a scenario is a more formal description of a story>
-
-\<only relevant scenarios should be described>
-
-| Scenario 1.1 | |
-| ------------- |:-------------:| 
-|  Precondition     | \<Boolean expression, must evaluate to true before the scenario can start> |
-|  Post condition     | \<Boolean expression, must evaluate to true after scenario is finished> |
-| Step#        | Description  |
-|  1     |  |  
-|  2     |  |
-|  ...     |  |
-
-### Use case 1, UC1 - Log out
+### Use case 2, UC2 - Log out
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
-|  Precondition     | The user is logged in  |  
+|  Precondition     | The user X is logged in  |  
 |  Post condition     | - |
-|  Nominal Scenario     | The cashier or manager closes the software |
-|  Variants     | if there is a sale in process, the user should close the sale |
+|  Nominal Scenario     | The user X closes the software |
+|  Variants     | if there is a sale in process, the user X should save/close the sale |
 
-### Use case 1, UC1 - Change password
+### Use case 3, UC3 - Change password
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The manager is logged in and selects the username to change the password  |  
@@ -245,7 +226,31 @@ c --> (FR2 Manage inventory)
 |  Nominal Scenario     | The manager loggs in and changes the password by selecting the username |
 |  Variants     | old password is not correct, new passwords don't match |
 
-### Use case 1, UC1 - Add items to the inventory
+### Use case 4, UC4 - Add items to the inventory
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique and valid  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The user scans the product with barcode reader |
+|  Variants     | Required fields are not provided, ID should be unique |
+
+### Use case 5, UC5 - Modify info about items (increase/decrease quantity)
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The user should see the item on list of items  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The user finds the item on list of items and opens the item to modify the info |
+|  Variants     | Required fields are not provided, ID should be unique |
+
+### Use case 6, UC6 - Add categories for items
+| Actors Involved        | Manager |
+| ------------- |:-------------:| 
+|  Precondition     | The category name should be unique  |  
+|  Post condition     | -  |
+|  Nominal Scenario     | The user opens the add category option and defines a name |
+|  Variants     | Category name is not unique (exist) |
+
+### Use case 7, UC7 - Search items
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique  |  
@@ -253,39 +258,7 @@ c --> (FR2 Manage inventory)
 |  Nominal Scenario     | The manager scans the product with barcode reader |
 |  Variants     | - |
 
-### Use case 1, UC1 - Decrease/increase amount of items
-| Actors Involved        | Manager |
-| ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
-
-### Use case 1, UC1 - Modify info about items
-| Actors Involved        | Manager |
-| ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
-
-### Use case 1, UC1 - Add categories for items
-| Actors Involved        | Manager |
-| ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
-
-### Use case 1, UC1 - Search items
-| Actors Involved        | Manager |
-| ------------- |:-------------:| 
-|  Precondition     | The barcode is unique  |  
-|  Post condition     | -  |
-|  Nominal Scenario     | The manager scans the product with barcode reader |
-|  Variants     | - |
-
-### Use case 1, UC1 - Generate reports about inventory
+### Use case 8, UC8 - Generate reports about inventory
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique  |  
