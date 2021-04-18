@@ -630,24 +630,69 @@ c --> (FR2 Manage inventory)
 class EZshop{}
 
 class Manager{
++Name
++Surname
++Password
 }
+
 class Cashier{
-
++Name
++Surname
++Password
 }
+
 class Shop{
-
++Name
++Address
 }
+
 class Inventory{}
-class Product{}
+class Product{
++Barcode
++Description
++Category
++Quantity
++Price
++Cost
+}
+
 class Customer{
++Name
++Surname
++Telephone
++Email
++Date of birth
++Fidelity ID
+}
+
+class "Fidelity card"{
++ID
++Date
+}
+
+class Sale{
++Total
++Date&time
 
 }
-class "Fidelity card"{}
-class Sale{}
-class Supplier{}
-class Order{}
+
+class Supplier{
++Name
++Address
++Telephone
++Telephone2
++Email
+}
+
+class Order{
++Date
++Amount
+}
+
 class "Cash register"{}
+
 class Pos{}
+
 class "Barcode reader"{}
 
 
