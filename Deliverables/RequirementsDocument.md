@@ -280,16 +280,7 @@ c --> (FR2 Manage inventory)
 |  Precondition     | The user should see the item on list of items  |  
 |  Post condition     | ID is valid and unique  |
 |  Nominal Scenario     | The user finds the item on list of items and opens the item to modify the info |
-|  Variants     | Required fields are not provided, ID should be unique |
-
-### Use case 6, UC6 - decrease quantity of items
-| Actors Involved        | - |
-| ------------- |:-------------:| 
-|  Precondition     | number of items added to sales transaction < number of items in the inventory |  
-|  Post condition     | new quantity = previous quantity - number of items sold  |
-|  Nominal Scenario     | A product is added to the sales transaction and the shop will request a reduction for specific item and the inventory decreases that amount |
-|  Variants     | Number of items in the system is less than actual numbers to be added to the sales transaction |
-
+|  Variants     | Required fields are not provided, ID should be unique (same scenarios when adding an item) |
 
 ### Use case 6, UC6 - Add categories for items
 | Actors Involved        | Manager |
@@ -306,15 +297,6 @@ c --> (FR2 Manage inventory)
 |  Post condition     | - |
 |  Nominal Scenario     | The user scans the product with barcode reader or enters the description |
 |  Variants     | The result is empty |
-
-### Use case 8, UC8 - Generate reports about inventory
-| Actors Involved        | Manager |
-| ------------- |:-------------:| 
-|  Precondition     | In the list of items there is a result of search  |  
-|  Post condition     | - |
-|  Nominal Scenario     | The user will export the result, the export function will generate a file (PDF/XLS) |
-|  Variants     | The result is empty |
-
 
 ### Use case 1, UC1 - Add supplier
 | Actors Involved        | Manager |
@@ -384,7 +366,7 @@ c --> (FR2 Manage inventory)
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | There is at least one customer registered in the system |  
-|  Post condition     | Number of customers shown are equal to number of customers in the system |
+|  Post condition     | Number of customers shown are equal to number of customers in the database |
 |  Nominal Scenario     | The manager retrives a list of customers registered in the system |
 |  Variants     | - |
 
@@ -451,7 +433,6 @@ c --> (FR2 Manage inventory)
 |  2     | Manager applies (or not) filters to the list of customer|
 | 3 | Manager sends email to the customers in the list |
 | 4 | System display an error message |
-
 
 ### Use case 21, UC21 - FR7 Manage Cash register
 | Actors Involved        | Manager, Cashier |
