@@ -445,8 +445,8 @@ c --> (FR2 Manage inventory)
 |  Variants     | Open and close cash register |
 
 ##### Scenario 20.1 - Open the cash register
-| Scenario SC20.1 | Corresponds to UC20 | |
-| ------------- |:-------------:|:-------------:|
+| Scenario SC20.1 | Corresponds to UC20 |
+| ------------- |:-------------:|
 |  Precondition     | no money in cash register|  
 |  Post condition     | cash amount = added cash amount |
 | **Step** | **Description** | 
@@ -454,8 +454,8 @@ c --> (FR2 Manage inventory)
 | 2 | Add the money "amount" to Cash register |
 
 ##### Scenario 20.2 - Close the cash register
-| Scenario SC20.2 | Corresponds to UC20 ||
-| ------------- |:-------------:|:-------------:|
+| Scenario SC20.2 | Corresponds to UC20 |
+| ------------- |:-------------:|
 |  Precondition     | some cash in cash register|  
 |  Post condition     | no money in cash register |
 | **Step** | **Description** | 
@@ -471,8 +471,8 @@ c --> (FR2 Manage inventory)
 |  Variants     | Sale product(s), payment by cash or by credit card, no credit abort sale,  barcode unreadable |
 
 ##### Scenario 21.1 - Sale 1 product and payment by cash
-| Scenario SC21.1 | Corresponds to UC21 ||
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.1 | Corresponds to UC21 |
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | 
@@ -486,8 +486,8 @@ c --> (FR2 Manage inventory)
 | 8 | Close transaction |
 
 ##### Scenario 21.2 - Sale 1 product and payment by credit card
-| Scenario SC21.2 | Corresponds to UC21 ||
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.2 | Corresponds to UC21 |
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | 
@@ -501,8 +501,8 @@ c --> (FR2 Manage inventory)
 | 8 | Close transaction |
 
 ##### Scenario 21.3 - Sale N products and payment by cash
-| Scenario SC21.3 | Corresponds to UC21 | |
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.3 | Corresponds to UC21 |
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | 
@@ -518,8 +518,8 @@ c --> (FR2 Manage inventory)
 | 10 | Close transaction |
 
 ##### Scenario 21.4 - Sale N products and payment by credit card
-| Scenario SC21.4 | Corresponds to UC21 | |
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.4 | Corresponds to UC21 |
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | **Requirement ID**|
@@ -535,8 +535,8 @@ c --> (FR2 Manage inventory)
 | 10 | Close transaction |
 
 ##### Scenario 21.5 - bar code unreadable
-| Scenario SC21.5 | Corresponds to UC21 |  |
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.5 | Corresponds to UC21 |  
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | 
@@ -552,8 +552,8 @@ c --> (FR2 Manage inventory)
 | 10 | Close transaction |
 
 ##### Scenario 21.6 - no credit in credit card, abort sale transaction
-| Scenario SC21.6 | Corresponds to UC21 |  |
-| ------------- |:-------------:|:-------------:|
+| Scenario SC21.6 | Corresponds to UC21 |
+| ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is aborted |
 | **Step** | **Description** | 
