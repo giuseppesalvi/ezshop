@@ -38,7 +38,6 @@ EZShop is a software application to:
 
 # Stakeholders
 
-
 | Stakeholder name  | Description | 
 | ----------------- |:-----------:|
 | Manager     |  Is the manager / owner of the shop | 
@@ -66,7 +65,6 @@ actor "Gmail gateway" as g
 (EZShop) <-down- g
 ```
 
-
 ## Interfaces
 
 | Actor | Logical Interface | Physical Interface  |
@@ -83,7 +81,7 @@ George, 55, is the manager of a small clothing shop. He has described his needs 
 
 I want the software to manage the sales. Adding items to the sale with the barcode reader or manually, this part should be fast and without delay. Then customer should be able to pay with cash or credit card. I need an accounting section to see all the sales and expenses during a specific period. I need to check my income each month, and it should be accurate.
 
-I want to add items to the system, categorize them, and check the number of items currently in the shop. The shop should be connected to the inventory and update the number of items when necessary (for example, selling something). I want the ability to generate reports on the items in the inventory. I need to add the suppliers and see the list of items that each supplier can provide.
+I want to add items to the system, categorize them, and check the number of items currently in the shop. The shop should be connected to the inventory and update the number of items when necessary. I want the ability to generate reports on the items in the inventory. I need to add the suppliers and see the list of suppliers that can provide a spcific item.
 
 I want to save customer’s contact info for managing customers and notify them about future discounts later. If the customer wants to have a fidelity card, the software should register a card for them. The software also should notify the registered customers about discounts through email.
 
@@ -104,8 +102,7 @@ I want to save customer’s contact info for managing customers and notify them 
 |	FR2.4	  | Modify items |
 |	FR2.5	  | Add/Delete categories |
 |	FR2.6   | Search items |
-|	FR2.7   | Generate reports about items in the inventory |
-| 	FR2.8   | List suppliers that can provide an item |
+| 	FR2.7   | List suppliers that can provide an item |
 |	FR3	    | Manage suppliers | 
 |  	FR3.1   | Add suppliers |
 |  	FR3.2   | Delete suppliers |
@@ -120,20 +117,19 @@ I want to save customer’s contact info for managing customers and notify them 
 |	FR4.6   | Filter list of customers |
 |	FR4.7   | Notify customers with newsletter |
 |   FR5     | Manage sales transaction | 
-|   FR5.1   | Start sale transaction | 
-|   FR5.2   | End sale transaction |
-|   FR5.3   | Add / delete product |
-|   FR5.4   | Compute total|
-|   FR5.5   | Display total amount due|
-|   FR5.6   | Print receipt|
-|   FR5.7   | Handle payment  |
-|   FR5.7.1 | Payment by cash  |
-|   FR5.7.2 | Payment by credit card  |
+|   FR5.1   | Create new sale transaction |
+|   FR5.2   | Add / delete product |
+|   FR5.3   | Compute total|
+|   FR5.4   | Display total amount due |
+|   FR5.5   | Print receipt|
+|   FR5.6   | Handle payment  |
+|   FR5.6.1 | Payment by cash  |
+|   FR5.6.2 | Payment by credit card  |
 |   FR6     | Manage accounting |
-|   FR6.1   | Add/Record income |
+|   FR6.1   | Add income |
 |   FR6.2   | Modify income |
 |   FR6.3   | Delete income |
-|   FR6.2   | Add/Record expense |
+|   FR6.2   | Add expense |
 |   FR6.2   | Modify expense |
 |   FR6.2   | Delete expense |
 |   FR6.3   | List expenses |
@@ -145,21 +141,17 @@ I want to save customer’s contact info for managing customers and notify them 
 |   FR7.3   | Take money from the cash register |
 |   FR7.4   | Close the cash register |
 
-
 ## Non Functional Requirements
 
 | ID        | Type (efficiency, reliability, ..)           | Description  | Refers to |
 | ------------- |:-------------:| :-----:| -----:|
-|  NFR1     | Privacy  | The system must not save credit card data | FR5.7.2 |
-|  NFR2     | Usability | Time to learn how to use for non Engineers < 1 day | all FR |
-|  NFR3     | Availability | Availability at least 99% of the time| all FR|
-|  NFR4     | Reliability  | Data integrity | FR2, FR3, FR4, FR6 |
-|  NFR5     | Performance  | Response time < 0.5s | all FR |
-|  Domain1 | | Currency is Euro | |
-
+|  NFR1     | Usability | Time to learn how to use for non Engineers < 1 day | all FR |
+|  NFR2     | Availability | Availability at least 99% of the time| all FR |
+|  NFR3     | Reliability  | Data in the accounting should be valid and accurate | FR2, FR3, FR4, FR6 |
+|  NFR4     | Performance  | Response time < 0.5s | all FR |
+|  NFR5     | Privacy  | The system must not save credit card data | FR5.7.2 |
 
 # Use case diagram and use cases
-
 
 ## Use case diagram
 ```plantuml
@@ -293,7 +285,7 @@ c --> (FR2 Manage inventory)
 ### Use case 7, UC7 - Search items
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | The user should provide the item description or scan with barcode  |  
+|  Precondition     | - |  
 |  Post condition     | - |
 |  Nominal Scenario     | The user scans the product with barcode reader or enters the description |
 |  Variants     | The result is empty |
@@ -341,7 +333,7 @@ c --> (FR2 Manage inventory)
 ### Use case 4, UC4 - Add customer
 | Actors Involved        |  Cashier |
 | ------------- |:-------------:| 
-|  Precondition     | Customer X does not have a fidelity card |  
+|  Precondition     | Customer X does not have a fidelity ID (card) |  
 |  Post condition     | Customer should be in the system, number of customers will increase by one |
 |  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
 |  Variants     | required fileds are not entered, barcode is not valid |
@@ -379,7 +371,17 @@ c --> (FR2 Manage inventory)
 |  Variants     | Customer X is not present in the system |
 
 ##### Scenario 8.1
-| Scenario | Customer X exists |
+| Scenario | Add customer required fields are not provided |
+| ------------- |:-------------:| 
+|  Precondition     | Customer X does not have a fidelity ID (card) |
+|  Post condition     | Customer should be in the system, number of customers will increase by one |
+| Step#        | Description  |
+|  1     | The user opens the add cutomer section |  
+|  2     | The user enters the information about the customer |
+|  3     | required fileds are not entered, system issues a warning |
+
+##### Scenario 8.1
+| Scenario | Search customer - customer X exists |
 | ------------- |:-------------:| 
 |  Precondition     | - |
 |  Post condition     | - |
@@ -388,13 +390,13 @@ c --> (FR2 Manage inventory)
 |  2     | The System displays info about all customers with name X and surname Y |
 
 ##### Scenario 8.2
-| Scenario | Customer X does not exist |
+| Scenario | Search customer - Customer X does not exist |
 | ------------- |:-------------:| 
 |  Precondition     | - |
 |  Post condition     | - |
 | Step#        | Description  |
 |  1     | Manager insert name X and surname Y in the appropriate fields |  
-|  2     | The System displays a message to inform that no customer has name X and surname Y|
+|  2     | The System displays a message to inform that no customer has name X and surname Y |
 
 ### Use case 9, UC9 - Filter list of customer
 | Actors Involved        | Manager |
@@ -408,8 +410,8 @@ c --> (FR2 Manage inventory)
 | Actors Involved        |  Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Customer database is not empty |  
-|  Post condition     | Emails sent |
-|  Nominal Scenario     | The manager sends an email to notify customers of a particular discount |
+|  Post condition     | number of emails sent equals to number of filtered customers |
+|  Nominal Scenario     | The manager sends an email to notify customers for a particular discount |
 |  Variants     | Gmail server is offline |
 
 ##### Scenario 10.1
@@ -565,15 +567,15 @@ c --> (FR2 Manage inventory)
 ### Use case 1 - Record income, UC1
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | This income must not have been already recorded in the system |  
-|  Post condition     | The new income is recorded |
+|  Precondition     | - |  
+|  Post condition     | The new income is recorded, the previous overall income < The new overall income |
 |  Nominal Scenario     | The manager records a new income in the system, specifies the amount, the date and the type of income |
 |  Variants     | - |
 
 ### Use case 2 - Record expense, UC2
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
-|  Precondition     | This expense must not have been already recorded in the system |  
+|  Precondition     | - |  
 |  Post condition     | The expense in recorded |
 |  Nominal Scenario     | The manager records a new expense in the system, specifies the amount, the date and the type of expense |
 |  Variants     | A scan of the expense is attached |
@@ -606,7 +608,6 @@ c --> (FR2 Manage inventory)
 
 # Glossary
 
-\<use UML class diagram to define important terms, or concepts in the domain of the system, and their relationships> 
 ```plantuml
 class EZshop{}
 
@@ -724,10 +725,9 @@ Cashier -- "Barcode reader"
 | Expense | Expenses are what the shop spends the money on, like rent, employees salaries, bills, ... |
 | Balance sheet | Is a statement of the assets, liabilities, and capital of a business at a particular point in time, detailing the balance of income and expenditure over the preceding period. |
 
-\<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
 # System Design
-\<describe here system design>
+
 ```plantuml
 class EZShop{
 +F1 Authorize and authenticate()
@@ -749,11 +749,10 @@ Computer -- Software
 ```
 
 
-\<must be consistent with Context diagram>
+
 
 # Deployment Diagram 
 
-\<describe here deployment diagram >
 ```plantuml
 artifact EZShop
 node "Computer" as c
