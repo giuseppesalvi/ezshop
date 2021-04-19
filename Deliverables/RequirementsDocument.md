@@ -449,18 +449,18 @@ c --> (FR2 Manage inventory)
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | no money in cash register|  
 |  Post condition     | cash amount = added cash amount |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Open the cash register  | FR7.1 |
-| 2 | Add the money "amount" to Cash register | FR7.2 |
+| **Step** | **Description** | 
+| 1 | Open the cash register  | 
+| 2 | Add the money "amount" to Cash register |
 
 ##### Scenario 20.2 - Close the cash register
 | Scenario SC20.2 | Corresponds to UC20 ||
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | some cash in cash register|  
 |  Post condition     | no money in cash register |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Take the money out of Cash register | FR7.3 |
-| 2 | Close the cash register  |  FR7.4 |
+| **Step** | **Description** | 
+| 1 | Take the money out of Cash register | 
+| 2 | Close the cash register  |
 
 ### Use case 21, UC21 - FR5 Sales transaction
 | Actors Involved        | Manager , Cashier |
@@ -475,47 +475,47 @@ c --> (FR2 Manage inventory)
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 | 
-| 2 | Read bar code X | FR5.3.1 |
-| 3 | Retrieve name and price given barcode X | FR2.5|
-| 4 | Compute total T | FR5.4 |
-| 5 | Manage payment amount T by cash |  FR5.7.1 |
-| 6 | Deduce stock amount of product |  FR2.2 |
-| 7 | Print receipt |  FR5.6 |
-| 8 | Close transaction | FR5.2 |
+| **Step** | **Description** | 
+| 1 | Start a new sales transaction  | 
+| 2 | Read bar code X | 
+| 3 | Retrieve name and price given barcode X | 
+| 4 | Compute total T | 
+| 5 | Manage payment amount T by cash | 
+| 6 | Deduce stock amount of product |
+| 7 | Print receipt |
+| 8 | Close transaction |
 
 ##### Scenario 21.2 - Sale 1 product and payment by credit card
 | Scenario SC21.2 | Corresponds to UC21 ||
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 | 
-| 2 | Read bar code X | FR5.3.1 |
-| 3 | Retrieve name and price given barcode X | FR2.5|
-| 4 | Compute total T | FR5.4 |
-| 5 | Manage payment amount T by credit card |  FR5.7.2 |
-| 6 | Deduce stock amount of product |  FR2.2 |
-| 7 | Print receipt |  FR5.6 |
-| 8 | Close transaction | FR5.2 |
+| **Step** | **Description** | 
+| 1 | Start a new sales transaction  |
+| 2 | Read bar code X | 
+| 3 | Retrieve name and price given barcode X |
+| 4 | Compute total T |
+| 5 | Manage payment amount T by credit card | 
+| 6 | Deduce stock amount of product | 
+| 7 | Print receipt | 
+| 8 | Close transaction |
 
 ##### Scenario 21.3 - Sale N products and payment by cash
 | Scenario SC21.3 | Corresponds to UC21 | |
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 |  
-| 2 | Read bar code X | FR5.3.1 |
-| 3 | Retrieve name and price given barcode X | FR2.5|
-| 4 | Read bar code X for n products|  |
-| 5 | Retrieve names and prices given barcode X | |
-| 6 | Compute total T | FR5.4 |
-| 7 | Manage payment amount T by cash | FR5.7.1 |
-| 8 | Deduce stock amount of product |  FR2.2 |
-| 9 | Print receipt |  FR5.6 |
-| 10 | Close transaction | FR5.2 |
+| **Step** | **Description** | 
+| 1 | Start a new sales transaction  | 
+| 2 | Read bar code X | 
+| 3 | Retrieve name and price given barcode X |
+| 4 | Read bar code X for n products| 
+| 5 | Retrieve names and prices given barcode X | 
+| 6 | Compute total T |
+| 7 | Manage payment amount T by cash | 
+| 8 | Deduce stock amount of product |
+| 9 | Print receipt |
+| 10 | Close transaction |
 
 ##### Scenario 21.4 - Sale N products and payment by credit card
 | Scenario SC21.4 | Corresponds to UC21 | |
@@ -523,45 +523,45 @@ c --> (FR2 Manage inventory)
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
 | **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 |  
-| 2 | Read bar code X | FR5.3.1 |
-| 3 | Retrieve name and price given barcode X | FR2.5|
-| 4 | Read bar code X for n products|  |
-| 5 | Retrieve names and prices of n products given barcode X | |
-| 6 | Compute total T | FR5.4 |
-| 7 | Manage payment amount T by credit card | FR5.7.2 |
-| 8 | Deduce stock amount of product |  FR2.2 |
-| 9 | Print receipt |  FR5.6 |
-| 10 | Close transaction | FR5.2 |
+| 1 | Start a new sales transaction  |
+| 2 | Read bar code X | 
+| 3 | Retrieve name and price given barcode X |
+| 4 | Read bar code X for n products|
+| 5 | Retrieve names and prices of n products given barcode X |
+| 6 | Compute total T |
+| 7 | Manage payment amount T by credit card |
+| 8 | Deduce stock amount of product |
+| 9 | Print receipt |
+| 10 | Close transaction |
 
 ##### Scenario 21.5 - bar code unreadable
 | Scenario SC21.5 | Corresponds to UC21 |  |
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 | 
-| 2 | Read bar code X | FR5.3.1 |
+| **Step** | **Description** | 
+| 1 | Start a new sales transaction  |  
+| 2 | Read bar code X |
 | 3 | Bar code not readable | 
 | 4 | Input bar code manually | 
-| 5 | Retrieve name and price given barcode X | FR2.5|
-| 6 | Compute total T | FR5.4 |
-| 7 | Manage payment amount T by cash | FR5.7.1 |
-| 8 | Deduce stock amount of product |  FR2.2 |
-| 9 | Print receipt |  FR5.6 |
-| 10 | Close transaction | FR5.2 |
+| 5 | Retrieve name and price given barcode X |
+| 6 | Compute total T | 
+| 7 | Manage payment amount T by cash |
+| 8 | Deduce stock amount of product | 
+| 9 | Print receipt |  
+| 10 | Close transaction |
 
 ##### Scenario 21.6 - no credit in credit card, abort sale transaction
 | Scenario SC21.6 | Corresponds to UC21 |  |
 | ------------- |:-------------:|:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is aborted |
-| **Step** | **Description** | **Requirement ID**|
-| 1 | Start a new sales transaction  |  FR5.1 | 
-| 2 | Read bar code X | FR5.3.1 |
-| 3 | Retrieve name and price given barcode X | FR2.5|
-| 4 | Compute total T | FR5.4 |
-| 5 | Manage payment amount T by credit card|  FR5.7.2 |
+| **Step** | **Description** | 
+| 1 | Start a new sales transaction  | 
+| 2 | Read bar code X |
+| 3 | Retrieve name and price given barcode X |
+| 4 | Compute total T | 
+| 5 | Manage payment amount T by credit card| 
 | 8 | No credit, Abort sale transaction |
 
 ### Use case 22 - Record income, UC22
