@@ -230,7 +230,7 @@ c --> (FR2 Manage inventory)
 |  4     | The system checks the passwords if the current password is not correct or new passwords don't match, issues a warning |
 
 ### Use case 4, UC4 - Add items to the inventory
-| Actors Involved        | Manager or Cashier |
+| Actors Involved        | Manager , Cashier , Barcode reader |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique and valid |  
 |  Post condition     | Number of items in the system = number of item before adding + 1  |
@@ -331,7 +331,7 @@ c --> (FR2 Manage inventory)
 |  Variants     | - |
 
 ### Use case 13, UC13 - Add customer
-| Actors Involved        |  Manager or Cashier |
+| Actors Involved        |  Manager , Cashier , Barcode reader |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity ID (card) |  
 |  Post condition     | Customer should be in the system, number of customers will increase by one |
@@ -407,7 +407,7 @@ c --> (FR2 Manage inventory)
 |  Variants     | - |
 
 ### Use case 19, UC19 - Notify customers about discounts
-| Actors Involved        |  Manager or Cashier|
+| Actors Involved        |  Manager , Cashier , Gmail gateway |
 | ------------- |:-------------:| 
 |  Precondition     | Customer database is not empty |  
 |  Post condition     | number of emails sent equals to number of filtered customers |
@@ -463,7 +463,7 @@ c --> (FR2 Manage inventory)
 | 2 | Close the cash register  |
 
 ### Use case 21, UC21 - FR5 Sales transaction
-| Actors Involved        | Manager , Cashier |
+| Actors Involved        | Manager , Cashier , POS |
 | ------------- |:-------------:| 
 |  Precondition     | Open Cash register |  
 |  Post condition     | sale transaction completed |
