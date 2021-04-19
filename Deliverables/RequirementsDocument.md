@@ -739,6 +739,10 @@ Cashier -- "Barcode reader"
 | Cash register | A cash register is a machine in a shop or other business that records sales and into which money received is put. |
 | Pos | POS Terminal is an electronic tool applied at retail places to conduct card payments. |
 | Barcode reader | A barcode reader (or barcode scanner) is an optical scanner that can read printed barcodes, decode the data contained in the barcode and send the data to a computer. |
+| Income | Income is the money that the shop takes in, from sales, from investments or from other sources. | 
+| Expense | Expenses are what the shop spends the money on, like rent, employees salaries, bills, ... |
+| Balance sheet | Is a statement of the assets, liabilities, and capital of a business at a particular point in time, detailing the balance of income and expenditure over the preceding period. |
+
 \<concepts are used consistently all over the document, ex in use cases, requirements etc>
 
 # System Design
