@@ -466,29 +466,31 @@ c --> (FR7 Manage cash register)
 ##### Scenario 14.1 
 | Scenario | Add Money |
 | ------------- |:-------------:|
-|  Precondition     | some cash in cash register|  
-|  Post condition     | no money in cash register |
+|  Precondition     | - |  
+|  Post condition     | Money added to cash register |
 | Step# | Description | 
-| 1 |  | 
-| 2 | |
+| 1 | Specify the amount by entering the quantity of each banknote | 
+| 2 | Open the drawer |
+| 3 | Save operation |
 
 ##### Scenario 14.2 
 | Scenario | Drop Money |
 | ------------- |:-------------:|
-|  Precondition     | some cash in cash register|  
-|  Post condition     | no money in cash register |
+|  Precondition     | Some cash in cash register |  
+|  Post condition     | Money dropped from cash register |
 | Step# | Description | 
-| 1 | | 
-| 2 | |
+| 1 | Specify the amount by entering the quantity of each banknote | 
+| 2 | Open the drawer |
+| 3 | Save operation |
 
 ##### Scenario 14.3
 | Scenario | Close the cash register |
 | ------------- |:-------------:|
-|  Precondition     | some cash in cash register|  
-|  Post condition     | no money in cash register |
+|  Precondition     | - |  
+|  Post condition     | - |
 | Step# | Description | 
-| 1 | Take the money out of Cash register | 
-| 2 | Close the cash register  |
+| 1 | Insert amount of cash present in the cash register at the end of the day specifing quantity of each banknote | 
+| 2 | Produce legal document |
 
 ### Use case 15, UC15 - Sale transaction
 | Actors Involved        | Manager , Cashier , POS |
