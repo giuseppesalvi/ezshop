@@ -675,7 +675,6 @@ class Customer{
 +Telephone
 +Email
 +Date of birth
-+Fidelity ID
 }
 
 class "Fidelity card"{
