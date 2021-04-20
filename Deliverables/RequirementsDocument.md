@@ -320,7 +320,7 @@ c --> (FR7 Manage cash register)
 |  Variants     | The result is empty |
 
 ### Use case 8, UC8 - Add supplier
-| Actors Involved        | Manager or Cashier |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Supplier X is not present in the system |  
 |  Post condition     | Supplier X added in the system, and number of suppliers is increased  |
@@ -328,7 +328,7 @@ c --> (FR7 Manage cash register)
 |  Variants     | Required fields are not entered |
 
 ### Use case 9, UC9 - List suppliers
-| Actors Involved        | Manager or Cashier |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | - |
@@ -359,7 +359,7 @@ c --> (FR7 Manage cash register)
 |  4     | Confirms the action |
 
 ### Use case 10, UC10 - List supplier that can provide an item
-| Actors Involved        | Manager or Cashier |
+| Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | Item X exists |  
 |  Post condition     | - |
