@@ -107,15 +107,13 @@ I want to save customer’s contact info for managing customers and notify them 
 |  	FR3.1   | Add suppliers |
 |  	FR3.2   | Delete suppliers |
 |  	FR3.3   | Modify suppliers |
-|  	FR3.4   | List all suppliers |
+|  	FR3.4   | List  suppliers |
 |	FR4	    | Manage customers | 
 |	FR4.1   | Add customers |
 | 	FR4.2   | Modify customers |
 |	FR4.3   | Delete customers |
-|	FR4.4   | List all customers |
-|	FR4.5   | Search customers |
-|	FR4.6   | Filter list of customers |
-|	FR4.7   | Notify customers with newsletter |
+|	FR4.4   | List  customers |
+|	FR4.5   | Notify customers with newsletter |
 |   FR5     | Manage sales transaction | 
 |   FR5.1   | Create new sale transaction |
 |   FR5.2   | Add / delete product |
