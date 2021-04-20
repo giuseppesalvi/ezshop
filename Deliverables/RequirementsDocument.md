@@ -2,9 +2,9 @@
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman 
 
-Date:
+Date: 20/04/2021
 
-Version:
+Version: 1.0.0
 
 # Contents
 
@@ -146,7 +146,7 @@ I want to save customer’s contact info for managing customers and notify them 
 |  NFR2     | Availability | Availability at least 99% of the time| all FR |
 |  NFR3     | Reliability  | Data in the accounting should be valid and accurate | FR2, FR3, FR4, FR6 |
 |  NFR4     | Performance  | Response time < 0.5s | all FR |
-|  NFR5     | Privacy  | The system must not save credit card data | FR5.7.2 |
+|  NFR5     | Privacy  | The system must not save credit card data | FR5.6.2 |
 
 # Use case diagram and use cases
 
@@ -170,11 +170,11 @@ c --> (FR2 Manage inventory)
 m --> (FR3 Manage suppliers)
 
 (FR4 Manage customers) .down.> (FR4.1 Add customer) :include
-(FR4 Manage customers) .down.> (FR4.7 Notify customers with newsletter) :include
+(FR4 Manage customers) .down.> (FR4.5 Notify customers with newsletter) :include
 m --> (FR4 Manage customers)
 (FR4.1 Add customer) <-- c
 (FR4.1 Add customer) --> b
-(FR4.7 Notify customers with newsletter) --> g
+(FR4.5 Notify customers with newsletter) --> g
 
 (FR5 Manage sales transaction) .down.> (FR5.2 Add / Delete product) :include
 (FR5 Manage sales transaction) .down.> (FR5.6.2 Payment by credit card) :include
@@ -214,7 +214,7 @@ c --> (FR7 Manage cash register)
 |  Variants     | current password is not correct, new passwords don't match |
 
 ##### Scenario 3.1
-| Scenario | current password in not correct, new passwords don't match |
+| Scenario | current password is not correct, new passwords don't match |
 | ------------- |:-------------:| 
 |  Precondition     | The manage is logged in |
 |  Post condition     | The new password is not equal to previous password  |
@@ -227,7 +227,7 @@ c --> (FR7 Manage cash register)
 ### Use case 4, UC4 - Add items to the inventory
 | Actors Involved        | Manager , Cashier , Barcode reader |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique and valid |  
+|  Precondition     | |  
 |  Post condition     | Number of items in the system = number of item before adding + 1  |
 |  Nominal Scenario     | The user adds an item to the inventory, specifies manually the description, the quantity, the category and all the other fields of the item |
 |  Variants     | Scan the item to add automatically the info, Required fields are not entered, ID/Barcode is not unique/valid |
@@ -257,7 +257,7 @@ c --> (FR7 Manage cash register)
 ##### Scenario 4.3
 | Scenario | Barcode is not valid |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique and valid |
+|  Precondition     | |
 |  Post condition     | Number of items in the system = number of item before adding + 1 |
 | Step#        | Description  |
 |  1     | The user scans the product with barcode reader|
@@ -266,7 +266,7 @@ c --> (FR7 Manage cash register)
 ##### Scenario 4.4
 | Scenario | ID is not unique |
 | ------------- |:-------------:| 
-|  Precondition     | The barcode is unique and valid |
+|  Precondition     | |
 |  Post condition     | Number of items in the system = number of item before adding + 1 |
 | Step#        | Description  |
 |  1     | The user scans the product with barcode reader or adds the ID manually |
@@ -391,7 +391,7 @@ c --> (FR7 Manage cash register)
 |  Precondition     | There is at least one customer registered in the system |  
 |  Post condition     | Number of customers shown are equal to number of customers in the database |
 |  Nominal Scenario     | The manager retrives a list of customers registered in the system |
-|  Variants     | Modify customer, Delete customer,Filter the list using name of customers |
+|  Variants     | Modify customer, Delete customer, Filter the list using name of customers |
 
 ##### Scenario 12.1
 | Scenario | Modify customer |
@@ -497,7 +497,7 @@ c --> (FR7 Manage cash register)
 | ------------- |:-------------:| 
 |  Precondition     | |  
 |  Post condition     | Sale transaction completed |
-|  Nominal Scenario     |  |
+|  Nominal Scenario     | Manage sale transaction |
 |  Variants     | Sale product(s), payment by cash or by credit card, no credit abort sale,  barcode unreadable |
 
 ##### Scenario 15.1
