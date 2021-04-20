@@ -134,10 +134,9 @@ I want to save customer’s contact info for managing customers and notify them 
 |   FR6.8   | List incomes |
 |   FR6.9   | Show balance sheet |
 |   FR7     | Manage cash register |
-|   FR7.1   | Open the cash register |
-|   FR7.2   | Add money to the cash register | 
-|   FR7.3   | Take money from the cash register |
-|   FR7.4   | Close the cash register |
+|   FR7.1   | Add money to the cash register | 
+|   FR7.2   | Take money from the cash register |
+|   FR7.3   | Close the cash register |
 
 ## Non Functional Requirements
 
