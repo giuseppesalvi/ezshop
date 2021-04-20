@@ -189,7 +189,6 @@ m --> (FR7 Manage cash register)
 c --> (FR7 Manage cash register)
 }
 ```
-
 ### Use case 1, UC1 - Log in
 | Actors Involved        | Manager and Cashier |
 | ------------- |:-------------:| 
@@ -230,10 +229,22 @@ c --> (FR7 Manage cash register)
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique and valid |  
 |  Post condition     | Number of items in the system = number of item before adding + 1  |
-|  Nominal Scenario     | The user adds the product with barcode and defines quantity, price, and category of the item |
-|  Variants     | Required fields are not entered, ID/Barcode is not unique/valid |
+|  Nominal Scenario     | The user adds an item to the inventory, specifies manually the description, the quantity, the category and all the other fields of the item |
+|  Variants     | Scan the item to add automatically the info, Required fields are not entered, ID/Barcode is not unique/valid |
 
 ##### Scenario 4.1
+| Scenario | Scan the item to add automatically the info |
+| ------------- |:-------------:| 
+|  Precondition     | The barcode is unique and valid |
+|  Post condition     | Number of items in the system = number of item before adding + 1 |
+| Step#        | Description  |
+|  1     | The user scans the product with barcode reader|
+|  2     | The user defines the Item description and quantity of product |
+|  3     | Some of the fields are automatically filled |
+|  4     | The user completes the remaining fields |
+|  5     | Hits the add button to add the item to the inventory |
+
+##### Scenario 4.2
 | Scenario | Required fields are not entered |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique and valid |
@@ -243,7 +254,7 @@ c --> (FR7 Manage cash register)
 |  2     | The user defines the Item description and quantity of product |
 |  3     | The user hits save button, issue an error and list the required fields that are not entered |
 
-##### Scenario 4.2
+##### Scenario 4.3
 | Scenario | Barcode is not valid |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique and valid |
@@ -252,7 +263,7 @@ c --> (FR7 Manage cash register)
 |  1     | The user scans the product with barcode reader|
 |  2     | The system cannot read the barcode's data, issues a warning about invalid barcode |
 
-##### Scenario 4.3
+##### Scenario 4.4
 | Scenario | ID is not unique |
 | ------------- |:-------------:| 
 |  Precondition     | The barcode is unique and valid |
@@ -262,15 +273,37 @@ c --> (FR7 Manage cash register)
 |  2     | The user completes the form and adds the details |
 |  3     | The user hits save button, system finds the ID duplicate, so issues a warning with a proper message |
 
-### Use case 5, UC5 - Modify info about items
+### Use case 5, UC5 - List items
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
-|  Precondition     | The user should see the item on list of items  |  
-|  Post condition     | ID is valid and unique  |
-|  Nominal Scenario     | The user finds the item on list of items and opens the item to modify the info |
-|  Variants     | Required fields are not provided, ID should be unique (same scenarios when adding an item) |
+|  Precondition     | |  
+|  Post condition     | The user sees the list of items in the inventory  |
+|  Nominal Scenario     | The user retrieves the list of items in the inventory |
+|  Variants     | Filter the list, Modify info about item, Delete item |
 
-### Use case 6, UC6 - Add categories for items
+##### Scenario 5.1
+| Scenario | Modify info about item |
+| ------------- |:-------------:| 
+|  Precondition     | |
+|  Post condition     | The user modified the info about an item |
+| Step#        | Description  |
+|  1     | The user retrieves the list of items in the inventory |
+|  2     | Finds the item that he wants to modify |
+|  3     | Modifies the fields |
+|  4     | Confirms the modifications |
+
+##### Scenario 5.2
+| Scenario | Delete item |
+| ------------- |:-------------:| 
+|  Precondition     | |
+|  Post condition     | The user deleted an item from the inventory |
+| Step#        | Description  |
+|  1     | The user retrieves the list of items in the inventory |
+|  2     | Finds the item that he wants to delete |
+|  3     | Deletes it |
+|  4     | Confirms the action |
+
+### Use case 6, UC6 - Add category for items
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | The category name should be unique  |  
@@ -283,7 +316,7 @@ c --> (FR7 Manage cash register)
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | - |
-|  Nominal Scenario     | The user scans the product with barcode reader or enters the description |
+|  Nominal Scenario     | The user scans the product with barcode reader or enters the description, retrieves the resulting product(or products) |
 |  Variants     | The result is empty |
 
 ### Use case 8, UC8 - Add supplier
@@ -294,184 +327,183 @@ c --> (FR7 Manage cash register)
 |  Nominal Scenario     | The manager adds the information of a new supplier in the system  |
 |  Variants     | Required fields are not entered |
 
-### Use case 9, UC9 - Remove supplier
-| Actors Involved        | Manager or Cashier |
-| ------------- |:-------------:| 
-|  Precondition     | Supplier X is already present in the system |  
-|  Post condition     | Supplier X is not in the system anymore, the number of suppliers is decreased |
-|  Nominal Scenario     | The manager removes Supplier X form the system |
-|  Variants     | - |
-
-### Use case 10, UC10 - Modify supplier
-| Actors Involved        | Manager or Cashier |
-| ------------- |:-------------:| 
-|  Precondition     | Supplier X is already present in the system |  
-|  Post condition     | - |
-|  Nominal Scenario     | The manager modifies Supplier X info |
-|  Variants     | Required fields are not entered |
-
-### Use case 11, UC11 - List of suppliers
+### Use case 9, UC9 - List suppliers
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | - |
-|  Nominal Scenario     | The manager retrives a list of suppliers |
-|  Variants     | The list is empty |
+|  Nominal Scenario     | The user retrives a list of suppliers |
+|  Variants     | The list is empty, Modify supplier, Delete supplier |
 
-### Use case 12, UC12 - List supplier that can provide an item
+##### Scenario 9.1
+| Scenario | Modify supplier |
+| ------------- |:-------------:| 
+|  Precondition     | Supplier X is already present in the system|
+|  Post condition     | - |
+| Step#        | Description  |
+|  1     | The user retrieves the list of suppliers |
+|  2     | Finds the supplier that he wants to modify |
+|  3     | Modifies the fields |
+|  4     | Confirms the modifications |
+
+
+##### Scenario 9.2
+| Scenario | Delete supplier |
+| ------------- |:-------------:| 
+|  Precondition     | Supplier X is already present in the system|
+|  Post condition     | Supplier X is not in the system anymore, the number of suppliers is decreased |
+| Step#        | Description  |
+|  1     | The user retrieves the list of suppliers |
+|  2     | Finds the supplier that he wants to delete |
+|  3     | Deletes it |
+|  4     | Confirms the action |
+
+### Use case 10, UC10 - List supplier that can provide an item
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | Item X exists |  
 |  Post condition     | - |
-|  Nominal Scenario     | The manager retrives a list of suppliers that can provide the item X |
+|  Nominal Scenario     | The user writes the description of the item X or scans its barcode, retrives a list of suppliers that can provide the item X |
 |  Variants     | - |
 
-### Use case 13, UC13 - Add customer
+### Use case 11, UC11 - Add customer
 | Actors Involved        |  Manager , Cashier , Barcode reader |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity ID (card) |  
 |  Post condition     | Customer should be in the system, number of customers will increase by one |
-|  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
+|  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, address, email, date of birth), the cashier inserts those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
 |  Variants     | required fileds are not entered, barcode is not valid |
 
-##### Scenario 13.1
+##### Scenario 11.1
 | Scenario | Add customer required fields are not provided |
 | ------------- |:-------------:| 
 |  Precondition     | Customer X does not have a fidelity ID (card) |
 |  Post condition     | Customer should be in the system, number of customers will increase by one |
 | Step#        | Description  |
-|  1     | The user opens the add cutomer section |  
+|  1     | The user opens the add customer section |  
 |  2     | The user enters the information about the customer |
-|  3     | required fileds are not entered, system issues a warning |
+|  3     | required fields are not entered, system issues a warning |
 
-### Use case 14, UC14 - Modify info about customer
-| Actors Involved        | Manager or Cashier|
-| ------------- |:-------------:| 
-|  Precondition     | Customer X already present in the system |  
-|  Post condition     | - |
-|  Nominal Scenario     | The manager selects customer X to modify his info; the manager modifies one or more fields|
-|  Variants     | required fileds are not entered |
 
-### Use case 15, UC15 - Delete customer
-| Actors Involved        | Manager or Cashier |
-| ------------- |:-------------:| 
-|  Precondition     | Customer X already present in the system   |  
-|  Post condition     | Customer X deleted from the system, number of customers will decrease by one |
-|  Nominal Scenario     | The manager selects customer X to delete it |
-|  Variants     | - |
-
-### Use case 16, UC16 - List all customers
+### Use case 12, UC12 - List customers
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | There is at least one customer registered in the system |  
 |  Post condition     | Number of customers shown are equal to number of customers in the database |
 |  Nominal Scenario     | The manager retrives a list of customers registered in the system |
-|  Variants     | - |
+|  Variants     | Modify customer, Delete customer,Filter the list using name of customers |
 
-### Use case 17, UC17 - Search customer
-| Actors Involved        | Manager or Cashier |
+##### Scenario 12.1
+| Scenario | Modify customer |
 | ------------- |:-------------:| 
-|  Precondition     | - |  
-|  Post condition     | - |
-|  Nominal Scenario     | The manager searches for a customer and possibly retrives a list of customers related to provided info |
-|  Variants     | Customer X is not present in the system |
-
-##### Scenario 17.1
-| Scenario | Search customer - customer X exists |
-| ------------- |:-------------:| 
-|  Precondition     | - |
+|  Precondition     | Customer X is already present in the system|
 |  Post condition     | - |
 | Step#        | Description  |
-|  1     | Manager insert name X and surname Y in the appropriate fields |  
-|  2     | The System displays info about all customers with name X and surname Y |
+|  1     | The user retrieves the list of customers registered in the system |
+|  2     | Finds the customer that he wants to modify |
+|  3     | Modifies the fields |
+|  4     | Confirms the modifications |
 
-##### Scenario 17.2
-| Scenario | Search customer - Customer X does not exist |
+##### Scenario 12.2
+| Scenario | Delete customer |
 | ------------- |:-------------:| 
-|  Precondition     | - |
+|  Precondition     | Customer X is already present in the system|
+|  Post condition     | Customer X is deleted from the system, number of customers will decrease by one|
+| Step#        | Description  |
+|  1     | The user retrieves the list of customers registered in the system |
+|  2     | Finds the customer that he wants to delete |
+|  3     | Deletes it |
+|  4     | Confirms the action |
+
+##### Scenario 12.3
+| Scenario | Filter the list using the name of customer |
+| ------------- |:-------------:| 
+|  Precondition     | Customer X is already present in the system|
 |  Post condition     | - |
 | Step#        | Description  |
-|  1     | Manager insert name X and surname Y in the appropriate fields |  
-|  2     | The System displays a message to inform that no customer has name X and surname Y |
+|  1     | The user retrieves the list of customers registered in the system |
+|  2     | Writes the customer name that he wants to search |
+|  3     | The list will show only the customer(or customers) with that name |
 
-### Use case 18, UC18 - Filter list of customer
-| Actors Involved        | Manager or Cashier |
-| ------------- |:-------------:| 
-|  Precondition     | Customer database is not empty |  
-|  Post condition     | - |
-|  Nominal Scenario     | The manager retrives the list of customer with a fidelity card; The manager applies a filter on a field |
-|  Variants     | - |
-
-### Use case 19, UC19 - Notify customers about discounts
+### Use case 13, UC13 - Notify customers with newsletter
 | Actors Involved        |  Manager , Cashier , Gmail gateway |
 | ------------- |:-------------:| 
 |  Precondition     | Customer database is not empty |  
-|  Post condition     | number of emails sent equals to number of filtered customers |
-|  Nominal Scenario     | The manager sends an email to notify customers for a particular discount |
+|  Post condition     | Number of emails sent equals to number of filtered customers |
+|  Nominal Scenario     | The manager sends an email to notify customers about new discounts or other news related to the shop |
 |  Variants     | Gmail server is offline |
 
-##### Scenario 19.1
+##### Scenario 13.1
 | Scenario | Gmail servers are online |
 | ------------- |:-------------:| 
 |  Precondition     | Customer database is not empty |
 |  Post condition     | Emails sent |
 | Step#        | Description  |
-|  1     | Manager retrives the list of customer |  
-|  2     | Manager applies (or not) filters to the list of customer|
+|  1     | Manager retrives the list of customers |  
+|  2     | Manager applies (or not) filters to the list of customers |
 | 3 | Manager sends email to the customers in the list |
 | 4 | System display a success message |
 
-##### Scenario 19.2
+##### Scenario 13.2
 | Scenario | Gmail servers are offline |
 | ------------- |:-------------:| 
 |  Precondition     | Customer database is not empty |
 |  Post condition     | Emails sent |
 | Step#        | Description  |
-|  1     | Manager retrives the list of customer |  
-|  2     | Manager applies (or not) filters to the list of customer|
+|  1     | Manager retrives the list of customers |  
+|  2     | Manager applies (or not) filters to the list of customers |
 | 3 | Manager sends email to the customers in the list |
 | 4 | System display an error message |
 
-### Use case 20, UC20 - FR7 Manage Cash register
+### Use case 14, UC14 - Manage Cash register
 | Actors Involved        | Manager, Cashier |
 | ------------- |:-------------:| 
-|  Precondition     | Cash register added by Manager|  
+|  Precondition     | Cash register is available |  
 |  Post condition     |  |
-|  Nominal Scenario     |  |
-|  Variants     | Open and close cash register |
+|  Nominal Scenario     | The user manages the cash register |
+|  Variants     | Add Money, Drop Money, Close register |
 
-##### Scenario 20.1 - Open the cash register
-| Scenario SC20.1 | Corresponds to UC20 |
-| ------------- |:-------------:|
-|  Precondition     | no money in cash register|  
-|  Post condition     | cash amount = added cash amount |
-| **Step** | **Description** | 
-| 1 | Open the cash register  | 
-| 2 | Add the money "amount" to Cash register |
-
-##### Scenario 20.2 - Close the cash register
-| Scenario SC20.2 | Corresponds to UC20 |
+##### Scenario 14.1 
+| Scenario | Add Money |
 | ------------- |:-------------:|
 |  Precondition     | some cash in cash register|  
 |  Post condition     | no money in cash register |
-| **Step** | **Description** | 
+| Step# | Description | 
+| 1 |  | 
+| 2 | |
+
+##### Scenario 14.2 
+| Scenario | Drop Money |
+| ------------- |:-------------:|
+|  Precondition     | some cash in cash register|  
+|  Post condition     | no money in cash register |
+| Step# | Description | 
+| 1 | | 
+| 2 | |
+
+##### Scenario 14.3
+| Scenario | Close the cash register |
+| ------------- |:-------------:|
+|  Precondition     | some cash in cash register|  
+|  Post condition     | no money in cash register |
+| Step# | Description | 
 | 1 | Take the money out of Cash register | 
 | 2 | Close the cash register  |
 
-### Use case 21, UC21 - FR5 Sales transaction
+### Use case 15, UC15 - Sale transaction
 | Actors Involved        | Manager , Cashier , POS |
 | ------------- |:-------------:| 
-|  Precondition     | Open Cash register |  
-|  Post condition     | sale transaction completed |
+|  Precondition     | |  
+|  Post condition     | Sale transaction completed |
 |  Nominal Scenario     |  |
 |  Variants     | Sale product(s), payment by cash or by credit card, no credit abort sale,  barcode unreadable |
 
-##### Scenario 21.1 - Sale 1 product and payment by cash
-| Scenario SC21.1 | Corresponds to UC21 |
+##### Scenario 15.1
+| Scenario  | Sale 1 product and payment by cash |
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | 
+| Step | Description | 
 | 1 | Start a new sales transaction  | 
 | 2 | Read bar code X | 
 | 3 | Retrieve name and price given barcode X | 
@@ -481,12 +513,12 @@ c --> (FR7 Manage cash register)
 | 7 | Print receipt |
 | 8 | Close transaction |
 
-##### Scenario 21.2 - Sale 1 product and payment by credit card
-| Scenario SC21.2 | Corresponds to UC21 |
+##### Scenario 15.2 
+| Scenario | Sale 1 product and payment by credit card|
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | 
+| Step | Description | 
 | 1 | Start a new sales transaction  |
 | 2 | Read bar code X | 
 | 3 | Retrieve name and price given barcode X |
@@ -496,12 +528,12 @@ c --> (FR7 Manage cash register)
 | 7 | Print receipt | 
 | 8 | Close transaction |
 
-##### Scenario 21.3 - Sale N products and payment by cash
-| Scenario SC21.3 | Corresponds to UC21 |
+##### Scenario 15.3  
+| Scenario | Sale N products and payment by cash |
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | 
+| Step | Description | 
 | 1 | Start a new sales transaction  | 
 | 2 | Read bar code X | 
 | 3 | Retrieve name and price given barcode X |
@@ -513,12 +545,12 @@ c --> (FR7 Manage cash register)
 | 9 | Print receipt |
 | 10 | Close transaction |
 
-##### Scenario 21.4 - Sale N products and payment by credit card
-| Scenario SC21.4 | Corresponds to UC21 |
+##### Scenario 15.4
+| Scenario | Sale N products and payment by credit card |
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | **Requirement ID**|
+| Step | Description |
 | 1 | Start a new sales transaction  |
 | 2 | Read bar code X | 
 | 3 | Retrieve name and price given barcode X |
@@ -530,15 +562,15 @@ c --> (FR7 Manage cash register)
 | 9 | Print receipt |
 | 10 | Close transaction |
 
-##### Scenario 21.5 - bar code unreadable
-| Scenario SC21.5 | Corresponds to UC21 |  
+##### Scenario 15.5
+| Scenario | Barcode unreadable |  
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is saved and Receipt is generated |
-| **Step** | **Description** | 
+| Step | Description | 
 | 1 | Start a new sales transaction  |  
 | 2 | Read bar code X |
-| 3 | Bar code not readable | 
+| 3 | Barcode not readable | 
 | 4 | Input bar code manually | 
 | 5 | Retrieve name and price given barcode X |
 | 6 | Compute total T | 
@@ -547,58 +579,59 @@ c --> (FR7 Manage cash register)
 | 9 | Print receipt |  
 | 10 | Close transaction |
 
-##### Scenario 21.6 - no credit in credit card, abort sale transaction
-| Scenario SC21.6 | Corresponds to UC21 |
+##### Scenario 15.6 
+| Scenario | No credit in credit card, abort sale transaction |
 | ------------- |:-------------:|
 |  Precondition     | Cashier is identified and authenticated |  
 |  Post condition     | Sale is aborted |
-| **Step** | **Description** | 
+| Step | Description | 
 | 1 | Start a new sales transaction  | 
 | 2 | Read bar code X |
 | 3 | Retrieve name and price given barcode X |
 | 4 | Compute total T | 
 | 5 | Manage payment amount T by credit card| 
-| 8 | No credit, Abort sale transaction |
+| 6 | No credit, Abort sale transaction |
 
-### Use case 22 - Record income, UC22
+### Use case 16 - Record income, UC16
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | The new income is recorded, the previous overall income < The new overall income |
-|  Nominal Scenario     | The manager records a new income in the system, specifies the amount, the date and the type of income |
+|  Nominal Scenario     | The manager records a new income in the system, specifies the description, the amount, the date, the type of income, and also other details |
 |  Variants     | - |
 
-### Use case 23 - Record expense, UC23
+### Use case 17 - Record expense, UC17
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | - |  
 |  Post condition     | The expense in recorded |
-|  Nominal Scenario     | The manager records a new expense in the system, specifies the amount, the date and the type of expense |
+|  Nominal Scenario     | The manager records a new expense in the system, specifies the description, the amount, the date, the type of expense and also other details|
 |  Variants     | A scan of the expense is attached |
 
-### Use case 24 - List expenses, UC24
+### Use case 18 - List expenses, UC18
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The expenses are recorded in the system |  
 |  Post condition     | The list of expenses is shown |
 |  Nominal Scenario     | The manager wants to see the list of expenses recored in the system |
-|  Variants     | See the expenses recorded in a period of time, the list of expenses is empty, Modify expense, Delete expense |
+|  Variants     | Filter the expenses, See the expenses recorded in a period of time, the list of expenses is empty, Modify expense, Delete expense |
 
-### Use case 25 - List incomes, UC25
+### Use case 19 - List incomes, UC19
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The incomes are recorded in the system |  
 |  Post condition     | The list of incomes is shown |
-|  Nominal Scenario     | The manager wants to list the incomes recorded in the system |
-|  Variants     | See the incomes recorded in a period of time, the list of incomes is empty, Modify income, Delete income|
+|  Nominal Scenario     | The manager wants to see the list of incomes recorded in the system |
+|  Variants     | Filter the incomes, See the incomes recorded in a period of time, the list of incomes is empty, Modify income, Delete income|
 
-### Use case 26 - Show balance sheet, UC26
+### Use case 20 - Show balance sheet, UC20
 | Actors Involved        | Manager |
 | ------------- |:-------------:| 
 |  Precondition     | The incomes and the expenses are recorded in the system |  
 |  Post condition     | The balance sheet is shown |
 |  Nominal Scenario     | The manager wants to see the balance sheet of the shop |
-|  Variants     | See the balance sheet for a period of time |
+|  Variants     | Filter the balance sheet, See the balance sheet for a period of time |
+
 
 
 
