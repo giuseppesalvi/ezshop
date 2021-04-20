@@ -169,7 +169,7 @@ m --> (FR1 Authorize and authenticate)
 (FR1.1 Log in/Log out) <-- c
 
 m --> (FR2 Manage inventory)
-
+c --> (FR2 Manage inventory)
 m --> (FR3 Manage suppliers)
 
 (FR4 Manage customers) .down.> (FR4.1 Add customer) :include
@@ -179,8 +179,8 @@ m --> (FR4 Manage customers)
 (FR4.1 Add customer) --> b
 (FR4.7 Notify customers about discounts) --> g
 
-(FR5 Manage sales transaction) .down.> (FR5.3 Add / Delete product) :include
-(FR5 Manage sales transaction) .down.> (FR5.7.2 Payment by credit card) :include
+(FR5 Manage sales transaction) .down.> (FR5.2 Add / Delete product) :include
+(FR5 Manage sales transaction) .down.> (FR5.6.2 Payment by credit card) :include
 m --> (FR5 Manage sales transaction)
 c --> (FR5 Manage sales transaction)
 (FR5.2 Add / Delete product) --> b
@@ -190,7 +190,6 @@ m --> (FR6 Manage accounting)
 
 m --> (FR7 Manage cash register)
 c --> (FR7 Manage cash register)
-c --> (FR2 Manage inventory)
 }
 ```
 
@@ -338,6 +337,16 @@ c --> (FR2 Manage inventory)
 |  Nominal Scenario     | Customer X agrees to give us some personal information (name, surname, email), the cashier insert those information in the system and attach to them a card ID, scanning with the barcode reader a new fidelity card |
 |  Variants     | required fileds are not entered, barcode is not valid |
 
+##### Scenario 13.1
+| Scenario | Add customer required fields are not provided |
+| ------------- |:-------------:| 
+|  Precondition     | Customer X does not have a fidelity ID (card) |
+|  Post condition     | Customer should be in the system, number of customers will increase by one |
+| Step#        | Description  |
+|  1     | The user opens the add cutomer section |  
+|  2     | The user enters the information about the customer |
+|  3     | required fileds are not entered, system issues a warning |
+
 ### Use case 14, UC14 - Modify info about customer
 | Actors Involved        | Manager or Cashier|
 | ------------- |:-------------:| 
@@ -369,16 +378,6 @@ c --> (FR2 Manage inventory)
 |  Post condition     | - |
 |  Nominal Scenario     | The manager searches for a customer and possibly retrives a list of customers related to provided info |
 |  Variants     | Customer X is not present in the system |
-
-##### Scenario 13.1
-| Scenario | Add customer required fields are not provided |
-| ------------- |:-------------:| 
-|  Precondition     | Customer X does not have a fidelity ID (card) |
-|  Post condition     | Customer should be in the system, number of customers will increase by one |
-| Step#        | Description  |
-|  1     | The user opens the add cutomer section |  
-|  2     | The user enters the information about the customer |
-|  3     | required fileds are not entered, system issues a warning |
 
 ##### Scenario 17.1
 | Scenario | Search customer - customer X exists |
@@ -586,7 +585,7 @@ c --> (FR2 Manage inventory)
 |  Precondition     | The expenses are recorded in the system |  
 |  Post condition     | The list of expenses is shown |
 |  Nominal Scenario     | The manager wants to see the list of expenses recored in the system |
-|  Variants     | See the expenses recorded in a period of time, the list of expenses is empty |
+|  Variants     | See the expenses recorded in a period of time, the list of expenses is empty, Modify expense, Delete expense |
 
 ### Use case 25 - List incomes, UC25
 | Actors Involved        | Manager |
@@ -594,7 +593,7 @@ c --> (FR2 Manage inventory)
 |  Precondition     | The incomes are recorded in the system |  
 |  Post condition     | The list of incomes is shown |
 |  Nominal Scenario     | The manager wants to list the incomes recorded in the system |
-|  Variants     | See the incomes recorded in a period of time, the list of incomes is empty |
+|  Variants     | See the incomes recorded in a period of time, the list of incomes is empty, Modify income, Delete income|
 
 ### Use case 26 - Show balance sheet, UC26
 | Actors Involved        | Manager |
