@@ -174,7 +174,7 @@ m --> (FR3 Manage suppliers)
 m --> (FR4 Manage customers)
 (FR4.1 Add customer) <-- c
 (FR4.1 Add customer) --> b
-(FR4.7 Notify customers about discounts) --> g
+(FR4.7 Notify customers with newsletter) --> g
 
 (FR5 Manage sales transaction) .down.> (FR5.2 Add / Delete product) :include
 (FR5 Manage sales transaction) .down.> (FR5.6.2 Payment by credit card) :include
