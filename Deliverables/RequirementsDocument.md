@@ -173,7 +173,7 @@ c --> (FR2 Manage inventory)
 m --> (FR3 Manage suppliers)
 
 (FR4 Manage customers) .down.> (FR4.1 Add customer) :include
-(FR4 Manage customers) .down.> (FR4.7 Notify customers about discounts) :include
+(FR4 Manage customers) .down.> (FR4.7 Notify customers with newsletter) :include
 m --> (FR4 Manage customers)
 (FR4.1 Add customer) <-- c
 (FR4.1 Add customer) --> b
@@ -363,7 +363,7 @@ c --> (FR7 Manage cash register)
 |  Nominal Scenario     | The manager selects customer X to delete it |
 |  Variants     | - |
 
-### Use case 16, UC16 - List all customer
+### Use case 16, UC16 - List all customers
 | Actors Involved        | Manager or Cashier |
 | ------------- |:-------------:| 
 |  Precondition     | There is at least one customer registered in the system |  
