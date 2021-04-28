@@ -35,8 +35,17 @@ The design must satisfy the Official Requirements document, notably functional a
 
 ```plantuml
 @startuml
+top to bottom direction
+
 package Model {
 Class EZShop{
+    +users : List<User>
+    +products : List<ProductType>
+    +orders : List<Order>
+    +customers : List<Customer>
+    +cards : List<Card>
+    +operations : List<BalanceOperation>
+    
     +reset() : void
     +createUser(String username, String password, String role) : Integer
     +deleteUser(Integer id) : boolean
@@ -106,7 +115,7 @@ class ProductType{
     -notes : String
     -ID : Integer
     -quantity : Integer
-    -position : String
+    -position : Position
 
     discountRate
 }
@@ -171,12 +180,18 @@ class ReturnTransaction{
 class BalanceOperation{
 
 }
+EZShop -- User
+EZShop -- ProductType
+EZShop -- Order
+EZShop -- Customer
+EZShop -- Card
+EZShop -- BalanceOperation
 
 Login -- User
 ProductType -- Order
 ProductType -- TransactionProduct
+Customer -- LoyaltyCard
 TransactionProduct -- SaleTransaction
-LoyaltyCard -- Customer
 TransactionProduct -- ReturnTransaction
 ReturnTransaction -- SaleTransaction
 }
@@ -212,6 +227,7 @@ Class InvalidDiscountRateException
 }
 @enduml
 ```
+
 
 # Verification traceability matrix
 
