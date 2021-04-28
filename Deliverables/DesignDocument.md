@@ -37,95 +37,105 @@ The design must satisfy the Official Requirements document, notably functional a
 @startuml
 package Model {
 Class EZShop{
-    reset()
-    createUser()
-    deleteUser()
-    getAllUser()
-    getUser()
-    updateUserRights()
-    login()
-    logout()
-    createProductType()
-    updateProduct()
-    deleteProductType()
-    getAllProductTypes()
-    getProductTypeByBarCode()
-    getProductTypeByDescription()
-    updateQuantity()
-    updatePosition()
-    issueOrder()
-    payOrderFor()
-    payOrder()
-    recordOrderArrival()
-    getAllOrders()
-    defineCustomer()
-    modifyCustomer()
-    deleteCustomer()
-    getCustomer()
-    getAllCustomers()
-    createCard()
-    attachCardToCustomer()
-    modifyPointsOnCard()
-    startSaleTransaction()
-    addProductToSale()
-    deleteProductFromSale()
-    applyDiscountRateToProduct()
-    applyDiscountRateToSale()
-    computePointsForSale()
-    endSaleTransaction()
-    deleteSaleTransaction()
-    getSaleTransaction()
-    startReturnTransaction()
-    returnProduct()
-    endReturnTransaction()
+    +reset() : void
+    +createUser(String username, String password, String role) : Integer
+    +deleteUser(Integer id) : boolean
+    +getAllUser() : List<User>
+    +getUser(Integer id) : User
+    +updateUserRights(Integer id, String role) : boolean
+    +login(String username, String password) : User
+    +logout() : boolean
+    +createProductType(String description, String productCode, double pricePerUnit, String note) : Integer
+    +updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) : boolean
+    +deleteProductType(Integer id) : boolean
+    +getAllProductTypes() : List<ProductType>
+    +getProductTypeByBarCode(String barcode) : ProductType
+    +getProductTypesByDescription(String description) : List<ProductType> 
+    +updateQuantity(Integer productId, int toBeAdded) : boolean
+    +updatePosition(Integer productId, String newPos) : boolean
+    +issueOrder(String productCode, int quantity, double pricePerUnit) : Integer
+    +payOrderFor(String productCode, int quantity, double pricePerUnit) : Integer
+    +payOrder(Integer orderId) : boolean
+    +recordOrderArrival(Integer orderId) : boolean
+    +getAllOrders() : List<Order>
+    +defineCustomer(String customerName) : Integer
+    +modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) : boolean
+    +deleteCustomer(Integer id) : boolean
+    +getCustomer(Integer id) : Customer
+    +getAllCustomers() : List<Customer>
+    +createCard() : String
+    +attachCardToCustomer(String customerCard, Integer customerId) : boolean
+    +modifyPointsOnCard(String customerCard, int pointsToBeAdded) : boolean
+    +startSaleTransaction() : Integer
+    +addProductToSale(Integer transactionId, String productCode, int amount) : boolean
+    +deleteProductFromSale(Integer transactionId, String productCode, int amount) : boolean
+    +applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) : boolean
+    +applyDiscountRateToSale(Integer transactionId, double discountRate) : boolean
+    +computePointsForSale(Integer transactionId) : int
+    +endSaleTransaction(Integer transactionId) : boolean
+    +deleteSaleTransaction(Integer transactionId) : boolean
+    +getSaleTransaction(Integer transactionId) : SaleTransaction
+    +startReturnTransaction(Integer transactionId) : Integer
+    +returnProduct(Integer returnId, String productCode, int amount) : boolean
+    +endReturnTransaction(Integer returnId, boolean commit) : boolean
+    +deleteReturnTransaction(Integer returnId) : boolean
+
+    +receiveCashPayment(Integer transactionId, double cash) : double
+    +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
+    +returnCashPayment(Integer returnId) : double
+    +returnCreditCardPayment(Integer returnId, String creditCard) : double
+    +recordBalanceUpdate(double toBeAdded) : boolean
+    +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
+    +computeBalance() : double
 }
 
 Class User {
-    String username
-    String password
-    String role
-    Integer ID
-    User login()
-    boolean logout()
+    -username : String
+    -password : String
+    -role : String
+    -ID : Integer
+    +login() : User
+    +logout() : boolean
 }
 
 
 class ProductType{
-    String productCode
-    String description
-    Double sellPrice
-    String notes
-    Integer ID
-    Integer quantity
-    String position
+    -productCode : String
+    -description : String
+    -sellPrice : Double
+    -notes : String
+    -ID : Integer
+    -quantity : Integer
+    -position : String
+
     discountRate
 }
 
 class Position{
-    String aisleID
-    String rackID
-    String levelID
-    Position(String position)
-    String getPosition()
+    -aisleID : String
+    -rackID : String
+    -levelID : String
+    +Position(String position)
+    +getPosition() : String
 }
 class Order {
-    Integer orderID
-    Double pricePerUnit
-    int quantity
-    String productID
-    String status
+    -orderID : Integer
+    -pricePerUnit : Double
+    -quantity : Integer
+    -productID : String
+    -status : String
 }
 
 class Customer{
-    String customerName
-    Integer customerID
-    LoyaltyCard card
+    -customerName : String
+    -customerID : Integer
+    -card : LoyaltyCard
 }
 
 class LoyaltyCard{
-    String cardID
-    Integer points
-    Customer customer
+    -cardID : String
+    -points : Integer
+    -customer : Customer
 }
 
 class CustomersWithCards{
@@ -133,28 +143,33 @@ class CustomersWithCards{
 }
 
 class SaleTransaction {
-    Integer transactionID
-    ArrayList<TransactionProduct> products
-    Double globalDiscountRate
-    String state
-    date
-    time
-    Double cost
+    -transactionID : Integer
+    -products : List<TransactionProduct>
+    -globalDiscountRate : Double
+    -state : String
+    -date : String
+    -time : String
+    -cost : Double
+
     paymentType
 
-    Double computeCost()
+    +computeCost() : Double
 }
 
 class TransactionProduct{
-    ProductType productCode
-    Integer quantity
-    Double discountRate
+    -productCode : ProductType
+    -quantity : Integer
+    -discountRate : Double
 }
 
 class ReturnTransaction{
-    Integer returnID
-    SaleTransaction transaction
-    ArrayList<TransactionProduct> products
+    -returnID : Integer
+    -transaction : SaleTransaction
+    -products : List<TransactionProduct>
+}
+
+class BalanceOperation{
+
 }
 
 Login -- User
