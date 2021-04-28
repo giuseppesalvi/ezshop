@@ -24,6 +24,15 @@ The design must satisfy the Official Requirements document, notably functional a
 <discuss architectural styles used, if any>
 <report package diagram>
 
+
+
+
+
+
+# Low level design
+
+<for each package, report class diagram>
+
 ```plantuml
 @startuml
 package Model {
@@ -76,9 +85,10 @@ Class User {
     String password
     String role
     Integer ID
+    User login()
+    boolean logout()
 }
 
-Class Login {}
 
 class ProductType{
     String productCode
@@ -88,51 +98,63 @@ class ProductType{
     Integer ID
     Integer quantity
     String position
-
     discountRate
 }
 
+class Position{
+    String aisleID
+    String rackID
+    String levelID
+    Position(String position)
+    String getPosition()
+}
 class Order {
     Integer orderID
     Double pricePerUnit
     int quantity
     String productID
     String status
-
-    supplier
 }
 
 class Customer{
     String customerName
     Integer customerID
+    LoyaltyCard card
 }
 
 class LoyaltyCard{
     String cardID
     Integer points
+    Customer customer
+}
+
+class CustomersWithCards{
+
 }
 
 class SaleTransaction {
     Integer transactionID
-    ArrayList products
+    ArrayList<TransactionProduct> products
     Double globalDiscountRate
     String state
     date
     time
-    cost
+    Double cost
     paymentType
-}
 
-class ReturnTransaction{
-    Integer transactionID
-    Integer returnID
-    ArrayList products
+    Double computeCost()
 }
 
 class TransactionProduct{
     ProductType productCode
     Integer quantity
     Double discountRate
+}
+
+class ReturnTransaction{
+    Integer returnID
+    SaleTransaction transaction
+    ArrayList<TransactionProduct> products
 }
 
 Login -- User
@@ -143,6 +165,11 @@ LoyaltyCard -- Customer
 TransactionProduct -- ReturnTransaction
 ReturnTransaction -- SaleTransaction
 }
+
+@enduml
+```
+```plantuml
+@startuml
 
 package Exceptions {
 Class InvalidUsernameException
@@ -170,21 +197,6 @@ Class InvalidDiscountRateException
 }
 @enduml
 ```
-
-
-
-
-# Low level design
-
-<for each package, report class diagram>
-
-
-
-
-
-
-
-
 
 # Verification traceability matrix
 
