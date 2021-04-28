@@ -282,3 +282,77 @@ Class InvalidDiscountRateException
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+## Scenario 4.1 - Create customer record
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Customer
+participant JSONWrite
+User -> EZShop : defineCustomer()
+EZShop -> Customer : Customer()
+EZShop <-- Customer : return Customer
+EZShop -> JSONWrite : writeCustomers()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return customerID
+@enduml
+```
+
+## Scenario 4.2 - Attach Loyalty card to customer record
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant LoyaltyCard
+participant Customer
+participant JSONWrite
+
+User -> EZShop : createCard()
+EZShop -> LoyaltyCard : LoyaltyCard()
+EZShop <-- LoyaltyCard : return LoyaltyCard
+User <-- EZShop : return cardID
+User -> EZShop : attachCardToCustomer()
+EZShop -> Customer : setCard()
+EZShop -> LoyaltyCard : setCustomer()
+EZShop -> JSONWrite : writeCustomers()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeCards()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 4.3 - Detach Loyalty card from customer record
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Customer
+participant LoyaltyCard
+participant JSONWrite
+User -> EZShop : modifyCustomer()
+EZShop -> Customer : setCard()
+EZShop -> LoyaltyCard : setCustomer()
+EZShop -> JSONWrite : writeCustomers()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeCards()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 4.4 - Update Customer record
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Customer
+participant JSONWrite
+User -> EZShop : modifyCustomer()
+EZShop -> Customer : setCustomerName()
+EZShop -> JSONWrite : writeCustomers()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
