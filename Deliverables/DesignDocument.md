@@ -282,6 +282,62 @@ Class InvalidDiscountRateException
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+## Scenario 3.1 - Order of product type X issued
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Order
+participant JSONWrite
+User -> EZShop : issueOrder()
+EZShop -> Order : Order()
+EZShop <-- Order : return Order
+EZShop -> JSONWrite : writeOrders()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return orderID
+@enduml
+```
+
+## Scenario 3.2 - Order of product type X payed
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Order
+participant JSONWrite
+User -> EZShop : payOrder()
+EZShop -> Order : setStatus()
+EZShop <-- Order : return true
+EZShop -> JSONWrite : writeOrders()
+EZShop <-- JSONWrite : return true
+EZShop --> BalanceOperation : BalanceOperation()
+EZShop <-- BalanceOperation : return BalanceOperation
+EZShop --> JSONWrite : writeOperations()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 3.3 - Record order of product type X arrival
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant Order
+participant JSONWrite
+User -> EZShop : recordOrderArrival()
+EZShop -> Order : setStatus()
+EZShop <-- Order : return true
+EZShop -> JSONWrite : writeOrders()
+EZShop <-- JSONWrite : return true
+EZShop -> ProductType : setQuantity()
+EZShop <-- ProductType : true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : true
+User <-- EZShop : return true
+@enduml
+```
+
 ## Scenario 4.1 - Create customer record
 ```plantuml
 @startuml
