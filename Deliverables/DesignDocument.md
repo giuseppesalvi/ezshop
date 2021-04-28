@@ -307,7 +307,6 @@ participant Order
 participant JSONWrite
 User -> EZShop : payOrder()
 EZShop -> Order : setStatus()
-EZShop <-- Order : return true
 EZShop -> JSONWrite : writeOrders()
 EZShop <-- JSONWrite : return true
 EZShop --> BalanceOperation : BalanceOperation()
@@ -327,13 +326,11 @@ participant Order
 participant JSONWrite
 User -> EZShop : recordOrderArrival()
 EZShop -> Order : setStatus()
-EZShop <-- Order : return true
 EZShop -> JSONWrite : writeOrders()
 EZShop <-- JSONWrite : return true
 EZShop -> ProductType : setQuantity()
-EZShop <-- ProductType : true
 EZShop -> JSONWrite : writeProducts()
-EZShop <-- JSONWrite : true
+EZShop <-- JSONWrite : return true
 User <-- EZShop : return true
 @enduml
 ```
