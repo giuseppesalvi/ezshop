@@ -37,6 +37,29 @@ The design must satisfy the Official Requirements document, notably functional a
 @startuml
 top to bottom direction
 
+package Data {
+    Class EZShopInterface{}
+    Class JSONread{
+        +readUsers(String fileName) : List<User>
+        +readProducts(String fileName) : List<ProductType>
+        +readOrders(String fileName) : List<Order>
+        +readCustomers(String fileName) : List<Customer>
+        +readCards(String fileName) : List<Cards>
+        +readSales(String fileName) : List<SaleTransaction>
+        +readReturns(String fileName) : List<ReturnTransaction>
+        +readOperations(String fileName) : List<Operations>
+    }
+    Class JSONwrite{
+        +writeUsers(String fileName, List<User>) : boolean
+        +writeProducts(String fileName, List<ProductType>) : boolean
+        +writeOrders(String fileName, List<Order>) : boolean
+        +writeCustomers(String fileName, List<Customer>) : boolean
+        +writeCards(String fileName, List<Cards>) : boolean
+        +writeSales(String fileName, List<SaleTransaction>) : boolean
+        +writeReturns(String fileName, List<ReturnTransaction>) : boolean
+        +writeOperations(String fileName, List<Operations>) : boolean
+    }
+}
 package Model {
 Class EZShop{
     +users : List<User>
@@ -44,7 +67,10 @@ Class EZShop{
     +orders : List<Order>
     +customers : List<Customer>
     +cards : List<Card>
+    +sales : List<SaleTransaction>
+    +returns : List<ReturnTransaction>
     +operations : List<BalanceOperation>
+    +loggedInUser : User
     
     +reset() : void
     +createUser(String username, String password, String role) : Integer
@@ -124,6 +150,7 @@ class Position{
     -aisleID : String
     -rackID : String
     -levelID : String
+    +Position(String aisleID, String rackID, String levelID)
     +Position(String position)
     +getPosition() : String
 }
@@ -147,20 +174,16 @@ class LoyaltyCard{
     -customer : Customer
 }
 
-class CustomersWithCards{
-
-}
-
 class SaleTransaction {
     -transactionID : Integer
     -products : List<TransactionProduct>
     -globalDiscountRate : Double
     -state : String
-    -date : String
+    -date : LocalDate
     -time : String
     -cost : Double
-
-    paymentType
+    -paymentType : String
+    -creditCard : String
 
     +computeCost() : Double
 }
@@ -175,27 +198,39 @@ class ReturnTransaction{
     -returnID : Integer
     -transaction : SaleTransaction
     -products : List<TransactionProduct>
+    -state : String
+    -commit : boolean
+    -value : Double
+
+    +computeValue() : Double
 }
 
 class BalanceOperation{
-
+    -type : String
+    -amount : Double
+    -date : LocalDate
 }
 EZShop -- User
 EZShop -- ProductType
 EZShop -- Order
 EZShop -- Customer
-EZShop -- Card
+EZShop -- LoyaltyCard
 EZShop -- BalanceOperation
 
-Login -- User
 ProductType -- Order
 ProductType -- TransactionProduct
+ProductType -right- Position
 Customer -- LoyaltyCard
 TransactionProduct -- SaleTransaction
 TransactionProduct -- ReturnTransaction
 ReturnTransaction -- SaleTransaction
+BalanceOperation -- Order
+BalanceOperation -- ReturnTransaction
+BalanceOperation -- SaleTransaction
+EZShopInterface -- EZShop
+JSONread -- EZShop
+JSONwrite -- EZShop
 }
-
 @enduml
 ```
 ```plantuml
@@ -227,6 +262,7 @@ Class InvalidDiscountRateException
 }
 @enduml
 ```
+
 
 
 # Verification traceability matrix
