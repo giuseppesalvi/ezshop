@@ -143,8 +143,6 @@ class ProductType{
     -ID : Integer
     -quantity : Integer
     -position : Position
-
-    discountRate
 }
 
 class Position{
@@ -184,8 +182,7 @@ class SaleTransaction {
     -time : String
     -cost : Double
     -paymentType : String
-    -creditCard : String
-
+    -creditCard : CreditCard
     +computeCost() : Double
 }
 
@@ -202,7 +199,6 @@ class ReturnTransaction{
     -state : String
     -commit : boolean
     -value : Double
-
     +computeValue() : Double
 }
 
@@ -211,12 +207,20 @@ class BalanceOperation{
     -amount : Double
     -date : LocalDate
 }
+
+class CreditCard{
+    -number : String
+    -balance : Double
+    +checkValidity() : boolean
+}
+
 EZShop -- User
 EZShop -- ProductType
 EZShop -- Order
 EZShop -- Customer
 EZShop -- LoyaltyCard
 EZShop -- BalanceOperation
+EZShop -- CreditCard
 
 ProductType -- Order
 ProductType -- TransactionProduct
@@ -228,6 +232,7 @@ ReturnTransaction -- SaleTransaction
 BalanceOperation -- Order
 BalanceOperation -- ReturnTransaction
 BalanceOperation -- SaleTransaction
+CreditCard -- SaleTransaction
 EZShopInterface -- EZShop
 JSONread -- EZShop
 JSONwrite -- EZShop
@@ -263,7 +268,6 @@ Class InvalidDiscountRateException
 
 Class InvalidCreditCardException
 Class InvalidCreditCardBalanceException
-Class ExceptionID
 }
 @enduml
 ```
@@ -518,120 +522,161 @@ User <-- EZShop : return true
 @enduml
 ```
 
+## Scenario 6.1 - Sale of product type X completed
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : receiveCashPayment()
+User <-- EZShop : return change
+@enduml
+```
+
 ## Scenario 7.1 - Manage payment by valid credit card
 ```plantuml
 @startuml
-participant User
+actor User
 participant EZShop
+participant CreditCard
 participant SaleTransaction
-participant PaymentGateway
-participant JSONWrite
-User -> EZShop : createSaleTransaction()
-EZShop -> SaleTransaction : SaleTransaction()
-User -> PaymentGateway : readPaymentCards()
-User <-- PaymentGateway : return true
-SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
-SaleTransaction <-- PaymentGateway : return true
-EZShop <-- SaleTransaction : return transactionID
-EZShop -> JSONWrite : writeSales()
+participant BalanceOperation
+User -> EZShop : receiveCreditCardPayment()
+EZShop -> JSONRead : readCreditCards()
+EZShop <-- JSONRead : List<CreditCards>
+EZShop -> CreditCard : checkValidity()
+EZShop <-- CreditCard : true
+EZShop -> CreditCard : getBalance()
+EZShop <-- CreditCard : Double
+EZShop -> CreditCard : setBalance()
+EZShop -> SaleTransaction : setCreditCard()
+EZShop -> SaleTransaction : setState()
+EZShop -> SaleTransaction : setPaymentType()
+EZShop -> SaleTransaction : getCost()
+EZShop <- SaleTransaction : Double
+EZShop --> JSONWrite : writeSales()
 EZShop <-- JSONWrite : return true
+EZShop --> BalanceOperation : BalanceOperation()
+EZShop <-- BalanceOperation : return BalanceOperation
+EZShop --> JSONWrite : writeOperations()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONRead : writeCreditCards()
+EZShop <-- JSONRead : true
 User <-- EZShop : return true
 @enduml
 ```
 
-## Scenario 7.2 - Manage payment by invalid credit card
-```plantuml
-@startuml
-participant User
-participant EZShop
-participant SaleTransaction
-participant PaymentGateway
-User -> EZShop : createSaleTransaction()
-EZShop -> SaleTransaction : SaleTransaction()
-User -> PaymentGateway : readPaymentCards()
-User <-- PaymentGateway : return false
-EZShop <-- SaleTransaction : return ExceptionID
-User <-- EZShop : return InvalidCreditCardException
-@enduml
-```
-
-## Scenario 7.3 - Manage credit card payment with not enough credit
-```plantuml
-@startuml
-participant User
-participant EZShop
-participant SaleTransaction
-participant PaymentGateway
-User -> EZShop : createSaleTransaction()
-EZShop -> SaleTransaction : SaleTransaction()
-User -> PaymentGateway : readPaymentCards()
-User <-- PaymentGateway : return true
-SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
-SaleTransaction <-- PaymentGateway : return false
-EZShop <-- SaleTransaction : return ExceptionID
-User <-- EZShop : return InvalidCreditCardBalanceException
-@enduml
-```
 
 ## Scenario 7.4 - Manage cash payment
 ```plantuml
 @startuml
-participant User
+actor User
 participant EZShop
 participant SaleTransaction
-participant JSONWrite
-User -> EZShop : createSaleTransaction()
-EZShop -> SaleTransaction : SaleTransaction()
-User -> SaleTransaction : receiveCashPayment()
-User <-- SaleTransaction : return transactionID
-EZShop -> JSONWrite : writeSales()
+participant BalanceOperation
+User -> EZShop : receiveCashPayment()
+EZShop -> SaleTransaction : setState()
+EZShop -> SaleTransaction : setPaymentType()
+EZShop -> SaleTransaction : getCost()
+EZShop <- SaleTransaction : Double
+EZShop --> JSONWrite : writeSales()
 EZShop <-- JSONWrite : return true
-User <-- EZShop : return true
+EZShop --> BalanceOperation : BalanceOperation()
+EZShop <-- BalanceOperation : return BalanceOperation
+EZShop --> JSONWrite : writeOperations()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return Double
 @enduml
 ```
 
 ## Scenario 8.1 - Return transaction of product type X completed, credit card
 ```plantuml
 @startuml
-participant User
+actor User
 participant EZShop
+participant SaleTransaction
+participant ProductType
+participant TransactionProduct
 participant ReturnTransaction
-participant PaymentGateway
-participant JSONWrite
-participant JSONread
-User -> EZShop : createReturnTransaction()
+User -> EZShop : startReturnTransaction()
 EZShop -> ReturnTransaction : ReturnTransaction()
-ReturnTransaction -> JSONread : readSales()
-ReturnTransaction <-- JSONread : return true
-User -> PaymentGateway : readPaymentCards()
-User <-- PaymentGateway : return true
-User -> PaymentGateway : returnCreditCardPayment()
-User <-- PaymentGateway : return true
+EZShop <-- ReturnTransaction : ReturnTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : returnProduct()
+EZShop -> SaleTransaction : getProducts()
+EZShop <-- SaleTransaction : List<TransactionProduct>
+EZShop -> TransactionProduct : getQuantity()
+EZShop <-- TransactionProduct : return quantity
+User -> EZShop : endReturnTransaction()
+EZShop -> ProductType : setQuantity()
+EZShop -> SaleTransaction : setProducts()
+User -> EZShop : returnCreditCardPayment()
+User <-- EZShop : return true
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
 EZShop -> JSONWrite : writeReturns()
 EZShop <-- JSONWrite : return true
-EZShop <-- ReturnTransaction : return transactionID
 User <-- EZShop : return true
 @enduml
 ```
 
-## Scenario 8.2 - Return transaction of product type X completed, cash
+## Scenario 9.1 - List credits and debits
 ```plantuml
 @startuml
-participant User
+actor User
 participant EZShop
+User -> EZShop : getCreditsAndDebits()
+User <-- EZShop : return List<BalanceOperation>
+@enduml
+```
+
+## Scenario 10.1 - Manage return 
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant CreditCard
 participant ReturnTransaction
-participant JSONWrite
-participant JSONread
-User -> EZShop : createReturnTransaction()
-EZShop -> ReturnTransaction : ReturnTransaction()
-ReturnTransaction -> JSONread : readSales()
-ReturnTransaction <-- JSONread : return true
-User -> ReturnTransaction : returnCashPayment()
-User <-- ReturnTransaction : return true
-EZShop -> JSONWrite : writeReturns()
+participant BalanceOperation
+User -> EZShop : returnCreditCardPayment()
+EZShop -> JSONRead : readCreditCards()
+EZShop <-- JSONRead : List<CreditCards>
+EZShop -> CreditCard : checkValidity()
+EZShop <-- CreditCard : true
+EZShop -> ReturnTransaction : computeValue()
+EZShop <-- ReturnTransaction : return amount
+EZShop -> CreditCard : getBalance()
+EZShop <-- CreditCard : Double
+EZShop -> CreditCard : setBalance()
+EZShop -> ReturnTransaction : setState()
+EZShop --> BalanceOperation : BalanceOperation()
+EZShop <-- BalanceOperation : return BalanceOperation
+EZShop --> JSONWrite : writeOperations()
 EZShop <-- JSONWrite : return true
-EZShop <-- ReturnTransaction : return transactionID
+EZShop -> JSONWrite : writeCreditCards()
+EZShop <-- JSONWrite : true
+EZShop -> JSONWrite : writeReturns()
+EZShop <-- JSONWrite : true
 User <-- EZShop : return true
 @enduml
+```
+
+
 ```
 
