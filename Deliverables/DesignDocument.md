@@ -527,8 +527,9 @@ participant SaleTransaction
 participant PaymentGateway
 participant JSONWrite
 User -> EZShop : createSaleTransaction()
-SaleTransaction -> PaymentGateway : readPaymentCards()
-SaleTransaction <-- PaymentGateway : return true
+EZShop -> SaleTransaction : SaleTransaction()
+User -> PaymentGateway : readPaymentCards()
+User <-- PaymentGateway : return true
 SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
 SaleTransaction <-- PaymentGateway : return true
 EZShop <-- SaleTransaction : return transactionID
@@ -546,8 +547,9 @@ participant EZShop
 participant SaleTransaction
 participant PaymentGateway
 User -> EZShop : createSaleTransaction()
-SaleTransaction -> PaymentGateway : readPaymentCards()
-SaleTransaction <-- PaymentGateway : return false
+EZShop -> SaleTransaction : SaleTransaction()
+User -> PaymentGateway : readPaymentCards()
+User <-- PaymentGateway : return false
 EZShop <-- SaleTransaction : return ExceptionID
 User <-- EZShop : return InvalidCreditCardException
 @enduml
@@ -561,8 +563,9 @@ participant EZShop
 participant SaleTransaction
 participant PaymentGateway
 User -> EZShop : createSaleTransaction()
-SaleTransaction -> PaymentGateway : readPaymentCards()
-SaleTransaction <-- PaymentGateway : return true
+EZShop -> SaleTransaction : SaleTransaction()
+User -> PaymentGateway : readPaymentCards()
+User <-- PaymentGateway : return true
 SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
 SaleTransaction <-- PaymentGateway : return false
 EZShop <-- SaleTransaction : return ExceptionID
@@ -578,10 +581,56 @@ participant EZShop
 participant SaleTransaction
 participant JSONWrite
 User -> EZShop : createSaleTransaction()
-EZShop -> SaleTransaction : receiveCashPayment()
-EZShop <-- SaleTransaction : return transactionID
+EZShop -> SaleTransaction : SaleTransaction()
+User -> SaleTransaction : receiveCashPayment()
+User <-- SaleTransaction : return transactionID
 EZShop -> JSONWrite : writeSales()
 EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 8.1 - Return transaction of product type X completed, credit card
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant ReturnTransaction
+participant PaymentGateway
+participant JSONWrite
+participant JSONread
+User -> EZShop : createReturnTransaction()
+EZShop -> ReturnTransaction : ReturnTransaction()
+ReturnTransaction -> JSONread : readSales()
+ReturnTransaction <-- JSONread : return true
+User -> PaymentGateway : readPaymentCards()
+User <-- PaymentGateway : return true
+User -> PaymentGateway : returnCreditCardPayment()
+User <-- PaymentGateway : return true
+EZShop -> JSONWrite : writeReturns()
+EZShop <-- JSONWrite : return true
+EZShop <-- ReturnTransaction : return transactionID
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 8.2 - Return transaction of product type X completed, cash
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant ReturnTransaction
+participant JSONWrite
+participant JSONread
+User -> EZShop : createReturnTransaction()
+EZShop -> ReturnTransaction : ReturnTransaction()
+ReturnTransaction -> JSONread : readSales()
+ReturnTransaction <-- JSONread : return true
+User -> ReturnTransaction : returnCashPayment()
+User <-- ReturnTransaction : return true
+EZShop -> JSONWrite : writeReturns()
+EZShop <-- JSONWrite : return true
+EZShop <-- ReturnTransaction : return transactionID
 User <-- EZShop : return true
 @enduml
 ```
