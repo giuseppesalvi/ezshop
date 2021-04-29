@@ -45,6 +45,7 @@ package Data {
         +readOrders(String fileName) : List<Order>
         +readCustomers(String fileName) : List<Customer>
         +readCards(String fileName) : List<Cards>
+        +readPaymentCards(String fileName) : List<PaymentCards>
         +readSales(String fileName) : List<SaleTransaction>
         +readReturns(String fileName) : List<ReturnTransaction>
         +readOperations(String fileName) : List<Operations>
@@ -259,6 +260,10 @@ Class InvalidCustomerIdException
 CLass InvalidTransactionIdException
 Class InvalidProductCodeException
 Class InvalidDiscountRateException
+
+Class InvalidCreditCardException
+Class InvalidCreditCardBalanceException
+Class ExceptionID
 }
 @enduml
 ```
@@ -508,6 +513,74 @@ participant JSONWrite
 User -> EZShop : modifyCustomer()
 EZShop -> Customer : setCustomerName()
 EZShop -> JSONWrite : writeCustomers()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 7.1 - Manage payment by valid credit card
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant SaleTransaction
+participant PaymentGateway
+participant JSONWrite
+User -> EZShop : createSaleTransaction()
+SaleTransaction -> PaymentGateway : readPaymentCards()
+SaleTransaction <-- PaymentGateway : return true
+SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
+SaleTransaction <-- PaymentGateway : return true
+EZShop <-- SaleTransaction : return transactionID
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 7.2 - Manage payment by invalid credit card
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant SaleTransaction
+participant PaymentGateway
+User -> EZShop : createSaleTransaction()
+SaleTransaction -> PaymentGateway : readPaymentCards()
+SaleTransaction <-- PaymentGateway : return false
+EZShop <-- SaleTransaction : return ExceptionID
+User <-- EZShop : return InvalidCreditCardException
+@enduml
+```
+
+## Scenario 7.3 - Manage credit card payment with not enough credit
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant SaleTransaction
+participant PaymentGateway
+User -> EZShop : createSaleTransaction()
+SaleTransaction -> PaymentGateway : readPaymentCards()
+SaleTransaction <-- PaymentGateway : return true
+SaleTransaction -> PaymentGateway : receiveCreditCardPayment()
+SaleTransaction <-- PaymentGateway : return false
+EZShop <-- SaleTransaction : return ExceptionID
+User <-- EZShop : return InvalidCreditCardBalanceException
+@enduml
+```
+
+## Scenario 7.4 - Manage cash payment
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant SaleTransaction
+participant JSONWrite
+User -> EZShop : createSaleTransaction()
+EZShop -> SaleTransaction : receiveCashPayment()
+EZShop <-- SaleTransaction : return transactionID
+EZShop -> JSONWrite : writeSales()
 EZShop <-- JSONWrite : return true
 User <-- EZShop : return true
 @enduml
