@@ -282,6 +282,105 @@ Class InvalidDiscountRateException
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
+## Scenario 1.1 - Create product type X issued
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant ProductType
+participant JSONWrite
+User -> EZShop : createProductType()
+EZShop -> ProductType : ProductType()
+EZShop <-- ProductType : return ProductType
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return productID
+@enduml
+```
+
+## Scenario 1.2 - Modify product type location
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant ProductType
+participant JSONWrite
+User -> EZShop : getProductTypeByBarCode()
+User <-- EZShop : return ProductType
+User -> EZShop : UpdatePosition()
+EZShop -> ProductType : setPosition()
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 1.3 - Modify product type price per unit
+```plantuml
+@startuml
+participant User
+participant EZShop
+participant ProductType
+participant JSONWrite
+User -> EZShop : getProductTypeByBarCode()
+User <-- EZShop : return ProductType
+User -> EZShop : updateProduct()
+EZShop -> ProductType : setSellPrice()
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 2.1 - Create user and define rights
+```plantuml
+@startuml
+participant Admin
+participant EZShop
+participant User
+participant JSONWrite
+Admin -> EZShop : CreateUser()
+EZShop -> User : User()
+EZShop <-- User : return User
+EZShop -> JSONWrite : writeUsers()
+EZShop <-- JSONWrite : return true
+Admin <-- EZShop : return userID
+@enduml
+```
+
+## Scenario 2.2 - Delete user
+```plantuml
+@startuml
+participant Admin
+participant EZShop
+participant JSONWrite
+Admin -> EZShop : getAllUser()
+Admin <-- EZShop : List<User>
+Admin -> EZShop : DeleteUser()
+EZShop -> JSONWrite : writeUsers()
+EZShop <-- JSONWrite : return true
+Admin <-- EZShop : return true
+@enduml
+```
+
+## Scenario 2.3 - Modify user rights
+```plantuml
+@startuml
+participant Admin
+participant EZShop
+participant User
+participant JSONWrite
+Admin -> EZShop : getAllUser()
+Admin <-- EZShop : List<User>
+Admin -> EZShop : updateUserRights()
+EZShop -> EZShop : getUser()
+EZShop -> User : setRole()
+EZShop -> JSONWrite : writeUsers()
+EZShop <-- JSONWrite : return true
+Admin <-- EZShop : return true
+@enduml
+```
+
 ## Scenario 3.1 - Order of product type X issued
 ```plantuml
 @startuml
