@@ -363,8 +363,6 @@ Admin <-- EZShop : return userID
 participant Admin
 participant EZShop
 participant JSONWrite
-Admin -> EZShop : getAllUser()
-Admin <-- EZShop : List<User>
 Admin -> EZShop : DeleteUser()
 EZShop -> JSONWrite : writeUsers()
 EZShop <-- JSONWrite : return true
@@ -379,8 +377,6 @@ participant Admin
 participant EZShop
 participant User
 participant JSONWrite
-Admin -> EZShop : getAllUser()
-Admin <-- EZShop : List<User>
 Admin -> EZShop : updateUserRights()
 EZShop -> EZShop : getUser()
 EZShop -> User : setRole()
