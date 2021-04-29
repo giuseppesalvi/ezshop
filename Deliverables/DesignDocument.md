@@ -522,7 +522,187 @@ User <-- EZShop : return true
 @enduml
 ```
 
-## Scenario 6.1 - Sale of product type X completed
+## Scenario 5.1 - Login
+
+```plantuml 
+@startuml
+Actor Employee
+participant EZShop
+participant User
+Employee -> EZShop : Login()
+EZShop -> User : Login()
+EZShop <-- User : return User
+Employee <-- EZShop : return User
+@enduml
+```
+
+## Scenario 5.2 - Logout
+
+```plantuml 
+@startuml
+Actor Employee
+participant EZShop
+participant User   
+Employee -> EZShop : Logout()
+EZShop -> User : Logout()
+EZShop <- User : return true
+Employee <- EZShop : return true
+@enduml
+```
+
+## Scenario 6.1 - Sale of product type X completed (Credit Card)
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : receiveCreditCardPayment()
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 6.2 - Sale of product type X with product discount
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+participant TransactionProduct
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : applyDiscountRateToProduct()
+EZShop -> TransactionProduct : setDiscountRate()
+User <- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : receiveCashPayment()
+User <-- EZShop : return change
+@enduml
+```
+
+## Scenario 6.3 - Sale of product type X with sale discount
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : applyDiscountRateToSale()
+EZShop -> SaleTransaction : setGlobalDiscountRate()
+User <- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : receiveCreditCardPayment()
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 6.4 - Sale of product type X with Loyalty Card update
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+participant Customer
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : getCustomer()
+EZShop -> Customer : getCustomer()
+EZShop <-- Customer : return Customer
+User <-- EZShop : return Customer
+User -> EZShop : receiveCreditCardPayment()
+User <-- EZShop : return true
+User -> EZShop : modifyPointsOnCard()
+EZShop -> LoyaltyCard: setPoints()
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 6.5 - Sale of product type X cancelled
+```plantuml
+@startuml
+actor User
+participant EZShop
+participant SaleTransaction
+participant ProductType
+User -> EZShop : startSaleTransaction()
+EZShop -> SaleTransaction : SaleTransaction()
+EZShop <-- SaleTransaction : SaleTransaction
+User <-- EZShop : return transactionID
+User -> EZShop : addProductToSale()
+EZShop -> ProductType : setQuantity()
+User <-- EZShop : return true
+User -> EZShop : endSaleTransaction()
+EZShop -> JSONWrite : writeSales()
+EZShop <-- JSONWrite : return true
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : getSaleTransaction()
+EZShop -> SaleTransaction: getSaleTransaction()
+EZShop <-- SaleTransaction: return Transaction
+User <-- EZShop : return Transaction
+User -> EZShop: deleteProductFromSale()
+EZShop -> ProductType : setQuantity()
+EZShop -> JSONWrite : writeProducts()
+EZShop <-- JSONWrite : return true
+User <-- EZShop : return true
+User -> EZShop : deleteSaleTransaction()
+EZShop -> JSONRead : readSales()
+EZShop <- JSONRead : return List<SaleTransaction>
+EZShop -> JSONWrite : writeSales()
+User <-- EZShop : return true
+@enduml
+```
+
+## Scenario 6.6 - Sale of product type X completed (Cash)
 ```plantuml
 @startuml
 actor User
