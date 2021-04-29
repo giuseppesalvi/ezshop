@@ -269,28 +269,33 @@ Class InvalidDiscountRateException
 
 \<for each functional requirement from the requirement document, list which classes concur to implement it>
 
-
-
-
-
-
-
-
+| | Admin | EZShopInterface | EZShop | User | Customer | LoyaltyCard | BalanceOperation | ReturnTransaction | SaleTransaction | Order | TransactionProduct | ProductType | Position |JSONwrite | JSONread |
+|--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|FR1 | X | | X | | | | | | | | | X | X | X | |
+|FR3 | X | | X | | X | | | | | | | | | X | |
+|FR4 | | | | | | | | | | | | | | | |
+|FR5 | | | | | | | | | | | | | | | |
+|FR6 | | | | | | | | | | | | | | | |
+|FR7 | | | | | | | | | | | | | | | |
+|FR8 | | | | | | | | | | | | | | | |
 
 
 
 # Verification sequence diagrams 
 \<select key scenarios from the requirement document. For each of them define a sequence diagram showing that the scenario can be implemented by the classes and methods in the design>
 
-## Scenario 1.1 - Create product type X issued
+## Scenario 1.1 - Create product type X
 ```plantuml
 @startuml
 participant User
 participant EZShop
 participant ProductType
+participant Position
 participant JSONWrite
 User -> EZShop : createProductType()
 EZShop -> ProductType : ProductType()
+ProductType -> Position : Position()
+ProductType <-- Position : return Position
 EZShop <-- ProductType : return ProductType
 EZShop -> JSONWrite : writeProducts()
 EZShop <-- JSONWrite : return true
