@@ -304,11 +304,15 @@ User <-- EZShop : return productID
 participant User
 participant EZShop
 participant ProductType
+participant Position
 participant JSONWrite
 User -> EZShop : getProductTypeByBarCode()
 User <-- EZShop : return ProductType
 User -> EZShop : UpdatePosition()
 EZShop -> ProductType : setPosition()
+ProductType -> Position : setAisleID()
+ProductType -> Position : setRackID()
+ProductType -> Position : setLevelID()
 EZShop -> JSONWrite : writeProducts()
 EZShop <-- JSONWrite : return true
 User <-- EZShop : return true
