@@ -50,9 +50,9 @@
 50
 51
 # Project Estimation  
-Authors:
-Date:
-Version:
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
+Date: 30/04/2021
+Version: 1.0.0
 # Contents
 - [Estimate by product decomposition]
 - [Estimate by activity decomposition ]
