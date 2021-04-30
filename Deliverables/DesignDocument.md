@@ -24,11 +24,6 @@ The design must satisfy the Official Requirements document, notably functional a
 <discuss architectural styles used, if any>
 <report package diagram>
 
-
-
-
-
-
 # Low level design
 
 <for each package, report class diagram>
@@ -39,38 +34,40 @@ top to bottom direction
 
 package Data {
     Class EZShopInterface{}
-    Class JSONread{
-        +readUsers(String fileName) : List<User>
-        +readProducts(String fileName) : List<ProductType>
-        +readOrders(String fileName) : List<Order>
-        +readCustomers(String fileName) : List<Customer>
-        +readCards(String fileName) : List<Cards>
-        +readPaymentCards(String fileName) : List<PaymentCards>
-        +readSales(String fileName) : List<SaleTransaction>
-        +readReturns(String fileName) : List<ReturnTransaction>
-        +readOperations(String fileName) : List<Operations>
+    Class FileRead{
+        +readUsers(String fileName) : Map<Integer,User>
+        +readProducts(String fileName) : Map<Integer,ProductType>
+        +readOrders(String fileName) : Map<Integer,Order>
+        +readCustomers(String fileName) : Map<Integer,Customer>
+        +readCards(String fileName) : Map<String,LoyaltyCard>
+        +readSales(String fileName) : Map<Integer,SaleTransaction>
+        +readReturns(String fileName) : Map<Integer,ReturnTransaction>
+        +readOperations(String fileName) : Map<Integer,BalanceOperation>
+        +readCreditCards(String fileName) : List<CreditCard>
+        
     }
-    Class JSONwrite{
-        +writeUsers(String fileName, List<User>) : boolean
-        +writeProducts(String fileName, List<ProductType>) : boolean
-        +writeOrders(String fileName, List<Order>) : boolean
-        +writeCustomers(String fileName, List<Customer>) : boolean
-        +writeCards(String fileName, List<Cards>) : boolean
-        +writeSales(String fileName, List<SaleTransaction>) : boolean
-        +writeReturns(String fileName, List<ReturnTransaction>) : boolean
-        +writeOperations(String fileName, List<Operations>) : boolean
+    Class FileWrite{
+        +writeUsers(String fileName, Map<Integer,User>) : boolean
+        +writeProducts(String fileName, Map<Integer,ProductType>) : boolean
+        +writeOrders(String fileName, Map<Integer,Order>) : boolean
+        +writeCustomers(String fileName, Map<Integer,Customer>) : boolean
+        +writeCards(String fileName, Map<String,LoyaltyCard>) : boolean
+        +writeSales(String fileName, Map<Integer,SaleTransaction>) : boolean
+        +writeReturns(String fileName, Map<Integer,ReturnTransaction>) : boolean
+        +writeOperations(String fileName, Map<Integer,BalanceOperation>) : boolean
+        +writeCreditCards(String fileName, List<CreditCard>) : boolean
     }
 }
 package Model {
 Class EZShop{
-    +users : List<User>
-    +products : List<ProductType>
-    +orders : List<Order>
-    +customers : List<Customer>
-    +cards : List<Card>
-    +sales : List<SaleTransaction>
-    +returns : List<ReturnTransaction>
-    +operations : List<BalanceOperation>
+    +users : Map<Integer,User>
+    +products : Map<Integer,ProductType>
+    +orders : Map<Integer,Order>
+    +customers : Map<Integer,Customer>
+    +cards : Map<String,LoyaltyCard>
+    +sales : Map<Integer,SaleTransaction>
+    +returns : Map<Integer,ReturnTransaction>
+    +operations : Map<Integer,BalanceOperation>
     +loggedInUser : User
     
     +reset() : void
@@ -115,7 +112,6 @@ Class EZShop{
     +returnProduct(Integer returnId, String productCode, int amount) : boolean
     +endReturnTransaction(Integer returnId, boolean commit) : boolean
     +deleteReturnTransaction(Integer returnId) : boolean
-
     +receiveCashPayment(Integer transactionId, double cash) : double
     +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
     +returnCashPayment(Integer returnId) : double
@@ -130,8 +126,6 @@ Class User {
     -password : String
     -role : String
     -ID : Integer
-    +login() : User
-    +logout() : boolean
 }
 
 
@@ -151,7 +145,6 @@ class Position{
     -levelID : String
     +Position(String aisleID, String rackID, String levelID)
     +Position(String position)
-    +getPosition() : String
 }
 class Order {
     -orderID : Integer
@@ -203,6 +196,7 @@ class ReturnTransaction{
 }
 
 class BalanceOperation{
+    -balanceId : Integer
     -type : String
     -amount : Double
     -date : LocalDate
@@ -214,64 +208,33 @@ class CreditCard{
     +checkValidity() : boolean
 }
 
-EZShop -- User
-EZShop -- ProductType
-EZShop -- Order
-EZShop -- Customer
-EZShop -- LoyaltyCard
-EZShop -- BalanceOperation
-EZShop -- CreditCard
+EZShop --> "*" User
+EZShop --> "*" ProductType
+EZShop --> "*" Order
+EZShop --> "*" Customer
+EZShop --> "*" LoyaltyCard
+EZShop --> "*" BalanceOperation
+EZShop --> "*" CreditCard
+EZShop --> "*" SaleTransaction
+EZShop --> "*" ReturnTransaction
 
 ProductType -- Order
 ProductType -- TransactionProduct
-ProductType -right- Position
+ProductType -- Position
 Customer -- LoyaltyCard
-TransactionProduct -- SaleTransaction
-TransactionProduct -- ReturnTransaction
+TransactionProduct "*" -- SaleTransaction
+TransactionProduct "*" -- ReturnTransaction
 ReturnTransaction -- SaleTransaction
 BalanceOperation -- Order
 BalanceOperation -- ReturnTransaction
 BalanceOperation -- SaleTransaction
 CreditCard -- SaleTransaction
-EZShopInterface -- EZShop
-JSONread -- EZShop
-JSONwrite -- EZShop
+EZShopInterface <|-- EZShop
+FileRead <-- EZShop
+FileWrite <-- EZShop
 }
 @enduml
 ```
-```plantuml
-@startuml
-
-package Exceptions {
-Class InvalidUsernameException
-Class InvalidPasswordException
-Class InvalidRoleException
-Class InvalidUserIdException
-Class UnauthorizedException
-
-CLass InvalidProductDescriptionException
-Class InvalidProductCodeException
-Class InvalidPricePerUnitException
-Class InvalidProductIdException
-Class InvalidLocationException
-
-Class InvalidQuantityException
-Class InvalidOrderIdException
-
-Class InvalidCustomerNameException
-Class InvalidCustomerCardException
-Class InvalidCustomerIdException
-
-CLass InvalidTransactionIdException
-Class InvalidProductCodeException
-Class InvalidDiscountRateException
-
-Class InvalidCreditCardException
-Class InvalidCreditCardBalanceException
-}
-@enduml
-```
-
 
 
 # Verification traceability matrix
