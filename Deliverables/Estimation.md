@@ -85,41 +85,37 @@ Version: 1.0.0
 | System validation | 10 |
 
 ###
-Insert here Gantt chart with above activities
+
+#### Gantt chart with above activities
 ```plantuml
 @startgantt
-[Process Instantiation] lasts 1 days
-[System requirements analysis] lasts 1 days
-[System architecture definition] lasts 1 days
+scale 1.5
+[                                      Process Instantiation] lasts 1 days
+then [                                      System requirements analysis] lasts 1 days
+then [                                      System architecture definition] lasts 1 days
+then [                              Software requirements analysis] lasts 2 days
+then [                              Software architecture definition]  lasts 1 days
+then [                  Software detailed design] lasts 1 days
+then [      Coding and unit testing] lasts 3 days
+then [      Integration of software units] lasts 1 days
+then [  Software validation] lasts 1 days
+then [  System integration] lasts 1 days
+then [  System validation] lasts 1 days
 
-[Software requirements analysis] lasts 2 days
-[Software architecture definition]  lasts 1 days
+Project start 2021-03-29
 
-[Software detailed design] lasts 1 days
+[                                      Process Instantiation] starts 2021-03-31 and is colored in Fuchsia/FireBrick
+[                                      System requirements analysis] starts 2021-03-31 and is colored in GreenYellow/Green
+[                                      System architecture definition] starts 2021-03-31  and is colored in Fuchsia/FireBrick
+[                              Software requirements analysis] starts 2021-04-01 and is colored in GreenYellow/Green
+[                              Software architecture definition]  starts 2021-04-02  and is colored in Fuchsia/FireBrick
+[                  Software detailed design] starts 2021-04-05 and is colored in GreenYellow/Green
+[      Coding and unit testing] starts 2021-04-06 and is colored in Fuchsia/FireBrick
+[      Integration of software units] starts 2021-04-08 and is colored in GreenYellow/Green
+[  Software validation] starts 2021-04-09 and is colored in Fuchsia/FireBrick
+[  System integration] starts 2021-04-09 and is colored in GreenYellow/Green
+[  System validation] starts 2021-04-09 and is colored in Fuchsia/FireBrick
 
-[Coding and unit testing] lasts 3 days
-[Integration of software units] lasts 1 days
-
-[Software validation] lasts 1 days
-[System integration] lasts 1 days
-[System validation] lasts 1 days
-
-Project start 2021-03-31
-[Process Instantiation] starts 2021-03-31
-[System requirements analysis] starts 2021-03-31
-[System architecture definition] starts 2021-03-31
-
-[Software requirements analysis] starts 2021-04-01
-[Software architecture definition]  starts 2021-04-02
-
-[Software detailed design] starts 2021-04-05
-
-[Coding and unit testing] starts 2021-04-06
-[Integration of software units] starts 2021-04-08
-
-[Software validation] starts 2021-04-09
-[System integration] starts 2021-04-09
-[System validation] starts 2021-04-09
 
 
 @endgantt
