@@ -2,7 +2,9 @@
 
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
+
 Date: 30/04/2021
+
 Version: 1.0.0
 
 
@@ -25,20 +27,21 @@ We also used MVC pattern, which model part is implemented in data and model pack
 
 DESIGN PATTERNS:
 EZShop is a Facade, and implements the interface EZShopInterface.
-For Drivers and Payment API we have an intermediate class, which is an adaptar for them. In our simplified version we don't need to manage hardware, so we didn't implement them.
+For Drivers and Payment API we would use an intermediate class, which is an adapter for them. In our simplified version we don't need to manage hardware, so we didn't implement them.
 
 DATA PERSISTENCE:
 When the application starts, it reads all the files to load the data in the maps.
 Each time a map is updated (ex: add a user, delete a user, ...), the application writes back the data to the file.
-FileRead and FileWrite classes manage the reading and the writing from and to the actual files, and expose the methods to do that.
+FileRead and FileWrite classes manage the reading and the writing from and to the files and expose the methods to do that.
 
 ```plantuml
 @startuml
 package data{}
 package model{}
 package exceptions{}
-data -- model
+model -- data
 data -- exceptions
+model -- exceptions
 @enduml
 ```
 
