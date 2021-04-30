@@ -24,6 +24,16 @@ The design must satisfy the Official Requirements document, notably functional a
 <discuss architectural styles used, if any>
 <report package diagram>
 
+```plantuml
+@startuml
+package data{}
+package model{}
+package exceptions{}
+data -- model
+data -- exceptions
+@enduml
+```
+
 # Low level design
 
 <for each package, report class diagram>
@@ -32,7 +42,7 @@ The design must satisfy the Official Requirements document, notably functional a
 @startuml
 top to bottom direction
 
-package Data {
+package data {
     Class EZShopInterface{}
     Class FileRead{
         +readUsers(String fileName) : Map<Integer,User>
@@ -58,7 +68,7 @@ package Data {
         +writeCreditCards(String fileName, List<CreditCard>) : boolean
     }
 }
-package Model {
+package model {
 Class EZShop{
     +users : Map<Integer,User>
     +products : Map<Integer,ProductType>
