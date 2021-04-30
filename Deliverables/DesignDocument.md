@@ -257,15 +257,15 @@ FileWrite <-- EZShop
 
 # Verification traceability matrix
 
-| | Admin | EZShopInterface | EZShop | User | Customer | LoyaltyCard | BalanceOperation | ReturnTransaction | SaleTransaction | Order | TransactionProduct | ProductType | Position | CreditCard |FileWrite | FileRead |
-|--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|FR1 | X | | X | | | | | | | | | X | X | X | |
-|FR3 | X | | X | | X | | | | | | | | | X | |
-|FR4 | | | | | | | | | | | | | | | |
-|FR5 | | | | | | | | | | | | | | | |
-|FR6 | | | | | | | | | | | | | | | |
-|FR7 | | | | | | | | | | | | | | | |
-|FR8 | | | | | | | | | | | | | | | |
+| | EZShopInterface | EZShop | User | Customer | LoyaltyCard | BalanceOperation | ReturnTransaction | SaleTransaction | Order | TransactionProduct | ProductType | Position | CreditCard | FileWrite | FileRead |
+|--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|FR1 |   | X | X |   |   |   |   |   |   |   |   |   |   | X |   |
+|FR3 |   | X |   |   |   |   |   |   |   |   | X | X |   | X |   |
+|FR4 |   | X |   |   |   | X |   |   | X |   | X | X |   | X |   |
+|FR5 |   | X |   | X | X |   |   |   |   |   |   |   |   | X |   |
+|FR6 |   | X |   |   |   |   | X | X |   | X | X |   |   | X |   |
+|FR7 |   | X |   | X | X | X |   |   |   |   |   |   | X | X | X |
+|FR8 |   | X |   |   |   | X |   |   |   |   |   |   |   | X |   |
 
 
 
