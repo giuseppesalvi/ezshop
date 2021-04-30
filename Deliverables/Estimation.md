@@ -72,9 +72,55 @@ Version:
 ### 
 |         Activity name    | Estimated effort (person hours)   |             
 | ----------- | ------------------------------- | 
-| Requirements | 50 |
-| Design | 20 |
-| Coding | 60 |
-| Testing | 30 | 
+| Process Instantiation | 8 |
+| System requirements analysis | 16 |
+| System architecture definition | 8 |
+| Software requirements analysis | 60 |
+| Software architecture definition | 8 |
+| Software detailed design | 32 |
+| Coding and unit testing | 100 |
+| Integration of software units | 4 |
+| Software validation | 10 |
+| System integration | 8 |
+| System validation | 10 |
+
 ###
 Insert here Gantt chart with above activities
+```plantuml
+@startgantt
+[Process Instantiation] lasts 1 days
+[System requirements analysis] lasts 1 days
+[System architecture definition] lasts 1 days
+
+[Software requirements analysis] lasts 2 days
+[Software architecture definition]  lasts 1 days
+
+[Software detailed design] lasts 1 days
+
+[Coding and unit testing] lasts 3 days
+[Integration of software units] lasts 1 days
+
+[Software validation] lasts 1 days
+[System integration] lasts 1 days
+[System validation] lasts 1 days
+
+Project start 2021-03-31
+[Process Instantiation] starts 2021-03-31
+[System requirements analysis] starts 2021-03-31
+[System architecture definition] starts 2021-03-31
+
+[Software requirements analysis] starts 2021-04-01
+[Software architecture definition]  starts 2021-04-02
+
+[Software detailed design] starts 2021-04-05
+
+[Coding and unit testing] starts 2021-04-06
+[Integration of software units] starts 2021-04-08
+
+[Software validation] starts 2021-04-09
+[System integration] starts 2021-04-09
+[System validation] starts 2021-04-09
+
+
+@endgantt
+```
