@@ -1,10 +1,8 @@
 # Design Document 
 
 
-Authors: 
-
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 Date: 30/04/2021
-
 Version: 1.0.0
 
 
