@@ -50,9 +50,9 @@
 50
 51
 # Project Estimation  
-Authors:
-Date:
-Version:
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
+Date: 30/04/2021
+Version: 1.0.0
 # Contents
 - [Estimate by product decomposition]
 - [Estimate by activity decomposition ]
@@ -62,16 +62,61 @@ Version:
 ### 
 |             | Estimate                        |             
 | ----------- | ------------------------------- |  
-| NC =  Estimated number of classes to be developed   |                             |             
-|  A = Estimated average size per class, in LOC       |                            | 
-| S = Estimated size of project, in LOC (= NC * A) | |
-| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour)  |                                      |   
-| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | | 
-| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) |                    |               
+| NC =  Estimated number of classes to be developed   | 20 |             
+|  A = Estimated average size per class, in LOC       | 80 | 
+| S = Estimated size of project, in LOC (= NC * A) | 1600|
+| E = Estimated effort, in person hours (here use productivity 10 LOC per person hour) | 160 |   
+| C = Estimated cost, in euro (here use 1 person hour cost = 30 euro) | 4800 | 
+| Estimated calendar time, in calendar weeks (Assume team of 4 people, 8 hours per day, 5 days per week ) | 1 week |               
 # Estimate by activity decomposition
 ### 
 |         Activity name    | Estimated effort (person hours)   |             
 | ----------- | ------------------------------- | 
-| | |
+| Process Instantiation | 8 |
+| System requirements analysis | 16 |
+| System architecture definition | 8 |
+| Software requirements analysis | 60 |
+| Software architecture definition | 8 |
+| Software detailed design | 32 |
+| Coding and unit testing | 100 |
+| Integration of software units | 4 |
+| Software validation | 10 |
+| System integration | 8 |
+| System validation | 10 |
+
 ###
-Insert here Gantt chart with above activities
+
+#### Gantt chart with above activities
+```plantuml
+@startgantt
+scale 1.5
+[                                      Process Instantiation] lasts 1 days
+then [                                      System requirements analysis] lasts 1 days
+then [                                      System architecture definition] lasts 1 days
+then [                              Software requirements analysis] lasts 2 days
+then [                              Software architecture definition]  lasts 1 days
+then [                  Software detailed design] lasts 1 days
+then [      Coding and unit testing] lasts 3 days
+then [      Integration of software units] lasts 1 days
+then [  Software validation] lasts 1 days
+then [  System integration] lasts 1 days
+then [  System validation] lasts 1 days
+
+Project start 2021-03-29
+
+[                                      Process Instantiation] starts 2021-03-31 and is colored in Fuchsia/FireBrick
+[                                      System requirements analysis] starts 2021-03-31 and is colored in GreenYellow/Green
+[                                      System architecture definition] starts 2021-03-31  and is colored in Fuchsia/FireBrick
+[                              Software requirements analysis] starts 2021-04-01 and is colored in GreenYellow/Green
+[                              Software architecture definition]  starts 2021-04-02  and is colored in Fuchsia/FireBrick
+[                  Software detailed design] starts 2021-04-05 and is colored in GreenYellow/Green
+[      Coding and unit testing] starts 2021-04-06 and is colored in Fuchsia/FireBrick
+[      Integration of software units] starts 2021-04-08 and is colored in GreenYellow/Green
+[  Software validation] starts 2021-04-09 and is colored in Fuchsia/FireBrick
+[  System integration] starts 2021-04-09 and is colored in GreenYellow/Green
+[  System validation] starts 2021-04-09 and is colored in Fuchsia/FireBrick
+
+
+
+@endgantt
+```
