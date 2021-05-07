@@ -1,13 +1,21 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
+import it.polito.ezshop.model.UserImpl;
 
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 
 public class EZShop implements EZShopInterface {
 
+    HashMap<Integer, User> users;
+
+    public EZShop() {
+        this.users = new HashMap<Integer, User>();
+    }
 
     @Override
     public void reset() {
@@ -16,7 +24,34 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer createUser(String username, String password, String role) throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
-        return null;
+        //Check username correctness
+        if (username.isEmpty() || username == null) {
+            throw new InvalidUsernameException();
+        }
+
+        //Check password correctness
+        if (password.isEmpty() || password == null){
+            throw new InvalidPasswordException();
+        }
+
+        //Check if username already exists
+        if (users.entrySet().stream().anyMatch(entry -> entry.getValue().getUsername().contentEquals(username))) {
+            return -1;
+        }
+
+        //Check role correctness
+        if (role.isEmpty() || role == null
+                || (!role.contentEquals("Administrator")
+                        && !role.contentEquals("Cashier")
+                        && !role.contentEquals("ShopManager"))
+        ){
+            throw new InvalidRoleException();
+        }
+
+        User newOne = new UserImpl(username, password, role);
+        users.put(newOne.getId(), newOne);
+
+        return newOne.getId();
     }
 
     @Override

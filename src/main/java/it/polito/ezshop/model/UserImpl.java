@@ -3,9 +3,23 @@ package it.polito.ezshop.model;
 import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
+
+    static Integer idGen = 0;
+    String username;
+    String password;
+    String role;
+    Integer id;
+
+    public UserImpl(String username, String password, String role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.id = idGen++;
+    }
+
     @Override
     public Integer getId() {
-        return null;
+        return this.id;
     }
 
     @Override
@@ -15,7 +29,7 @@ public class UserImpl implements User {
 
     @Override
     public String getUsername() {
-        return null;
+        return this.username;
     }
 
     @Override
@@ -25,7 +39,7 @@ public class UserImpl implements User {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
@@ -35,7 +49,7 @@ public class UserImpl implements User {
 
     @Override
     public String getRole() {
-        return null;
+        return role;
     }
 
     @Override
