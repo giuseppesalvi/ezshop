@@ -1,6 +1,9 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
+import it.polito.ezshop.model.ProductTypeImpl;
+import it.polito.ezshop.model.SaleTransactionImpl;
+import it.polito.ezshop.model.TicketEntryImpl;
 import it.polito.ezshop.model.UserImpl;
 
 import java.time.LocalDate;
@@ -12,9 +15,12 @@ import java.util.List;
 public class EZShop implements EZShopInterface {
 
     HashMap<Integer, User> users;
+    HashMap<Integer, SaleTransactionImpl> sales; 
+    User loggedInUser;
 
     public EZShop() {
         this.users = new HashMap<Integer, User>();
+        this.sales = new HashMap<Integer, SaleTransactionImpl>();
     }
 
     @Override
@@ -191,12 +197,68 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer startSaleTransaction() throws UnauthorizedException {
-        return null;
+    	// Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+
+    	SaleTransactionImpl newSale = new SaleTransactionImpl();
+    	sales.put(newSale.getTicketNumber(), newSale);
+
+        return newSale.getTicketNumber();
     }
 
     @Override
     public boolean addProductToSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
-        return false;
+        // Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+    	
+    	// Check transactionId
+    	if (transactionId == null || transactionId <= 0 ) {
+    		throw new InvalidTransactionIdException();
+    	}
+    	
+    	// Check productCode
+    	if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+    		throw new InvalidProductCodeException();
+    	}
+    	
+    	// Check amount
+    	if (amount < 0) {
+    		throw new InvalidQuantityException();
+    	}
+    
+    	// Check if the product exists and the quantity is enough
+    	ProductType prod = getProductTypeByBarCode(productCode);
+    	if (prod == null || prod.getQuantity() < amount ) {
+    		return false;
+    	}
+    	
+    	// Check if the transactionId identifies a started transaction
+    	if (!sales.containsKey(transactionId)) {
+    		return false;
+    	}
+    	SaleTransactionImpl sale = sales.get(transactionId);
+    	
+    	// Check if the transactionId identifies an open transaction
+    	if (!sale.getState().contentEquals("OPEN")) {
+    		return false;
+    	}
+    
+    	// Add the product to the sale transaction and decrease the amount of product available on the shelves
+    	sale.addEntry(new TicketEntryImpl(prod, amount));
+    	prod.setQuantity(prod.getQuantity() - amount);
+    	return true;
     }
 
     @Override
