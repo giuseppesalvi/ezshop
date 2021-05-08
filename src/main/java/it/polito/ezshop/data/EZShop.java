@@ -1,20 +1,22 @@
 package it.polito.ezshop.data;
 
 import it.polito.ezshop.exceptions.*;
+import it.polito.ezshop.model.ProductTypeImpl;
 import it.polito.ezshop.model.UserImpl;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class EZShop implements EZShopInterface {
 
     HashMap<Integer, User> users;
+    HashMap<Integer, ProductTypeImpl> products;
     User loggedInUser;
 
     public EZShop() {
-        this.users = new HashMap<Integer, User>();
+        this.users = new HashMap<>();
+        this.products = new HashMap<>();
         loggedInUser = null;
     }
 
@@ -31,7 +33,7 @@ public class EZShop implements EZShopInterface {
         }
 
         //Check password correctness
-        if (password.isEmpty() || password == null){
+        if (password.isEmpty() || password == null) {
             throw new InvalidPasswordException();
         }
 
@@ -43,9 +45,9 @@ public class EZShop implements EZShopInterface {
         //Check role correctness
         if (role.isEmpty() || role == null
                 || (!role.contentEquals("Administrator")
-                        && !role.contentEquals("Cashier")
-                        && !role.contentEquals("ShopManager"))
-        ){
+                && !role.contentEquals("Cashier")
+                && !role.contentEquals("ShopManager"))
+        ) {
             throw new InvalidRoleException();
         }
 
@@ -59,12 +61,12 @@ public class EZShop implements EZShopInterface {
     public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
         //Check access rights
-        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")) {
             throw new UnauthorizedException();
         }
 
         //Check id correctness
-        if (id == null || id <= 0){
+        if (id == null || id <= 0) {
             throw new InvalidUserIdException();
         }
 
@@ -81,7 +83,7 @@ public class EZShop implements EZShopInterface {
     public List<User> getAllUsers() throws UnauthorizedException {
 
         //Check access rights
-        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")) {
             throw new UnauthorizedException();
         }
 
@@ -92,12 +94,12 @@ public class EZShop implements EZShopInterface {
     public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
         //Check access rights
-        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")) {
             throw new UnauthorizedException();
         }
 
         //Check id correctness
-        if (id == null || id <= 0){
+        if (id == null || id <= 0) {
             throw new InvalidUserIdException();
         }
 
@@ -113,12 +115,12 @@ public class EZShop implements EZShopInterface {
     public boolean updateUserRights(Integer id, String role) throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
 
         //Check access rights
-        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")) {
             throw new UnauthorizedException();
         }
 
         //Check id correctness
-        if (id == null || id <= 0){
+        if (id == null || id <= 0) {
             throw new InvalidUserIdException();
         }
 
@@ -127,7 +129,7 @@ public class EZShop implements EZShopInterface {
                 || (!role.contentEquals("Administrator")
                 && !role.contentEquals("Cashier")
                 && !role.contentEquals("ShopManager"))
-        ){
+        ) {
             throw new InvalidRoleException();
         }
 
@@ -149,7 +151,7 @@ public class EZShop implements EZShopInterface {
         }
 
         //Check password correctness
-        if (password.isEmpty() || password == null){
+        if (password.isEmpty() || password == null) {
             throw new InvalidPasswordException();
         }
 
@@ -159,7 +161,7 @@ public class EZShop implements EZShopInterface {
         //Checking if username and password match
         if (optionalUser.isPresent() && optionalUser.get().getPassword().contentEquals(password)) {
             loggedInUser = optionalUser.get();
-        }else {
+        } else {
             loggedInUser = null;
         }
 
@@ -170,7 +172,7 @@ public class EZShop implements EZShopInterface {
     public boolean logout() {
 
         //Check if there is a logged user
-        if (loggedInUser == null){
+        if (loggedInUser == null) {
             return false;
         }
 
@@ -180,42 +182,225 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer createProductType(String description, String productCode, double pricePerUnit, String note) throws InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
-        return null;
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check description correctness
+        if (description.isEmpty() || description == null) {
+            throw new InvalidProductDescriptionException();
+        }
+
+        //Check productCode correctness
+        if (productCode.isEmpty() || productCode == null || !ProductTypeImpl.checkBarCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        //Check price correctness
+        if (pricePerUnit <= 0) {
+            throw new InvalidPricePerUnitException();
+        }
+
+        //Check if barcode already exists
+        if (products.values().stream().anyMatch(p -> p.getBarCode().contentEquals(productCode))) {
+            return -1;
+        }
+
+        ProductTypeImpl newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
+        products.put(newOne.getId(), newOne);
+        return newOne.getId();
+
     }
 
     @Override
     public boolean updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) throws InvalidProductIdException, InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check description correctness
+        if (newDescription.isEmpty() || newDescription == null) {
+            throw new InvalidProductDescriptionException();
+        }
+
+        //Check productCode correctness
+        if (newCode.isEmpty() || newCode == null || !ProductTypeImpl.checkBarCode(newCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        //Check price correctness
+        if (newPrice <= 0) {
+            throw new InvalidPricePerUnitException();
+        }
+
+        //Check id correctness
+        if (id == null || id <= 0) {
+            throw new InvalidProductIdException();
+        }
+
+        //Check if product exists
+        if (products.containsKey(id)) {
+            ProductTypeImpl chosen = products.get(id);
+            if (!chosen.getBarCode().contentEquals(newCode)) {
+                //The new barcode differs from the original one thus we need to check if it is still unique.
+                if (products.values().stream().anyMatch(p -> p.getBarCode().contentEquals(newCode)))
+                    return false;
+            }
+            chosen.setBarCode(newCode);
+            chosen.setNote(newNote);
+            chosen.setProductDescription(newDescription);
+            chosen.setPricePerUnit(newPrice);
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id == null || id <= 0) {
+            throw new InvalidProductIdException();
+        }
+
+        if (products.containsKey(id)) {
+            products.remove(id);
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public List<ProductType> getAllProductTypes() throws UnauthorizedException {
-        return null;
+
+        //Check access rights
+        if (loggedInUser == null) {
+            throw new UnauthorizedException();
+        }
+
+        return new ArrayList<>(products.values());
+
     }
 
     @Override
     public ProductType getProductTypeByBarCode(String barCode) throws InvalidProductCodeException, UnauthorizedException {
-        return null;
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check productCode correctness
+        if (barCode.isEmpty() || barCode == null || !ProductTypeImpl.checkBarCode(barCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        //Retrieve the correct one
+        Optional<ProductTypeImpl> productOptional = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(barCode)).findFirst();
+
+        return productOptional.orElse(null);
+
     }
 
     @Override
     public List<ProductType> getProductTypesByDescription(String description) throws UnauthorizedException {
-        return null;
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //null description treated as empty string
+        if (description == null)
+            description = "";
+
+        String finalVal = description;
+        return products.values().stream().filter(p -> p.getProductDescription().contains(finalVal)).
+                collect(Collectors.toList());
     }
 
     @Override
     public boolean updateQuantity(Integer productId, int toBeAdded) throws InvalidProductIdException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (productId == null || productId <= 0) {
+            throw new InvalidProductIdException();
+        }
+
+        if (products.containsKey(productId)) {
+            ProductTypeImpl chosen = products.get(productId);
+            if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation() == null) {
+                return false;
+            }
+            chosen.setQuantity(chosen.getQuantity() + toBeAdded);
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public boolean updatePosition(Integer productId, String newPos) throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null ||
+                (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (productId == null || productId <= 0) {
+            throw new InvalidProductIdException();
+        }
+
+        //Check newPos correctness
+        if (!newPos.matches(".+-.+-.+") && !newPos.isEmpty()) {
+            throw new InvalidLocationException();
+        }
+
+        if (products.containsKey(productId)) {
+            ProductTypeImpl chosen = products.get(productId);
+            if (!chosen.getLocation().contentEquals(newPos)) {
+                //The new location differs from the original one thus we need to check if it is still unique.
+                if (products.values().stream().anyMatch(p -> p.getLocation().contentEquals(newPos)))
+                    return false;
+            }
+            chosen.setLocation(newPos);
+            return true;
+        }
+
         return false;
+
     }
 
     @Override
