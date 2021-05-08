@@ -4,17 +4,18 @@ import it.polito.ezshop.exceptions.*;
 import it.polito.ezshop.model.UserImpl;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class EZShop implements EZShopInterface {
 
     HashMap<Integer, User> users;
+    User loggedInUser;
 
     public EZShop() {
         this.users = new HashMap<Integer, User>();
+        loggedInUser = null;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class EZShop implements EZShopInterface {
         }
 
         //Check if username already exists
-        if (users.entrySet().stream().anyMatch(entry -> entry.getValue().getUsername().contentEquals(username))) {
+        if (users.values().stream().anyMatch(u -> u.getUsername().contentEquals(username))) {
             return -1;
         }
 
@@ -56,32 +57,125 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id == null || id <= 0){
+            throw new InvalidUserIdException();
+        }
+
+        //Remove if present
+        if (users.containsKey(id)) {
+            users.remove(id);
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public List<User> getAllUsers() throws UnauthorizedException {
-        return null;
+
+        //Check access rights
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+            throw new UnauthorizedException();
+        }
+
+        return new ArrayList<>(users.values());
     }
 
     @Override
     public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id == null || id <= 0){
+            throw new InvalidUserIdException();
+        }
+
+        //Return it if present
+        if (users.containsKey(id)) {
+            return users.get(id);
+        }
+
         return null;
     }
 
     @Override
     public boolean updateUserRights(Integer id, String role) throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
+
+        //Check access rights
+        if (loggedInUser == null || !loggedInUser.getRole().contentEquals("Administrator")){
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id == null || id <= 0){
+            throw new InvalidUserIdException();
+        }
+
+        //Check role correctness
+        if (role.isEmpty() || role == null
+                || (!role.contentEquals("Administrator")
+                && !role.contentEquals("Cashier")
+                && !role.contentEquals("ShopManager"))
+        ){
+            throw new InvalidRoleException();
+        }
+
+        //Set if present
+        if (users.containsKey(id)) {
+            users.get(id).setRole(role);
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public User login(String username, String password) throws InvalidUsernameException, InvalidPasswordException {
-        return null;
+
+        //Check username correctness
+        if (username.isEmpty() || username == null) {
+            throw new InvalidUsernameException();
+        }
+
+        //Check password correctness
+        if (password.isEmpty() || password == null){
+            throw new InvalidPasswordException();
+        }
+
+        //Retrieving user with that username
+        Optional<User> optionalUser = users.values().stream().filter(u -> u.getUsername().contentEquals(username)).findFirst();
+
+        //Checking if username and password match
+        if (optionalUser.isPresent() && optionalUser.get().getPassword().contentEquals(password)) {
+            loggedInUser = optionalUser.get();
+        }else {
+            loggedInUser = null;
+        }
+
+        return loggedInUser;
     }
 
     @Override
     public boolean logout() {
-        return false;
+
+        //Check if there is a logged user
+        if (loggedInUser == null){
+            return false;
+        }
+
+        loggedInUser = null;
+        return true;
     }
 
     @Override
