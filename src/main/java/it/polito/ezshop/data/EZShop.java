@@ -14,19 +14,13 @@ import java.util.stream.Collectors;
 public class EZShop implements EZShopInterface {
 
     HashMap<Integer, User> users;
-<<<<<<< HEAD
     HashMap<Integer, SaleTransactionImpl> sales; 
-=======
->>>>>>> branch 'code-and-unit-test' of git@git-softeng.polito.it:se-2021/group-23/ezshop.git
     User loggedInUser;
 
     public EZShop() {
         this.users = new HashMap<Integer, User>();
-<<<<<<< HEAD
         this.sales = new HashMap<Integer, SaleTransactionImpl>();
-=======
         loggedInUser = null;
->>>>>>> branch 'code-and-unit-test' of git@git-softeng.polito.it:se-2021/group-23/ezshop.git
     }
 
     @Override
