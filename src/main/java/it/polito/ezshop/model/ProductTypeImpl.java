@@ -4,7 +4,7 @@ import it.polito.ezshop.data.ProductType;
 
 public class ProductTypeImpl implements ProductType {
 
-    static Integer idGen = 0;
+    static Integer idGen = 1;
     private String productCode;
     private String description;
     private Double sellPrice;
