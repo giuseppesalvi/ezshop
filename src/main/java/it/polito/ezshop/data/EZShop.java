@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-
 public class EZShop implements EZShopInterface {
 
     HashMap<Integer, User> users;
@@ -1441,7 +1440,7 @@ public class EZShop implements EZShopInterface {
         }
 
     	// Read the list of credit cards from the file
-    	List<CreditCard> creditCardsList= readCreditCards("CreditCards.txt");
+    	List<CreditCard> creditCardsList = FileRead.readCreditCards("CreditCards.txt");
     	
     	// Search the CreditCard in the list
     	CreditCard cCard = null;
@@ -1566,7 +1565,7 @@ public class EZShop implements EZShopInterface {
         double amount = ret.getValue();
 
     	// Read the list of credit cards from the file
-    	List<CreditCard> creditCardsList= readCreditCards("CreditCards.txt");
+    	List<CreditCard> creditCardsList= FileRead.readCreditCards("CreditCards.txt");
     	
     	// Search the CreditCard in the list
     	CreditCard cCard = null;
