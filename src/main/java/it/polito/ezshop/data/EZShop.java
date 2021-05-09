@@ -15,6 +15,8 @@ public class EZShop implements EZShopInterface {
     HashMap<Integer, ProductTypeImpl> products;
     HashMap<Integer, OrderImpl> orders;
     HashMap<Integer, BalanceOperationImpl> operations;
+    HashMap<Integer, CustomerImpl> customers;
+    HashMap<String, LoyaltyCard> cards;
     User loggedInUser;
 
     public EZShop() {
@@ -24,6 +26,7 @@ public class EZShop implements EZShopInterface {
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
         this.operations = new HashMap<>();
+        this.customers = new HashMap<>();
         loggedInUser = null;
     }
 
@@ -60,7 +63,7 @@ public class EZShop implements EZShopInterface {
 
         User newOne = new UserImpl(username, password, role);
         users.put(newOne.getId(), newOne);
-
+        // TODO save in memory and check the result of the operation
         return newOne.getId();
     }
 
@@ -80,6 +83,7 @@ public class EZShop implements EZShopInterface {
         //Remove if present
         if (users.containsKey(id)) {
             users.remove(id);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -143,6 +147,7 @@ public class EZShop implements EZShopInterface {
         //Set if present
         if (users.containsKey(id)) {
             users.get(id).setRole(role);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -219,6 +224,7 @@ public class EZShop implements EZShopInterface {
 
         ProductTypeImpl newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
         products.put(newOne.getId(), newOne);
+        // TODO save in memory and check the result of the operation
         return newOne.getId();
 
     }
@@ -265,6 +271,7 @@ public class EZShop implements EZShopInterface {
             chosen.setNote(newNote);
             chosen.setProductDescription(newDescription);
             chosen.setPricePerUnit(newPrice);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -288,6 +295,7 @@ public class EZShop implements EZShopInterface {
 
         if (products.containsKey(id)) {
             products.remove(id);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -369,6 +377,7 @@ public class EZShop implements EZShopInterface {
                 return false;
             }
             chosen.setQuantity(chosen.getQuantity() + toBeAdded);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -403,6 +412,7 @@ public class EZShop implements EZShopInterface {
                     return false;
             }
             chosen.setLocation(newPos);
+            // TODO save in memory and check the result of the operation
             return true;
         }
 
@@ -433,9 +443,10 @@ public class EZShop implements EZShopInterface {
         //Check correctness of barcode and retrieve the correct one if exists
         ProductType chosen = this.getProductTypeByBarCode(productCode);
 
-        if (chosen != null){
+        if (chosen != null) {
             OrderImpl newOne = new OrderImpl(chosen, quantity, pricePerUnit);
             orders.put(newOne.getOrderId(), newOne);
+            // TODO save in memory and check the result of the operation
             return newOne.getOrderId();
         }
 
@@ -465,15 +476,15 @@ public class EZShop implements EZShopInterface {
         //Check correctness of barcode and retrieve the correct one if exists
         ProductType chosen = this.getProductTypeByBarCode(productCode);
 
-        if (chosen == null){
+        if (chosen == null) {
             return -1;
         }
 
         OrderImpl newOrd = new OrderImpl(chosen, quantity, pricePerUnit);
-        double cost = quantity*pricePerUnit;
+        double cost = quantity * pricePerUnit;
 
         //Check balance
-        if ((BalanceOperationImpl.getCurrBalance(operations.values()) - cost) < 0){
+        if ((this.computeBalance() - cost) < 0) {
             return -1;
         }
 
@@ -483,6 +494,7 @@ public class EZShop implements EZShopInterface {
         newOrd.setBalanceId(newOp.getBalanceId());
         newOrd.setStatus("payed");
         orders.put(newOrd.getOrderId(), newOrd);
+        // TODO save in memory and check the result of the operation
         return newOrd.getOrderId();
     }
 
@@ -507,12 +519,12 @@ public class EZShop implements EZShopInterface {
         }
 
         OrderImpl chosen = orders.get(orderId);
-        if (chosen.getStatus().contentEquals("issued")){
+        if (chosen.getStatus().contentEquals("issued")) {
 
-            double cost = chosen.getPricePerUnit()* chosen.getQuantity();
+            double cost = chosen.getPricePerUnit() * chosen.getQuantity();
 
             //Check balance
-            if ((BalanceOperationImpl.getCurrBalance(operations.values()) - cost) < 0){
+            if ((this.computeBalance() - cost) < 0) {
                 return false;
             }
 
@@ -522,6 +534,7 @@ public class EZShop implements EZShopInterface {
             //Update order
             chosen.setBalanceId(newOp.getBalanceId());
             chosen.setStatus("payed");
+            // TODO save in memory and check the result of the operation
             return true;
         } else return chosen.getStatus().contentEquals("payed");
     }
@@ -549,14 +562,15 @@ public class EZShop implements EZShopInterface {
         OrderImpl chosen = orders.get(orderId);
 
         //Check location of product
-        if (chosen.getProduct().getLocation() == null){
+        if (chosen.getProduct().getLocation() == null) {
             throw new InvalidLocationException();
         }
 
-        if (chosen.getStatus().contentEquals("payed")){
+        if (chosen.getStatus().contentEquals("payed")) {
             //Update quantity in inventory
             chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
             chosen.setStatus("completed");
+            // TODO save in memory and check the result of the operation
             return true;
         } else return chosen.getStatus().contentEquals("completed");
     }
@@ -576,41 +590,241 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
-        return null;
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check customer name correctness
+        if (customerName.isEmpty() || customerName == null) {
+            throw new InvalidCustomerNameException();
+        }
+
+        //Check if customer name already exists
+        if (customers.values().stream().anyMatch(u -> u.getCustomerName().contentEquals(customerName))) {
+            return -1;
+        }
+
+        CustomerImpl newOne = new CustomerImpl(customerName);
+        customers.put(newOne.getId(), newOne);
+        // TODO save in memory and check the result of the operation
+        return newOne.getId();
     }
 
     @Override
     public boolean modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) throws InvalidCustomerNameException, InvalidCustomerCardException, InvalidCustomerIdException, UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check customer name correctness
+        if (newCustomerName.isEmpty() || newCustomerName == null) {
+            throw new InvalidCustomerNameException();
+        }
+
+        //Check id correctness
+        if (id <= 0 || id == null) {
+            throw new InvalidCustomerIdException();
+        }
+
+        //Check card correctness
+        if (!newCustomerCard.matches("^[0-9]{10}$") && !newCustomerCard.isEmpty() && newCustomerCard != null) {
+            throw new InvalidCustomerCardException();
+        }
+
+        if (customers.containsKey(id)) {
+            CustomerImpl chosen = customers.get(id);
+
+            if (!chosen.getCustomerName().contentEquals(newCustomerName)) {
+                //The new customer name differs from the original one thus we need to check if it is still unique.
+                if (customers.values().stream().anyMatch(p -> p.getCustomerName().contentEquals(newCustomerName)))
+                    return false;
+            }
+
+            chosen.setCustomerName(newCustomerName);
+
+            if (newCustomerCard.matches("^[0-9]{10}$")) {
+                if (cards.containsKey(newCustomerCard) && cards.get(newCustomerCard).getCustomer() == null) {
+                    //Double reference
+                    chosen.setCard(cards.get(newCustomerCard));
+                    cards.get(newCustomerCard).setCustomer(chosen);
+                }
+            } else if (newCustomerCard.isEmpty()) {
+                //Double reference
+                chosen.getCard().setCustomer(null);
+                chosen.setCustomerCard(null);
+            }//null case does not modify anything
+
+            // TODO save in memory and check the result of the operation
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id <= 0 || id == null) {
+            throw new InvalidCustomerIdException();
+        }
+
+        if (customers.containsKey(id)) {
+            //Remove reference to loyalty card
+            if (customers.get(id).getCard() != null) {
+                customers.get(id).getCard().setCustomer(null);
+            }
+            customers.remove(id);
+            // TODO save in memory and check the result of the operation
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (id <= 0 || id == null) {
+            throw new InvalidCustomerIdException();
+        }
+
+        if (customers.containsKey(id)) {
+            return customers.get(id);
+        }
+
         return null;
     }
 
     @Override
     public List<Customer> getAllCustomers() throws UnauthorizedException {
-        return null;
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        return new ArrayList<>(customers.values());
     }
 
     @Override
     public String createCard() throws UnauthorizedException {
-        return null;
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        LoyaltyCard newOne = new LoyaltyCard();
+        cards.put(newOne.getCardId(), newOne);
+        // TODO save in memory and check the result of the operation
+        return newOne.getCardId();
     }
 
     @Override
     public boolean attachCardToCustomer(String customerCard, Integer customerId) throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check id correctness
+        if (customerId <= 0 || customerId == null) {
+            throw new InvalidCustomerIdException();
+        }
+
+        //Check card correctness
+        if (!customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty() && customerCard != null) {
+            throw new InvalidCustomerCardException();
+        }
+
+        if (customers.containsKey(customerId)
+                && cards.containsKey(customerCard)
+                && cards.get(customerCard).getCustomer() == null) {
+
+            //Customer has already a card, detach it
+            if (customers.get(customerId).getCard() != null) {
+                customers.get(customerId).getCard().setCustomer(null);
+            }
+
+            //Double reference
+            customers.get(customerId).setCard(cards.get(customerCard));
+            cards.get(customerCard).setCustomer(customers.get(customerId));
+            // TODO save in memory and check the result of the operation
+            return true;
+        }
         return false;
     }
 
     @Override
     public boolean modifyPointsOnCard(String customerCard, int pointsToBeAdded) throws InvalidCustomerCardException, UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        //Check card correctness
+        if (!customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty() && customerCard != null) {
+            throw new InvalidCustomerCardException();
+        }
+
+        if (cards.containsKey(customerCard)){
+            if ((cards.get(customerCard).getPoints() + pointsToBeAdded) < 0){
+                return false;
+            }
+            cards.get(customerCard).setPoints(cards.get(customerCard).getPoints()+pointsToBeAdded);
+            // TODO save in memory and check the result of the operation
+            return true;
+        }
         return false;
     }
 
@@ -642,310 +856,310 @@ public class EZShop implements EZShopInterface {
         ) {
             throw new UnauthorizedException();
         }
-    	
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    	
-    	// Check productCode
-    	if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
-    		throw new InvalidProductCodeException();
-    	}
-    	
-    	// Check amount
-    	if (amount < 0) {
-    		throw new InvalidQuantityException();
-    	}
-    
-    	// Check if the product exists and the quantity is enough
-    	ProductType prod = getProductTypeByBarCode(productCode);
-    	if (prod == null || prod.getQuantity() < amount ) {
-    		return false;
-    	}
-    	
-    	// Check if the transactionId identifies a started transaction
-    	if (!sales.containsKey(transactionId)) {
-    		return false;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies an open transaction
-    	if (!sale.getState().contentEquals("OPEN")) {
-    		return false;
-    	}
-    
-    	// Add the product to the sale transaction and decrease the amount of product available on the shelves
-    	// If this operation goes wrong, return false
-    	if (!sale.addEntry(new TicketEntryImpl(prod, amount))) {
-    		return false;
-    	}
-    	prod.setQuantity(prod.getQuantity() - amount);
-    	return true;
-   }
+
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check productCode
+        if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        // Check amount
+        if (amount < 0) {
+            throw new InvalidQuantityException();
+        }
+
+        // Check if the product exists and the quantity is enough
+        ProductType prod = getProductTypeByBarCode(productCode);
+        if (prod == null || prod.getQuantity() < amount) {
+            return false;
+        }
+
+        // Check if the transactionId identifies a started transaction
+        if (!sales.containsKey(transactionId)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies an open transaction
+        if (!sale.getState().contentEquals("OPEN")) {
+            return false;
+        }
+
+        // Add the product to the sale transaction and decrease the amount of product available on the shelves
+        // If this operation goes wrong, return false
+        if (!sale.addEntry(new TicketEntryImpl(prod, amount))) {
+            return false;
+        }
+        prod.setQuantity(prod.getQuantity() - amount);
+        return true;
+    }
 
     @Override
     public boolean deleteProductFromSale(Integer transactionId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
 
         // Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
-    	
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    	
-    	// Check productCode
-    	if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
-    		throw new InvalidProductCodeException();
-    	}
-    	
-    	// Check amount
-    	if (amount < 0) {
-    		throw new InvalidQuantityException();
-    	}
-    	
-    	// Check if the product exists 
-    	ProductType prod = getProductTypeByBarCode(productCode);
-    	if (prod == null) {
-    		return false;
-    	}
-    	
-    	// Check if the transactionId identifies a started transaction
-    	if (!sales.containsKey(transactionId)) {
-    		return false;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies an open transaction
-    	if (!sale.getState().contentEquals("OPEN")) {
-    		return false;
-    	}
-    	
-    	// Delete the product from the sale transaction and increase the amount of product available on the shelves
-    	// If this operation goes wrong, return false
-    	if (!sale.deleteEntry(productCode)) {
-    		return false;
-    	}
-    	prod.setQuantity(prod.getQuantity() + amount);
-    	return true;
+
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check productCode
+        if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        // Check amount
+        if (amount < 0) {
+            throw new InvalidQuantityException();
+        }
+
+        // Check if the product exists
+        ProductType prod = getProductTypeByBarCode(productCode);
+        if (prod == null) {
+            return false;
+        }
+
+        // Check if the transactionId identifies a started transaction
+        if (!sales.containsKey(transactionId)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies an open transaction
+        if (!sale.getState().contentEquals("OPEN")) {
+            return false;
+        }
+
+        // Delete the product from the sale transaction and increase the amount of product available on the shelves
+        // If this operation goes wrong, return false
+        if (!sale.deleteEntry(productCode)) {
+            return false;
+        }
+        prod.setQuantity(prod.getQuantity() + amount);
+        return true;
     }
 
     @Override
     public boolean applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidDiscountRateException, UnauthorizedException {
- 
+
         // Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
-    	
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    	
-    	// Check productCode
-    	if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
-    		throw new InvalidProductCodeException();
-    	}
 
-    	// Check discountRate
-    	if (discountRate < 0.0 || discountRate >= 1.0) {
-    		throw new InvalidDiscountRateException();
-    	}
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
 
-    	// Check if the product exists 
-    	ProductType prod = getProductTypeByBarCode(productCode);
-    	if (prod == null) {
-    		return false;
-    	}
-    	
-    	// Check if the transactionId identifies a started transaction
-    	if (!sales.containsKey(transactionId)) {
-    		return false;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies an open transaction
-    	if (!sale.getState().contentEquals("OPEN")) {
-    		return false;
-    	}
-    	
-    	sale.setDiscountRate(discountRate);
-    	return true;
+        // Check productCode
+        if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+            throw new InvalidProductCodeException();
+        }
+
+        // Check discountRate
+        if (discountRate < 0.0 || discountRate >= 1.0) {
+            throw new InvalidDiscountRateException();
+        }
+
+        // Check if the product exists
+        ProductType prod = getProductTypeByBarCode(productCode);
+        if (prod == null) {
+            return false;
+        }
+
+        // Check if the transactionId identifies a started transaction
+        if (!sales.containsKey(transactionId)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies an open transaction
+        if (!sale.getState().contentEquals("OPEN")) {
+            return false;
+        }
+
+        sale.setDiscountRate(discountRate);
+        return true;
     }
 
     @Override
     public boolean applyDiscountRateToSale(Integer transactionId, double discountRate) throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
-  
+
         // Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
 
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
 
-    	// Check discountRate
-    	if (discountRate < 0.0 || discountRate >= 1.0) {
-    		throw new InvalidDiscountRateException();
-    	}
+        // Check discountRate
+        if (discountRate < 0.0 || discountRate >= 1.0) {
+            throw new InvalidDiscountRateException();
+        }
 
-	
-    	// Check if the transactionId identifies a started transaction
-    	if (!sales.containsKey(transactionId)) {
-    		return false;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies an open or closed but not payed transaction
-    	if (!sale.getState().contentEquals("OPEN") && !sale.getState().contentEquals("CLOSED")) {
-    		return false;
-    	}
-    	
-    	sale.setDiscountRate(discountRate);
-    	return true;
+
+        // Check if the transactionId identifies a started transaction
+        if (!sales.containsKey(transactionId)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies an open or closed but not payed transaction
+        if (!sale.getState().contentEquals("OPEN") && !sale.getState().contentEquals("CLOSED")) {
+            return false;
+        }
+
+        sale.setDiscountRate(discountRate);
+        return true;
     }
 
     @Override
     public int computePointsForSale(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
         // Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
 
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    	
-    	// Check if the transactionId exists 
-    	if (!sales.containsKey(transactionId)) {
-    		return -1;
-    	}
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
 
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	return (int)sale.getPrice() / 10;
+        // Check if the transactionId exists
+        if (!sales.containsKey(transactionId)) {
+            return -1;
+        }
+
+        SaleTransactionImpl sale = sales.get(transactionId);
+        return (int) sale.getPrice() / 10;
     }
 
     @Override
     public boolean endSaleTransaction(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
-    	// Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
 
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    		
-    	// Check if the transactionId exists 
-    	if (!sales.containsKey(transactionId)) {
-    		return false;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies an already closed transaction
-    	if (sale.getState().contentEquals("CLOSED")) {
-    		return false;
-    	}
-    	
-    	sale.setState("CLOSED");
-    	// TODO save in memory and check the result of the operation
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check if the transactionId exists
+        if (!sales.containsKey(transactionId)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies an already closed transaction
+        if (sale.getState().contentEquals("CLOSED")) {
+            return false;
+        }
+
+        sale.setState("CLOSED");
+        // TODO save in memory and check the result of the operation
         return true;
     }
 
     @Override
     public boolean deleteSaleTransaction(Integer saleNumber) throws InvalidTransactionIdException, UnauthorizedException {
 
-    	// Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
 
-    	// Check transactionId
-    	if (saleNumber == null || saleNumber <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    		
-    	// Check if the transactionId exists 
-    	if (!sales.containsKey(saleNumber)) {
-    		return false;
-    	}
-    	
-    	SaleTransactionImpl sale = sales.get(saleNumber);
+        // Check transactionId
+        if (saleNumber == null || saleNumber <= 0) {
+            throw new InvalidTransactionIdException();
+        }
 
-     	// Check if the transactionId identifies an already payed transaction
-    	if (sale.getState().contentEquals("PAYED")) {
-    		return false;
-    	}
-   
-    	// Delete the sale from the map
-    	sales.remove(saleNumber);
-    	// TODO save in memory and check the result of the operation
+        // Check if the transactionId exists
+        if (!sales.containsKey(saleNumber)) {
+            return false;
+        }
+
+        SaleTransactionImpl sale = sales.get(saleNumber);
+
+        // Check if the transactionId identifies an already payed transaction
+        if (sale.getState().contentEquals("PAYED")) {
+            return false;
+        }
+
+        // Delete the sale from the map
+        sales.remove(saleNumber);
+        // TODO save in memory and check the result of the operation
         return true;
     }
 
     @Override
     public SaleTransaction getSaleTransaction(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
- 
-    	// Check user role
-    	if (loggedInUser == null
-    			|| (!loggedInUser.getRole().contentEquals("Administrator")
-                        && !loggedInUser.getRole().contentEquals("Cashier")
-                        && !loggedInUser.getRole().contentEquals("ShopManager"))
-        ){
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
             throw new UnauthorizedException();
         }
 
-    	// Check transactionId
-    	if (transactionId == null || transactionId <= 0 ) {
-    		throw new InvalidTransactionIdException();
-    	}
-    		
-    	// Check if the transactionId exists 
-    	if (!sales.containsKey(transactionId)) {
-    		return null;
-    	}
-    	SaleTransactionImpl sale = sales.get(transactionId);
-    	
-    	// Check if the transactionId identifies a closed transaction
-    	if (!sale.getState().contentEquals("CLOSED")) {
-    		return null;
-    	}
-    	
-    	return sale;
+        // Check transactionId
+        if (transactionId == null || transactionId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check if the transactionId exists
+        if (!sales.containsKey(transactionId)) {
+            return null;
+        }
+        SaleTransactionImpl sale = sales.get(transactionId);
+
+        // Check if the transactionId identifies a closed transaction
+        if (!sale.getState().contentEquals("CLOSED")) {
+            return null;
+        }
+
+        return sale;
     }
 
     @Override
@@ -990,16 +1204,66 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public boolean recordBalanceUpdate(double toBeAdded) throws UnauthorizedException {
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        if ((this.computeBalance() +toBeAdded ) >= 0){
+            BalanceOperationImpl newOne = new BalanceOperationImpl(toBeAdded, (toBeAdded>=0)?"credit":"debit");
+            operations.put(newOne.getBalanceId(), newOne);
+            // TODO save in memory and check the result of the operation
+            return true;
+        }
+
         return false;
     }
 
     @Override
     public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to) throws UnauthorizedException {
-        return null;
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        LocalDate start = from, end = to;
+
+        if (from == null){ start = LocalDate.MIN;}
+        if (to == null){ end = LocalDate.MAX;}
+        if (start.isAfter(end)){
+            LocalDate temp = start;
+            start = to;
+            to = temp;
+        }
+
+        LocalDate finalStart = start;
+        LocalDate finalEnd = end;
+        return operations.values().stream().
+                filter(o -> (o.getDate().isAfter(finalStart) && o.getDate().isBefore(finalEnd)) ).
+                collect(Collectors.toList());
+
     }
 
     @Override
     public double computeBalance() throws UnauthorizedException {
-        return 0;
+
+        // Check user role
+        if (loggedInUser == null
+                || (!loggedInUser.getRole().contentEquals("Administrator")
+                && !loggedInUser.getRole().contentEquals("Cashier")
+                && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ) {
+            throw new UnauthorizedException();
+        }
+
+        return operations.values().stream().mapToDouble(BalanceOperation::getMoney).sum();
     }
 }
