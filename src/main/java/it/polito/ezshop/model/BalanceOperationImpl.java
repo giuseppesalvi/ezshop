@@ -3,45 +3,64 @@ package it.polito.ezshop.model;
 import it.polito.ezshop.data.BalanceOperation;
 
 import java.time.LocalDate;
+import java.util.Collection;
 
 public class BalanceOperationImpl implements BalanceOperation {
+
+    private Integer idGen = 1;
+    private Integer id;
+    private LocalDate date;
+    private Double amount;
+    private String type;
+
+    public BalanceOperationImpl(Double amount, String type) {
+        this.amount = amount;
+        this.type = type;
+        this.date = LocalDate.now();
+        this.id = idGen++;
+    }
+
+    public static double getCurrBalance(Collection<BalanceOperationImpl> operations){
+        return operations.stream().mapToDouble(BalanceOperation::getMoney).sum();
+    }
+
     @Override
     public int getBalanceId() {
-        return 0;
+        return id;
     }
 
     @Override
     public void setBalanceId(int balanceId) {
-
+        this.id = balanceId;
     }
 
     @Override
     public LocalDate getDate() {
-        return null;
+        return date;
     }
 
     @Override
     public void setDate(LocalDate date) {
-
+        this.date = date;
     }
 
     @Override
     public double getMoney() {
-        return 0;
+        return amount;
     }
 
     @Override
     public void setMoney(double money) {
-
+        this.amount = money;
     }
 
     @Override
     public String getType() {
-        return null;
+        return type;
     }
 
     @Override
     public void setType(String type) {
-
+        this.type = type;
     }
 }

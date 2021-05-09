@@ -4,7 +4,7 @@ import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
 
-    static Integer idGen = 0;
+    static Integer idGen = 1;
     String username;
     String password;
     String role;
