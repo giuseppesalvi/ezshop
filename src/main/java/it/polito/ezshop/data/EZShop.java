@@ -15,6 +15,7 @@ public class EZShop implements EZShopInterface {
     HashMap<Integer, ProductTypeImpl> products;
     HashMap<Integer, OrderImpl> orders;
     HashMap<Integer, BalanceOperationImpl> operations;
+    HashMap<Integer, ReturnTransaction> returns;
     User loggedInUser;
 
     public EZShop() {
@@ -24,6 +25,7 @@ public class EZShop implements EZShopInterface {
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
         this.operations = new HashMap<>();
+        this.returns = new HashMap<>();
         loggedInUser = null;
     }
 
@@ -911,8 +913,19 @@ public class EZShop implements EZShopInterface {
     		return false;
     	}
    
+    	// Delete every product from the transaction and restore the quantities in the inventory
+    	for (TicketEntry entry: sale.getEntries()) {
+    		for (ProductType p : products.values()) {
+    			if (entry.getBarCode().contentEquals(p.getBarCode())) {
+    				sale.deleteEntry(entry.getBarCode());
+    				p.setQuantity(p.getQuantity() + entry.getAmount());
+    			}
+    		}
+    	}
+
     	// Delete the sale from the map
     	sales.remove(saleNumber);
+
     	// TODO save in memory and check the result of the operation
         return true;
     }
@@ -950,22 +963,192 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public Integer startReturnTransaction(Integer saleNumber) throws /*InvalidTicketNumberException,*/InvalidTransactionIdException, UnauthorizedException {
-        return null;
+
+        // Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+
+    	// Check saleNumber 
+    	if (saleNumber == null || saleNumber <= 0 ) {
+    		throw new InvalidTransactionIdException();
+    	}
+    		
+
+    	// Check if the transaction with saleNumber exists 
+    	if (!sales.containsKey(saleNumber)) {
+    		return -1;
+    	}
+    	SaleTransactionImpl sale = sales.get(saleNumber);
+    	
+    	// Check if the saleNumber identifies a payed transaction
+    	if (!sale.getState().contentEquals("PAYED")) {
+    		return -1;
+    	}
+    	
+    	ReturnTransaction newRet = new ReturnTransaction(sale);
+    	returns.put(newRet.getReturnID(), newRet);
+    	return newRet.getReturnID();
     }
 
     @Override
     public boolean returnProduct(Integer returnId, String productCode, int amount) throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
-        return false;
+
+    	// Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+
+    	// Check returnId  
+    	if (returnId == null || returnId <= 0 ) {
+    		throw new InvalidTransactionIdException();
+    	}
+
+   		// Check productCode
+    	if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+    		throw new InvalidProductCodeException();
+    	}
+    	
+    	// Check amount
+    	if (amount <= 0) {
+    		throw new InvalidQuantityException();
+    	}
+    	
+    	// Check if the product exists 
+    	ProductType prod = getProductTypeByBarCode(productCode);
+    	if (prod == null) {
+    		return false;
+    	}
+    	
+    	// Check if the return transaction exists
+    	if (!returns.containsKey(returnId)) {
+    		return false;
+    	}
+    	ReturnTransaction ret = returns.get(returnId);
+    	
+    	// Check if the product to be returned is in the Sale Transaction
+    	TicketEntry entrySold = null;
+    	for (TicketEntry e : ret.getTransaction().getEntries()) {
+    		if (e.getBarCode().contentEquals(productCode)) {
+    			entrySold = e;
+    		}
+    	}
+    	if (entrySold == null) {
+    		return false;
+    	}
+
+    	// Check if the amount to return is higher than the one sold
+    	if (amount > entrySold.getAmount()) {
+    		return false;
+    	}
+    	
+    	// Add the product in the return transaction
+    	ret.addEntry(new TicketEntryImpl(prod, amount)); 
+    	
+    	// Note: this method doesn't update the productType quantity 
+        return true;
     }
 
     @Override
     public boolean endReturnTransaction(Integer returnId, boolean commit) throws InvalidTransactionIdException, UnauthorizedException {
-        return false;
+
+        // Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+
+    	// Check returnId  
+    	if (returnId == null || returnId <= 0 ) {
+    		throw new InvalidTransactionIdException();
+    	}
+
+    	// Check if the return transaction exists
+    	if (!returns.containsKey(returnId)) {
+    		return false;
+    	}
+    	ReturnTransaction ret = returns.get(returnId);
+    	
+    	// Check if the return transaction is open
+    	if (!ret.getState().contentEquals("OPEN")) {
+    		return false;
+    	}
+    	
+    	if (commit) {
+
+    		// Increase the product quantity available in the shelves
+    		for (TicketEntry e : ret.getProducts()) {
+    			ProductTypeImpl prod = null;
+    			for (ProductTypeImpl p : products.values()) {
+    				if(p.getBarCode().equals(e.getBarCode())) {
+    					prod = p;
+    				}
+    			}
+    			if (prod == null) {
+    				return false;
+    			}
+    			prod.setQuantity(prod.getQuantity() + e.getAmount());
+    		}
+
+    		// Update the sale transaction status: decrease the number of units sold by the number of returned one
+    		for (TicketEntry sold : ret.getTransaction().getEntries()) {
+    			for (TicketEntry returned : ret.getProducts() ) {
+    				if (sold.getBarCode().contentEquals(returned.getBarCode())) {
+    					sold.setAmount(sold.getAmount() - returned.getAmount());
+    				}
+    			}
+    		}
+
+    		// Recompute the final price of the sale transaction
+    		ret.getTransaction().setPrice(ret.getTransaction().computeCost());
+    	}
+    	ret.setState("CLOSED");
+    	ret.setCommit(commit);
+    	return true;
     }
 
     @Override
     public boolean deleteReturnTransaction(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
-        return false;
+ 
+        // Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+
+    	// Check returnId  
+    	if (returnId == null || returnId <= 0 ) {
+    		throw new InvalidTransactionIdException();
+    	}
+
+    	// Check if the return transaction exists
+    	if (!returns.containsKey(returnId)) {
+    		return false;
+    	}
+    	ReturnTransaction ret = returns.get(returnId);
+    	
+    	// Check if the return transaction has been closed, if it's open or payed return false
+    	if (!ret.getState().contentEquals("CLOSED")) {
+    		return false;
+    	}
+
+    	// Delete the return transaction from the map
+    	returns.remove(returnId);
+    	return true;
     }
 
     @Override
