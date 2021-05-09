@@ -24,7 +24,7 @@ public class SaleTransactionImpl implements SaleTransaction {
     public SaleTransactionImpl() {
 		this.transactionID = idGen++;
 		this.products = null;
-		this.globalDiscountRate = null;
+		this.globalDiscountRate = 0.0;
 		this.state = "OPEN";
 		this.date = LocalDate.now();
 		this.time = LocalTime.now();
@@ -65,6 +65,8 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public double getPrice() {
+    	// Compute cost and set it
+    	setPrice(computeCost());
         return this.cost;
     }
 
@@ -87,4 +89,32 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		return this.products.add(entry);
 	}
+	
+	public boolean deleteEntry(String barcode) {
+		int targetIdx = -1;
+		for (TicketEntry p : products) {
+			if (p.getBarCode().contentEquals(barcode)) {
+				targetIdx = products.indexOf(p);
+			}
+		}
+		
+		if (targetIdx == -1) {
+			return false;
+		}
+
+		products.remove(targetIdx);
+		return true;
+	}
+	
+	public Double computeCost() {
+		Double cost = 0.0;
+		for (TicketEntry prod : products) {
+			// For each product add its price after discount * its quantity
+			cost += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate() ) * prod.getAmount();
+		}
+		// Apply sale DiscountRate
+		cost = cost * (1.00 - globalDiscountRate);
+		return cost;
+	}
+	
 }

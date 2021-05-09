@@ -17,6 +17,7 @@ public class TicketEntryImpl implements TicketEntry {
     public TicketEntryImpl(ProductType product, Integer quantity) {
 		this.product = product;
 		this.quantity = quantity;
+		this.discountRate = 0.0;
 	}
 
 	@Override
