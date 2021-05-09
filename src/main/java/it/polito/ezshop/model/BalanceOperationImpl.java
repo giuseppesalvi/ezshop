@@ -20,10 +20,6 @@ public class BalanceOperationImpl implements BalanceOperation {
         this.id = idGen++;
     }
 
-    public static double getCurrBalance(Collection<BalanceOperationImpl> operations){
-        return operations.stream().mapToDouble(BalanceOperation::getMoney).sum();
-    }
-
     @Override
     public int getBalanceId() {
         return id;
