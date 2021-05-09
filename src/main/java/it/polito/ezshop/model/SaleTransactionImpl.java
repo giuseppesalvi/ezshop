@@ -83,6 +83,22 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.state = state;
 	}
 	
+	public String getPaymentType() {
+		return paymentType;
+	}
+
+	public void setPaymentType(String paymentType) {
+		this.paymentType = paymentType;
+	}
+
+	public CreditCard getCreditCard() {
+		return creditCard;
+	}
+
+	public void setCreditCard(CreditCard creditCard) {
+		this.creditCard = creditCard;
+	}
+
 	public boolean addEntry(TicketEntry entry) {
 		if (this.products == null) {
 			this.products = new ArrayList<TicketEntry>();

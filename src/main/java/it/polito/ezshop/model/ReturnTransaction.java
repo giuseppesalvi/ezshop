@@ -74,8 +74,14 @@ public class ReturnTransaction {
 	}
 	
 	public Double computeValue() {
-		//TODO
-		return 0.0;
+		Double amount = 0.0;
+		for (TicketEntry prod : products) {
+			// For each product add its price after discount * its quantity
+			amount += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate() ) * prod.getAmount();
+		}
+		// Apply sale DiscountRate
+		amount = amount * (1.00 - transaction.getDiscountRate());
+		return amount;
 	}
 
 	public boolean addEntry(TicketEntry entry) {

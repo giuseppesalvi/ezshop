@@ -1101,7 +1101,6 @@ public class EZShop implements EZShopInterface {
     @Override
     public boolean deleteSaleTransaction(Integer saleNumber) throws InvalidTransactionIdException, UnauthorizedException {
 
-<<<<<<< HEAD
     	// Check user role
     	if (loggedInUser == null
     			|| (!loggedInUser.getRole().contentEquals("Administrator")
@@ -1266,8 +1265,9 @@ public class EZShop implements EZShopInterface {
     	}
     	
     	// Add the product in the return transaction
-    	ret.addEntry(new TicketEntryImpl(prod, amount)); 
-    	
+    	// Set its discount rate equal to the one when it was sold
+    	ret.addEntry(new TicketEntryImpl(prod, amount, entrySold.getDiscountRate())); 
+
     	// Note: this method doesn't update the productType quantity 
         return true;
     }
@@ -1368,22 +1368,231 @@ public class EZShop implements EZShopInterface {
 
     @Override
     public double receiveCashPayment(Integer ticketNumber, double cash) throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
-        return 0;
+
+        // Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+ 
+    	// Check cash
+    	if (cash <= 0) {
+    		throw new InvalidPaymentException();
+    	}
+
+        // Check ticketNumber, that is the id of the sale transaction 
+        if (ticketNumber == null || ticketNumber <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check if the ticketNumber identifies a sale transaction that exists
+        if (!sales.containsKey(ticketNumber)) {
+            return -1;
+        }
+        SaleTransactionImpl sale = sales.get(ticketNumber);
+        
+        // Check if the sale transaction is closed
+        if (!sale.getState().contentEquals("CLOSED")) {
+        	return -1;
+        }
+
+        double price = sale.getPrice();
+        double rest = cash - price;
+
+        if (rest < 0) {
+        	return -1;
+        }
+        else {
+        	// Update sale fields
+        	sale.setPaymentType("cash");
+        	sale.setState("PAYED");
+
+        	// Create new balance operation, to record this sale in the balance
+        	BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
+        	operations.put(newOp.getBalanceId(), newOp);
+        	// TODO persistence
+        	return rest;
+        }
     }
 
     @Override
     public boolean receiveCreditCardPayment(Integer ticketNumber, String creditCard) throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
-        return false;
+
+    	// Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+    	
+    	// Check creditCard
+    	if (creditCard == null || creditCard.isEmpty() || !CreditCard.checkValidity(creditCard)) {
+    		throw new InvalidCreditCardException();
+    	}
+   
+        // Check ticketNumber, that is the id of the sale transaction 
+        if (ticketNumber == null || ticketNumber <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+    	// Read the list of credit cards from the file
+    	List<CreditCard> creditCardsList= readCreditCards("CreditCards.txt");
+    	
+    	// Search the CreditCard in the list
+    	CreditCard cCard = null;
+    	for (CreditCard c : creditCardsList) {
+    		if (c.getNumber().contentEquals(creditCard)) {
+    			cCard = c;
+    		}
+    	}
+
+    	// Credit card not registered in the credit card circuit
+    	if (cCard == null) {
+    		return false;
+    	}
+    	
+        // Check if the ticketNumber identifies a sale transaction that exists
+        if (!sales.containsKey(ticketNumber)) {
+            return false;
+        }
+        SaleTransactionImpl sale = sales.get(ticketNumber);
+        
+        // Check if the sale transaction is closed
+        if (!sale.getState().contentEquals("CLOSED")) {
+        	return false;
+        }
+
+        double price = sale.getPrice();
+
+        // Check if the credit card has enough money
+    	if (cCard.getBalance() < price) {
+    		return false;
+    	}
+    	
+    	// Update credit card balance
+    	cCard.setBalance(cCard.getBalance() - price);
+
+        // Update sale fields
+        sale.setPaymentType("creditCard");
+        sale.setState("PAYED");
+        sale.setCreditCard(cCard);
+        
+      	// Create new balance operation, to record this sale in the balance
+      	BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
+       	operations.put(newOp.getBalanceId(), newOp);
+
+       	// TODO persistence
+       	return true;
     }
 
     @Override
     public double returnCashPayment(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
-        return 0;
+
+    	// Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+    	
+        // Check returnId
+        if (returnId == null || returnId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+
+        // Check if the return transaction exists 
+        if (!returns.containsKey(returnId)) {
+            return -1;
+        }
+        ReturnTransaction ret = returns.get(returnId);
+        
+        // Check if the return transaction is closed
+        if (!ret.getState().contentEquals("CLOSED")) {
+        	return -1;
+        }
+
+        double amount = ret.getValue();
+
+        // Update return transaction fields
+        ret.setState("PAYED");
+
+        // Create new balance operation, to record this return in the balance
+       	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
+       	operations.put(newOp.getBalanceId(), newOp);
+       	// TODO persistence
+    	return amount;
     }
 
     @Override
     public double returnCreditCardPayment(Integer returnId, String creditCard) throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
-        return 0;
+
+    	// Check user role
+    	if (loggedInUser == null
+    			|| (!loggedInUser.getRole().contentEquals("Administrator")
+                        && !loggedInUser.getRole().contentEquals("Cashier")
+                        && !loggedInUser.getRole().contentEquals("ShopManager"))
+        ){
+            throw new UnauthorizedException();
+        }
+    	
+        // Check returnId
+        if (returnId == null || returnId <= 0) {
+            throw new InvalidTransactionIdException();
+        }
+    	
+    	// Check creditCard
+    	if (creditCard == null || creditCard.isEmpty() || !CreditCard.checkValidity(creditCard)) {
+    		throw new InvalidCreditCardException();
+    	}
+ 
+        // Check if the return transaction exists 
+        if (!returns.containsKey(returnId)) {
+            return -1;
+        }
+        ReturnTransaction ret = returns.get(returnId);
+        
+        // Check if the return transaction is closed
+        if (!ret.getState().contentEquals("CLOSED")) {
+        	return -1;
+        }
+
+        double amount = ret.getValue();
+
+    	// Read the list of credit cards from the file
+    	List<CreditCard> creditCardsList= readCreditCards("CreditCards.txt");
+    	
+    	// Search the CreditCard in the list
+    	CreditCard cCard = null;
+    	for (CreditCard c : creditCardsList) {
+    		if (c.getNumber().contentEquals(creditCard)) {
+    			cCard = c;
+    		}
+    	}
+
+    	// Credit card not registered in the credit card circuit
+    	if (cCard == null) {
+    		return -1;
+    	}
+    	
+    	// Update credit card balance
+    	cCard.setBalance(cCard.getBalance() + amount);
+
+        // Update return transaction fields
+        ret.setState("PAYED");
+
+        // Create new balance operation, to record this return in the balance
+       	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
+       	operations.put(newOp.getBalanceId(), newOp);
+       	// TODO persistence
+    	return amount;
+
     }
 
     @Override

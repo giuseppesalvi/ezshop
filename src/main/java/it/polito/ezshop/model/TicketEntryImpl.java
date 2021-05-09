@@ -15,6 +15,11 @@ public class TicketEntryImpl implements TicketEntry {
 		this.discountRate = 0.0;
 	}
 
+	public TicketEntryImpl(ProductType product, Integer quantity, Double discountRate) {
+		this.product = product;
+		this.quantity = quantity;
+		this.discountRate = discountRate;
+	}
 
     @Override
     public String getBarCode() {
