@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class EZShop implements EZShopInterface {
 
-    HashMap<Integer, User> users;
+    HashMap<Integer, UserImpl> users;
     HashMap<Integer, SaleTransactionImpl> sales;
     HashMap<Integer, ProductTypeImpl> products;
     HashMap<Integer, OrderImpl> orders;
@@ -20,14 +20,14 @@ public class EZShop implements EZShopInterface {
     User loggedInUser;
 
     public EZShop() {
-        this.users = new HashMap<>();
+        this.users = FileRead.readUsers("users.json");
         this.sales = new HashMap<>();
-        this.users = new HashMap<>();
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
         this.operations = new HashMap<>();
         this.returns = new HashMap<>();
         this.customers = new HashMap<>();
+        this.cards = new HashMap<>();
         loggedInUser = null;
     }
 
@@ -62,10 +62,15 @@ public class EZShop implements EZShopInterface {
             throw new InvalidRoleException();
         }
 
-        User newOne = new UserImpl(username, password, role);
+        UserImpl newOne = new UserImpl(username, password, role);
         users.put(newOne.getId(), newOne);
-        // TODO save in memory and check the result of the operation
-        return newOne.getId();
+        if (FileWrite.writeUsers("users.json", users)){
+            return newOne.getId();
+        }
+
+        //db unreachable
+        users.remove(newOne.getId());
+        return -1;
     }
 
     @Override
@@ -83,9 +88,13 @@ public class EZShop implements EZShopInterface {
 
         //Remove if present
         if (users.containsKey(id)) {
+            UserImpl eliminated = users.get(id);
             users.remove(id);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeUsers("users.json", users))
+                return true;
+
+            //reinsert it if something goes wrong with the db
+            users.put(eliminated.getId(), eliminated);
         }
 
         return false;
@@ -147,9 +156,14 @@ public class EZShop implements EZShopInterface {
 
         //Set if present
         if (users.containsKey(id)) {
+            String precRole = users.get(id).getRole();
             users.get(id).setRole(role);
-            // TODO save in memory and check the result of the operation
-            return true;
+
+            if (FileWrite.writeUsers("users.json", users))
+                return true;
+
+            //return to the previous state if something goes wrong
+            users.get(id).setRole(precRole);
         }
 
         return false;
@@ -169,7 +183,7 @@ public class EZShop implements EZShopInterface {
         }
 
         //Retrieving user with that username
-        Optional<User> optionalUser = users.values().stream().filter(u -> u.getUsername().contentEquals(username)).findFirst();
+        Optional<UserImpl> optionalUser = users.values().stream().filter(u -> u.getUsername().contentEquals(username)).findFirst();
 
         //Checking if username and password match
         if (optionalUser.isPresent() && optionalUser.get().getPassword().contentEquals(password)) {
@@ -1632,8 +1646,8 @@ public class EZShop implements EZShopInterface {
         if (to == null){ end = LocalDate.MAX;}
         if (start.isAfter(end)){
             LocalDate temp = start;
-            start = to;
-            to = temp;
+            start = end;
+            end = temp;
         }
 
         LocalDate finalStart = start;

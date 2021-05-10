@@ -4,17 +4,24 @@ import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
 
-    static Integer idGen = 1;
-    String username;
-    String password;
-    String role;
-    Integer id;
+    static public Integer idGen = 1;
+    private String username;
+    private String password;
+    private String role;
+    private Integer id;
 
     public UserImpl(String username, String password, String role) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.id = idGen++;
+    }
+
+    public UserImpl(String username, String password, String role, Integer id) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.id = id;
     }
 
     @Override
@@ -56,4 +63,5 @@ public class UserImpl implements User {
     public void setRole(String role) {
         this.role = role;
     }
+
 }
