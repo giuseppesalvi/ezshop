@@ -996,7 +996,13 @@ public class EZShop implements EZShopInterface {
             return false;
         }
 
-        sale.setDiscountRate(discountRate);
+        // Check the product and apply the discountRate
+        for (TicketEntry entry : sale.getEntries()) {
+        	if (entry.getBarCode().contentEquals(productCode)) {
+        		entry.setDiscountRate(discountRate);
+        	}
+        }
+
         return true;
     }
 
