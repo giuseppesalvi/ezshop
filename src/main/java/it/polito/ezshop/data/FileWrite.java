@@ -6,8 +6,12 @@ import java.util.List;
 import java.util.Map;
 
 import it.polito.ezshop.model.CreditCard;
+import it.polito.ezshop.model.CustomerImpl;
 import it.polito.ezshop.model.LoyaltyCard;
+import it.polito.ezshop.model.OrderImpl;
+import it.polito.ezshop.model.ProductTypeImpl;
 import it.polito.ezshop.model.ReturnTransaction;
+import it.polito.ezshop.model.SaleTransactionImpl;
 import it.polito.ezshop.model.UserImpl;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -43,15 +47,15 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeProducts(String fileName, Map<Integer, ProductType> products) {
+	public static boolean writeProducts(String fileName, Map<Integer, ProductTypeImpl> products) {
 		return false;
 	}
 
-	public static boolean writeOrders(String fileName, Map<Integer, Order> orders) {
+	public static boolean writeOrders(String fileName, Map<Integer, OrderImpl> orders) {
 		return false;
 	}
 
-	public static boolean writeCustomers(String fileName, Map<Integer, Customer> customers) {
+	public static boolean writeCustomers(String fileName, Map<Integer, CustomerImpl> customers) {
 		return false;
 	}
 	
@@ -59,8 +63,51 @@ public class FileWrite {
 		return false;
 	}
 
-	public static boolean writeSales(String fileName, Map<Integer, SaleTransaction> sales) {
-		return false;
+	public static boolean writeSales(String fileName, Map<Integer, SaleTransactionImpl> sales) {
+	
+		JSONObject obj = new JSONObject();
+
+		//Write the current id generator
+		obj.put("idgen", SaleTransactionImpl.idGen);
+		JSONArray listSalesJSON = new JSONArray();
+
+		//Write each user
+		for(SaleTransactionImpl sale : sales.values() ){
+			JSONObject saleJSON = new JSONObject();
+			saleJSON.put("transactionID", sale.getTicketNumber()) ;
+			saleJSON.put("globalDiscountRate", sale.getDiscountRate());
+			saleJSON.put("state", sale.getState());
+			saleJSON.put("date", sale.getDate().toString());
+			saleJSON.put("time", sale.getTime().toString());
+			saleJSON.put("cost", sale.getPrice());
+			saleJSON.put("paymentType", sale.getPaymentType());
+			if( sale.getCreditCard() != null) {
+				saleJSON.put("creditCard", sale.getCreditCard().getNumber());
+			}
+			else {
+				saleJSON.put("creditCard", null);
+			}
+			JSONArray listProductsJSON = new JSONArray();
+			for (TicketEntry prod : sale.getEntries()) {
+				JSONObject prodJSON = new JSONObject();
+				prodJSON.put("product", prod.getBarCode());
+				prodJSON.put("quantity", prod.getAmount());
+				prodJSON.put("discountRate", prod.getDiscountRate());
+				listProductsJSON.add(prodJSON);
+			}
+			saleJSON.put("products", listProductsJSON);
+			listSalesJSON.add(saleJSON);
+		}
+
+		obj.put("sales", listSalesJSON);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public static boolean writeReturns(String fileName, Map<Integer, ReturnTransaction> returns) {

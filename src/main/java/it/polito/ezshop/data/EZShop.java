@@ -21,7 +21,7 @@ public class EZShop implements EZShopInterface {
 
     public EZShop() {
         this.users = FileRead.readUsers("users.json");
-        this.sales = new HashMap<>();
+        this.sales = FileRead.readSales("sales.json");
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
         this.operations = new HashMap<>();

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SaleTransactionImpl implements SaleTransaction {
 	
-	private static Integer idGen = 1;
+	public static Integer idGen = 1;
 	private Integer transactionID;
 	private List<TicketEntry> products;
 	private Double globalDiscountRate;
@@ -32,6 +32,19 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.paymentType = null;
 		this.creditCard = null;
 	}
+
+    public SaleTransactionImpl(Integer transactionId, List<TicketEntry> products, Double globalDiscountRate, String state, String dateString, String timeString, Double cost, String paymentType, String creditCard) {
+		this.transactionID = transactionId;
+		this.products = products;
+		this.globalDiscountRate = globalDiscountRate;
+		this.state = state;
+		this.date = LocalDate.parse(dateString);
+		this.time = LocalTime.parse(timeString);
+		this.cost = cost;
+		this.paymentType = paymentType;
+		this.creditCard = new CreditCard(creditCard, null);
+	}
+
 
 	@Override
     public Integer getTicketNumber() {
@@ -97,6 +110,22 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	public void setCreditCard(CreditCard creditCard) {
 		this.creditCard = creditCard;
+	}
+
+	public LocalDate getDate() {
+		return date;
+	}
+
+	public void setDate(LocalDate date) {
+		this.date = date;
+	}
+
+	public LocalTime getTime() {
+		return time;
+	}
+
+	public void setTime(LocalTime time) {
+		this.time = time;
 	}
 
 	public boolean addEntry(TicketEntry entry) {
