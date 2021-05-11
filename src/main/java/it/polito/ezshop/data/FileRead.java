@@ -98,6 +98,8 @@ public class FileRead {
 				List<TicketEntry> products = new ArrayList<TicketEntry>();
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
 					TicketEntry prod = new TicketEntryImpl(
+							// create a dummy ProductType, with just the barcode
+							// it will be used later to build the reference with the real ProductType
 							new ProductTypeImpl( (String) productJSON.get("product"), null, null, null),
 							(Integer) productJSON.get("quantity"),
 							(Double) productJSON.get("discountRate")
@@ -119,8 +121,8 @@ public class FileRead {
 				sales.put(sale.getTicketNumber(), sale);
 			}
 
-			//Set the id generator for the users
-			UserImpl.idGen = idGen;
+			//Set the id generator for the sales 
+			SaleTransactionImpl.idGen = idGen;
 
 		} catch (IOException | ParseException e) {
 			//return an empty map if there is some error.

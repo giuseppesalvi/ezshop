@@ -29,6 +29,9 @@ public class EZShop implements EZShopInterface {
         this.customers = new HashMap<>();
         this.cards = new HashMap<>();
         loggedInUser = null;
+        
+        // TODO: restore references between classes
+        // sales -> productType
     }
 
     @Override
@@ -856,6 +859,7 @@ public class EZShop implements EZShopInterface {
 
         SaleTransactionImpl newSale = new SaleTransactionImpl();
         sales.put(newSale.getTicketNumber(), newSale);
+        FileWrite.writeSales("sales.json", sales);
 
         return newSale.getTicketNumber();
 

@@ -23,12 +23,12 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     public SaleTransactionImpl() {
 		this.transactionID = idGen++;
-		this.products = null;
+		this.products = new ArrayList<TicketEntry>();
 		this.globalDiscountRate = 0.0;
 		this.state = "OPEN";
 		this.date = LocalDate.now();
 		this.time = LocalTime.now();
-		this.cost = null;
+		this.cost = 0.0;
 		this.paymentType = null;
 		this.creditCard = null;
 	}
@@ -129,9 +129,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public boolean addEntry(TicketEntry entry) {
-		if (this.products == null) {
-			this.products = new ArrayList<TicketEntry>();
-		}
 		return this.products.add(entry);
 	}
 	

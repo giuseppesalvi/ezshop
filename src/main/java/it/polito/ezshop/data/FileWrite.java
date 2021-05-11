@@ -64,7 +64,7 @@ public class FileWrite {
 	}
 
 	public static boolean writeSales(String fileName, Map<Integer, SaleTransactionImpl> sales) {
-	
+
 		JSONObject obj = new JSONObject();
 
 		//Write the current id generator
