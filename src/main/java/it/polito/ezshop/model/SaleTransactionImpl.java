@@ -33,7 +33,9 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.creditCard = null;
 	}
 
-    public SaleTransactionImpl(Integer transactionId, List<TicketEntry> products, Double globalDiscountRate, String state, String dateString, String timeString, Double cost, String paymentType, String creditCard) {
+    public SaleTransactionImpl(Integer transactionId, List<TicketEntry> products,
+							   Double globalDiscountRate, String state, String dateString,
+							   String timeString, Double cost, String paymentType, String creditCard) {
 		this.transactionID = transactionId;
 		this.products = products;
 		this.globalDiscountRate = globalDiscountRate;

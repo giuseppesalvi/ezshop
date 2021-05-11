@@ -22,17 +22,41 @@ public class EZShop implements EZShopInterface {
     public EZShop() {
         this.users = FileRead.readUsers("users.json");
         this.sales = FileRead.readSales("sales.json");
-        this.products = new HashMap<>();
-        this.orders = new HashMap<>();
+        this.products = FileRead.readProducts("products.json");
+        this.orders = FileRead.readOrders("orders.json");
         this.operations = FileRead.readOperations("operations.json");
         this.returns = FileRead.readReturns("returns.json"); 
-        this.customers = new HashMap<>();
-        this.cards = new HashMap<>();
+        this.customers = FileRead.readCustomers("customers.json");
+        this.cards = FileRead.readCards("cards.json");
         loggedInUser = null;
         
         // TODO: restore references between classes
         // sales -> productType
         // returns -> productType
+
+        // Customer -> cards
+        for (CustomerImpl cus: customers.values()){
+            if (!cus.getCard().getCardId().equals("")) {
+                cus.setCard(cards.get(cus.getCard().getCardId()));
+            } else {
+                cus.setCard(null);
+            }
+
+        }
+
+        // Cards -> customer
+        for (LoyaltyCard loy: cards.values()){
+            if (loy.getCustomer().getId() != -1) {
+                loy.setCustomer(customers.get(loy.getCustomer().getId()));
+            } else {
+                loy.setCustomer(null);
+            }
+        }
+
+        // orders -> productType
+        for (OrderImpl ord: orders.values()){
+            ord.setProduct(products.get(ord.getProduct().getId()));
+        }
 
         // returns -> sales
         for (ReturnTransaction ret : returns.values()) {
@@ -78,7 +102,7 @@ public class EZShop implements EZShopInterface {
         }
 
         //db unreachable
-        users.remove(newOne.getId());
+        //users.remove(newOne.getId());
         return -1;
     }
 
@@ -97,13 +121,13 @@ public class EZShop implements EZShopInterface {
 
         //Remove if present
         if (users.containsKey(id)) {
-            UserImpl eliminated = users.get(id);
+            //UserImpl eliminated = users.get(id);
             users.remove(id);
             if (FileWrite.writeUsers("users.json", users))
                 return true;
 
             //reinsert it if something goes wrong with the db
-            users.put(eliminated.getId(), eliminated);
+            //users.put(eliminated.getId(), eliminated);
         }
 
         return false;
@@ -165,14 +189,14 @@ public class EZShop implements EZShopInterface {
 
         //Set if present
         if (users.containsKey(id)) {
-            String precRole = users.get(id).getRole();
+            //String precRole = users.get(id).getRole();
             users.get(id).setRole(role);
 
             if (FileWrite.writeUsers("users.json", users))
                 return true;
 
             //return to the previous state if something goes wrong
-            users.get(id).setRole(precRole);
+            //users.get(id).setRole(precRole);
         }
 
         return false;
@@ -248,8 +272,11 @@ public class EZShop implements EZShopInterface {
 
         ProductTypeImpl newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
         products.put(newOne.getId(), newOne);
-        // TODO save in memory and check the result of the operation
-        return newOne.getId();
+        if (FileWrite.writeProducts("products.json", products)){
+            return newOne.getId();
+        }
+
+        return -1;
 
     }
 
@@ -295,8 +322,9 @@ public class EZShop implements EZShopInterface {
             chosen.setNote(newNote);
             chosen.setProductDescription(newDescription);
             chosen.setPricePerUnit(newPrice);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeProducts("products.json", products)){
+                return true;
+            }
         }
 
         return false;
@@ -319,8 +347,9 @@ public class EZShop implements EZShopInterface {
 
         if (products.containsKey(id)) {
             products.remove(id);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeProducts("products.json", products)){
+                return true;
+            }
         }
 
         return false;
@@ -401,8 +430,9 @@ public class EZShop implements EZShopInterface {
                 return false;
             }
             chosen.setQuantity(chosen.getQuantity() + toBeAdded);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeProducts("products.json", products)){
+                return true;
+            }
         }
 
         return false;
@@ -436,8 +466,9 @@ public class EZShop implements EZShopInterface {
                     return false;
             }
             chosen.setLocation(newPos);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeProducts("products.json", products)){
+                return true;
+            }
         }
 
         return false;
@@ -470,8 +501,9 @@ public class EZShop implements EZShopInterface {
         if (chosen != null) {
             OrderImpl newOne = new OrderImpl(chosen, quantity, pricePerUnit);
             orders.put(newOne.getOrderId(), newOne);
-            // TODO save in memory and check the result of the operation
-            return newOne.getOrderId();
+            if (FileWrite.writeOrders("orders.json", orders)){
+                return newOne.getOrderId();
+            }
         }
 
         return -1;
@@ -518,8 +550,10 @@ public class EZShop implements EZShopInterface {
         newOrd.setBalanceId(newOp.getBalanceId());
         newOrd.setStatus("payed");
         orders.put(newOrd.getOrderId(), newOrd);
-        // TODO save in memory and check the result of the operation
-        return newOrd.getOrderId();
+        if (FileWrite.writeOrders("orders.json", orders)){
+            return newOrd.getOrderId();
+        }
+        return -1;
     }
 
     @Override
@@ -558,8 +592,10 @@ public class EZShop implements EZShopInterface {
             //Update order
             chosen.setBalanceId(newOp.getBalanceId());
             chosen.setStatus("payed");
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeOrders("orders.json", orders)){
+                return true;
+            }
+            return false;
         } else return chosen.getStatus().contentEquals("payed");
     }
 
@@ -594,8 +630,11 @@ public class EZShop implements EZShopInterface {
             //Update quantity in inventory
             chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
             chosen.setStatus("completed");
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeOrders("orders.json", orders) &&
+                    FileWrite.writeProducts("products.json", products)){
+                return true;
+            }
+            return false;
         } else return chosen.getStatus().contentEquals("completed");
     }
 
@@ -636,8 +675,9 @@ public class EZShop implements EZShopInterface {
 
         CustomerImpl newOne = new CustomerImpl(customerName);
         customers.put(newOne.getId(), newOne);
-        // TODO save in memory and check the result of the operation
-        return newOne.getId();
+        if (FileWrite.writeCustomers("customers.json", customers))
+            return newOne.getId();
+        return -1;
     }
 
     @Override
@@ -690,8 +730,9 @@ public class EZShop implements EZShopInterface {
                 chosen.setCustomerCard(null);
             }//null case does not modify anything
 
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeCustomers("customers.json", customers) &&
+                    FileWrite.writeCards("cards.json", cards))
+                return true;
         }
 
         return false;
@@ -718,10 +759,12 @@ public class EZShop implements EZShopInterface {
             //Remove reference to loyalty card
             if (customers.get(id).getCard() != null) {
                 customers.get(id).getCard().setCustomer(null);
+                customers.get(id).getCard().setPoints(0);
             }
             customers.remove(id);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeCustomers("customers.json", customers) &&
+                    FileWrite.writeCards("cards.json", cards))
+                return true;
         }
 
         return false;
@@ -780,8 +823,9 @@ public class EZShop implements EZShopInterface {
 
         LoyaltyCard newOne = new LoyaltyCard();
         cards.put(newOne.getCardId(), newOne);
-        // TODO save in memory and check the result of the operation
-        return newOne.getCardId();
+        if (FileWrite.writeCards("cards.json", cards))
+            return newOne.getCardId();
+        return "";
     }
 
     @Override
@@ -818,8 +862,9 @@ public class EZShop implements EZShopInterface {
             //Double reference
             customers.get(customerId).setCard(cards.get(customerCard));
             cards.get(customerCard).setCustomer(customers.get(customerId));
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeCustomers("customers.json", customers) &&
+                    FileWrite.writeCards("cards.json", cards))
+                return true;
         }
         return false;
     }
@@ -846,8 +891,8 @@ public class EZShop implements EZShopInterface {
                 return false;
             }
             cards.get(customerCard).setPoints(cards.get(customerCard).getPoints()+pointsToBeAdded);
-            // TODO save in memory and check the result of the operation
-            return true;
+            if (FileWrite.writeCards("cards.json", cards))
+                return true;
         }
         return false;
     }

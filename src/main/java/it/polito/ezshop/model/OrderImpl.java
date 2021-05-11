@@ -5,7 +5,7 @@ import it.polito.ezshop.data.ProductType;
 
 public class OrderImpl implements Order {
 
-    static private Integer idGen = 1;
+    static public Integer idGen = 1;
     private ProductType product;
     private String status;
     private Integer quantity;
@@ -17,9 +17,19 @@ public class OrderImpl implements Order {
         this.product = product;
         this.quantity = quantity;
         this.pricePerUnit = pricePerUnit;
-        this.status = "issued";
+        this.status = "ISSUED";
         this.balanceId = null;
         this.id = idGen++;
+    }
+
+    public OrderImpl(ProductType product, Integer quantity, Double pricePerUnit,
+                     String status, Integer balanceId, Integer id) {
+        this.product = product;
+        this.quantity = quantity;
+        this.pricePerUnit = pricePerUnit;
+        this.status = status;
+        this.balanceId = balanceId;
+        this.id = id;
     }
 
     @Override
@@ -39,7 +49,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setProductCode(String productCode) {
-        this.product.setBarCode(productCode);
+
     }
 
     @Override
@@ -84,5 +94,9 @@ public class OrderImpl implements Order {
 
     public ProductType getProduct(){
         return this.product;
+    }
+
+    public void setProduct(ProductType product) {
+        this.product = product;
     }
 }

@@ -4,7 +4,7 @@ import it.polito.ezshop.data.ProductType;
 
 public class ProductTypeImpl implements ProductType {
 
-    static Integer idGen = 1;
+    static public Integer idGen = 1;
     private String productCode;
     private String description;
     private Double sellPrice;
@@ -19,8 +19,30 @@ public class ProductTypeImpl implements ProductType {
         this.sellPrice = sellPrice;
         this.notes = notes;
         this.quantity = 0;
-        this.position = new Position("", "", "");
+        this.position = new Position(" ", " ", " ");
         this.id = idGen++;
+    }
+
+    public ProductTypeImpl(String productCode, String description, Double sellPrice,
+                           String notes, Integer quantity, String position, Integer id) {
+        this.productCode = productCode;
+        this.description = description;
+        this.sellPrice = sellPrice;
+        this.notes = notes;
+        this.quantity = quantity;
+        this.position = new Position(position);
+        this.id = id;
+    }
+
+    //dummy product
+    public ProductTypeImpl(Integer id){
+        this.id = id;
+        this.productCode = null;
+        this.description = null;
+        this.sellPrice = null;
+        this.notes = null;
+        this.quantity = null;
+        this.position = null;
     }
 
      public static boolean checkBarCode(String barCode) {

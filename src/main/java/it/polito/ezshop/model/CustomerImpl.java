@@ -4,7 +4,7 @@ import it.polito.ezshop.data.Customer;
 
 public class CustomerImpl implements Customer {
 
-    private static Integer idGen = 1;
+    public static Integer idGen = 1;
     private String customerName;
     private Integer customerId;
     private LoyaltyCard card;
@@ -13,6 +13,19 @@ public class CustomerImpl implements Customer {
         this.customerName = customerName;
         this.card = null;
         this.customerId = idGen++;
+    }
+
+    public CustomerImpl(String customerName, Integer customerId, LoyaltyCard card) {
+        this.customerName = customerName;
+        this.customerId = customerId;
+        this.card = card;
+    }
+
+    //Dummy customer
+    public CustomerImpl(Integer id) {
+        this.customerName = null;
+        this.card = null;
+        this.customerId = id;
     }
 
     @Override
@@ -27,7 +40,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public String getCustomerCard() {
-        return card.getCardId();
+        return (card != null)? card.getCardId(): "";
     }
 
     @Override
@@ -47,7 +60,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public Integer getPoints() {
-        return card.getPoints();
+        return (card!=null)?card.getPoints():0;
     }
 
     @Override

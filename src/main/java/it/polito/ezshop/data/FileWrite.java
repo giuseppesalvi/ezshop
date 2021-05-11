@@ -28,13 +28,13 @@ public class FileWrite {
 		JSONArray listUser = new JSONArray();
 
 		//Write each user
-		for(Map.Entry<Integer, UserImpl> entry : users.entrySet()){
-			JSONObject user = new JSONObject();
-			user.put("username", entry.getValue().getUsername());
-			user.put("password", entry.getValue().getPassword());
-			user.put("role", entry.getValue().getRole());
-			user.put("id", entry.getValue().getId());
-			listUser.add(user);
+		for(UserImpl user: users.values()){
+			JSONObject jsonUser = new JSONObject();
+			jsonUser.put("username", user.getUsername());
+			jsonUser.put("password", user.getPassword());
+			jsonUser.put("role", user.getRole());
+			jsonUser.put("id", user.getId());
+			listUser.add(jsonUser);
 		}
 
 		obj.put("users", listUser);
@@ -49,19 +49,123 @@ public class FileWrite {
 	}
 
 	public static boolean writeProducts(String fileName, Map<Integer, ProductTypeImpl> products) {
-		return false;
+
+		JSONObject obj = new JSONObject();
+
+		//Write the current id generator
+		obj.put("idgen", ProductTypeImpl.idGen);
+		JSONArray listUser = new JSONArray();
+
+		//Write each user
+		for(ProductTypeImpl product : products.values()){
+			JSONObject jsonProduct = new JSONObject();
+			jsonProduct.put("productCode", product.getBarCode());
+			jsonProduct.put("description", product.getProductDescription());
+			jsonProduct.put("sellPrice", product.getPricePerUnit());
+			jsonProduct.put("notes", product.getNote());
+			jsonProduct.put("quantity", product.getQuantity());
+			jsonProduct.put("position", product.getLocation());
+			jsonProduct.put("id", product.getId());
+			listUser.add(jsonProduct);
+		}
+
+		obj.put("products", listUser);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public static boolean writeOrders(String fileName, Map<Integer, OrderImpl> orders) {
-		return false;
+
+		JSONObject obj = new JSONObject();
+
+		//Write the current id generator
+		obj.put("idgen", OrderImpl.idGen);
+		JSONArray listOrder = new JSONArray();
+
+		//Write each order
+		for(OrderImpl order : orders.values()){
+			JSONObject jsonOrder = new JSONObject();
+			jsonOrder.put("productId", order.getProduct().getId());
+			jsonOrder.put("quantity", order.getQuantity());
+			jsonOrder.put("pricePerUnit", order.getPricePerUnit());
+			jsonOrder.put("status", order.getStatus());
+			jsonOrder.put("balanceId", order.getBalanceId());
+			jsonOrder.put("id", order.getOrderId());
+			listOrder.add(jsonOrder);
+		}
+
+		obj.put("orders", listOrder);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public static boolean writeCustomers(String fileName, Map<Integer, CustomerImpl> customers) {
-		return false;
+
+		JSONObject obj = new JSONObject();
+
+		//Write the current id generator
+		obj.put("idgen", CustomerImpl.idGen);
+		JSONArray listCustomer = new JSONArray();
+
+		//Write each order
+		for(CustomerImpl customer : customers.values()){
+			JSONObject jsonCustomer = new JSONObject();
+			jsonCustomer.put("id", customer.getId());
+			jsonCustomer.put("customerName", customer.getCustomerName());
+			jsonCustomer.put("cardId", (customer.getCard() == null)?"":customer.getCard().getCardId() );
+			listCustomer.add(jsonCustomer);
+		}
+
+		obj.put("customers", listCustomer);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+
 	}
 	
-	public static boolean writeCards(String fileName, Map<Integer, LoyaltyCard> loyaltyCards) {
-		return false;
+	public static boolean writeCards(String fileName, Map<String, LoyaltyCard> loyaltyCards) {
+
+		JSONObject obj = new JSONObject();
+
+		//Write the current id generator
+		obj.put("idgen", LoyaltyCard.idGen);
+		JSONArray listCards = new JSONArray();
+
+		//Write each order
+		for(LoyaltyCard card : loyaltyCards.values()){
+			JSONObject jsonCards = new JSONObject();
+			jsonCards.put("id", card.getCardId());
+			jsonCards.put("customerId", (card.getCustomer() == null)?"-1": card.getCustomer().getId());
+			jsonCards.put("points", card.getPoints());
+			listCards.add(jsonCards);
+		}
+
+		obj.put("cards", listCards);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public static boolean writeSales(String fileName, Map<Integer, SaleTransactionImpl> sales) {

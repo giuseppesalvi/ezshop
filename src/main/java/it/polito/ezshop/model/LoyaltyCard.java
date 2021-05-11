@@ -2,7 +2,7 @@ package it.polito.ezshop.model;
 
 public class LoyaltyCard {
 
-    private static Integer idGen = 1;
+    public static Integer idGen = 1;
     private String cardId;
     private CustomerImpl customer;
     private Integer points;
@@ -11,6 +11,19 @@ public class LoyaltyCard {
         this.cardId = String.format("%010d", idGen++);
         this.customer = null;
         this.points = 0;
+    }
+
+    public LoyaltyCard(String cardId, CustomerImpl customer, Integer points) {
+        this.cardId = cardId;
+        this.customer = customer;
+        this.points = points;
+    }
+
+    //Dummy LoyaltyCard
+    public LoyaltyCard(String cardId){
+        this.customer = null;
+        this.points = null;
+        this.cardId = cardId;
     }
 
     public Integer getPoints() {
