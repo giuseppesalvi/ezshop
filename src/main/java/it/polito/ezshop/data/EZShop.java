@@ -25,13 +25,19 @@ public class EZShop implements EZShopInterface {
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
         this.operations = new HashMap<>();
-        this.returns = new HashMap<>();
+        this.returns = FileRead.readReturns("returns.json"); 
         this.customers = new HashMap<>();
         this.cards = new HashMap<>();
         loggedInUser = null;
         
         // TODO: restore references between classes
         // sales -> productType
+        // returns -> productType
+
+        // returns -> sales
+        for (ReturnTransaction ret : returns.values()) {
+        	ret.setTransaction(sales.get(ret.getTransaction().getTicketNumber()));
+        }
     }
 
     @Override
@@ -1221,12 +1227,10 @@ public class EZShop implements EZShopInterface {
     		return false;
     	}
   
-    	// Not Necessary: Delete every product from the transaction and restore the quantities in the inventory
     	// Restore quantities in the inventory for every product
     	for (TicketEntry entry: sale.getEntries()) {
     		for (ProductType p : products.values()) {
     			if (entry.getBarCode().contentEquals(p.getBarCode())) {
-    				// sale.deleteEntry(entry.getBarCode());
     				p.setQuantity(p.getQuantity() + entry.getAmount());
     			}
     		}
@@ -1241,7 +1245,6 @@ public class EZShop implements EZShopInterface {
        		for (TicketEntry entry: sale.getEntries()) {
        			for (ProductType p : products.values()) {
        				if (entry.getBarCode().contentEquals(p.getBarCode())) {
-       					// sale.deleteEntry(entry.getBarCode());
        					p.setQuantity(p.getQuantity() - entry.getAmount());
        				}
        			}
@@ -1316,7 +1319,16 @@ public class EZShop implements EZShopInterface {
     	
     	ReturnTransaction newRet = new ReturnTransaction(sale);
     	returns.put(newRet.getReturnID(), newRet);
-    	return newRet.getReturnID();
+    	
+    	// Store changes in persistent memory
+    	if (!FileWrite.writeReturns("returns.json", returns)) {
+    		// Error: restore previous state
+    		returns.remove(newRet.getReturnID());
+    		return -1;
+    	}
+    	else {
+    		return newRet.getReturnID();
+    	}
     }
 
     @Override
@@ -1379,7 +1391,15 @@ public class EZShop implements EZShopInterface {
     	ret.addEntry(new TicketEntryImpl(prod, amount, entrySold.getDiscountRate())); 
 
     	// Note: this method doesn't update the productType quantity 
-        return true;
+        // Store changes in persistent memory
+    	if (!FileWrite.writeReturns("returns.json", returns)) {
+    		// Error: restore previous state
+    		ret.deleteEntry(productCode);
+    		return false;
+    	}
+    	else {
+    		return true; 
+    	}
     }
 
     @Override
@@ -1440,7 +1460,46 @@ public class EZShop implements EZShopInterface {
     	}
     	ret.setState("CLOSED");
     	ret.setCommit(commit);
-    	return true;
+
+        // Store changes in persistent memory
+    	if (!FileWrite.writeReturns("returns.json", returns) || !FileWrite.writeProducts("products.json", products) || !FileWrite.writeSales("sales.json", sales)) {
+    		// Error: restore previous state
+    		if (commit) {
+    			// Decrease the product quantity available in the shelves
+    		for (TicketEntry e : ret.getProducts()) {
+    			ProductTypeImpl prod = null;
+    			for (ProductTypeImpl p : products.values()) {
+    				if(p.getBarCode().equals(e.getBarCode())) {
+    					prod = p;
+    				}
+    			}
+    			if (prod == null) {
+    				return false;
+    			}
+    			prod.setQuantity(prod.getQuantity() - e.getAmount());
+    		}
+
+    		// Update the sale transaction status: increase the number of units sold by the number of returned one
+    		for (TicketEntry sold : ret.getTransaction().getEntries()) {
+    			for (TicketEntry returned : ret.getProducts() ) {
+    				if (sold.getBarCode().contentEquals(returned.getBarCode())) {
+    					sold.setAmount(sold.getAmount() + returned.getAmount());
+    				}
+    			}
+    		}
+
+    		// Recompute the final price of the sale transaction
+    		ret.getTransaction().setPrice(ret.getTransaction().computeCost());
+
+    		}
+    		ret.setState("OPEN");
+    		ret.setCommit(false);
+    		return false;
+    	}
+    	else {
+    		return true; 
+    	}
+
     }
 
     @Override
@@ -1470,10 +1529,78 @@ public class EZShop implements EZShopInterface {
     	if (!ret.getState().contentEquals("CLOSED")) {
     		return false;
     	}
+    	
+    	// Restore the quantity of product available on the shelves and the quantity of product sold in the connected sale transaction
+    	if (ret.isCommit()) {
+    		// Decrease the product quantity available in the shelves
+    		for (TicketEntry e : ret.getProducts()) {
+    			ProductTypeImpl prod = null;
+    			for (ProductTypeImpl p : products.values()) {
+    				if(p.getBarCode().equals(e.getBarCode())) {
+    					prod = p;
+    				}
+    			}
+    			if (prod == null) {
+    				return false;
+    			}
+    			prod.setQuantity(prod.getQuantity() - e.getAmount());
+    		}
+
+    		// Update the sale transaction status: increase the number of units sold by the number of returned one
+    		for (TicketEntry sold : ret.getTransaction().getEntries()) {
+    			for (TicketEntry returned : ret.getProducts() ) {
+    				if (sold.getBarCode().contentEquals(returned.getBarCode())) {
+    					sold.setAmount(sold.getAmount() + returned.getAmount());
+    				}
+    			}
+    		}
+
+    		// Recompute the final price of the sale transaction
+    		ret.getTransaction().setPrice(ret.getTransaction().computeCost());
+
+    		}
 
     	// Delete the return transaction from the map
     	returns.remove(returnId);
-    	return true;
+
+        // Store changes in persistent memory
+    	if (!FileWrite.writeReturns("returns.json", returns) || !FileWrite.writeProducts("products.json", products) || !FileWrite.writeSales("sales.json", sales)) {
+    		// Error: restore previous state
+    		if (ret.isCommit()) {
+    		// Increase the product quantity available in the shelves
+    		for (TicketEntry e : ret.getProducts()) {
+    			ProductTypeImpl prod = null;
+    			for (ProductTypeImpl p : products.values()) {
+    				if(p.getBarCode().equals(e.getBarCode())) {
+    					prod = p;
+    				}
+    			}
+    			if (prod == null) {
+    				return false;
+    			}
+    			prod.setQuantity(prod.getQuantity() + e.getAmount());
+    		}
+
+    		// Update the sale transaction status: decrease the number of units sold by the number of returned one
+    		for (TicketEntry sold : ret.getTransaction().getEntries()) {
+    			for (TicketEntry returned : ret.getProducts() ) {
+    				if (sold.getBarCode().contentEquals(returned.getBarCode())) {
+    					sold.setAmount(sold.getAmount() - returned.getAmount());
+    				}
+    			}
+    		}
+
+    		// Recompute the final price of the sale transaction
+    		ret.getTransaction().setPrice(ret.getTransaction().computeCost());
+
+    		}
+    		return false;
+    	}
+    	else {
+    		return true; 
+    	}
+
+
     }
 
     @Override

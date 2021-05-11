@@ -6,7 +6,7 @@ import java.util.List;
 import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransaction {
-	private static Integer idGen = 1;
+	public static Integer idGen = 1;
 	private Integer returnID;
 	private SaleTransactionImpl transaction;
 	private List<TicketEntry> products;
@@ -17,10 +17,20 @@ public class ReturnTransaction {
 	public ReturnTransaction(SaleTransactionImpl transaction) {
 		this.returnID = idGen++;
 		this.transaction = transaction;
-		this.products = null;
+		this.products = new ArrayList<TicketEntry>();
 		this.state = "OPEN";
 		this.commit = false;
-		this.value = null;
+		this.value = 0.0;
+	}
+
+	public ReturnTransaction(Integer returnID, SaleTransactionImpl transaction, List<TicketEntry> products,
+			String state, boolean commit, Double value) {
+		this.returnID = returnID;
+		this.transaction = transaction;
+		this.products = products;
+		this.state = state;
+		this.commit = commit;
+		this.value = value;
 	}
 
 	public Integer getReturnID() {
@@ -85,10 +95,23 @@ public class ReturnTransaction {
 	}
 
 	public boolean addEntry(TicketEntry entry) {
-		if (this.products == null) {
-			this.products = new ArrayList<TicketEntry>();
-		}
 		return this.products.add(entry);
+	}
+	
+	public TicketEntry deleteEntry(String barcode) {
+		int targetIdx = -1;
+		for (TicketEntry p : products) {
+			if (p.getBarCode().contentEquals(barcode)) {
+				targetIdx = products.indexOf(p);
+			}
+		}
+		
+		if (targetIdx == -1) {
+			return null;
+		}
+		TicketEntry eliminated = products.get(targetIdx);
+		products.remove(targetIdx);
+		return eliminated;
 	}
 
 }

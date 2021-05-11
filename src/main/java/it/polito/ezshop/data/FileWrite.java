@@ -112,7 +112,43 @@ public class FileWrite {
 	}
 
 	public static boolean writeReturns(String fileName, Map<Integer, ReturnTransaction> returns) {
-		return false;
+	
+		JSONObject obj = new JSONObject();
+
+		// Write the current id generator
+		obj.put("idGen", ReturnTransaction.idGen);
+
+		JSONArray listReturnsJSON = new JSONArray();
+
+		// Write each return transaction 
+		for (ReturnTransaction ret: returns.values() ){
+			JSONObject retJSON = new JSONObject();
+			retJSON.put("returnID", ret.getReturnID()) ;
+			retJSON.put("saleTransactionID", ret.getTransaction().getTicketNumber());
+			retJSON.put("state", ret.getState());
+			retJSON.put("commit", ret.isCommit());
+			retJSON.put("value", ret.getValue());
+			JSONArray listProductsJSON = new JSONArray();
+			for (TicketEntry prod : ret.getProducts()) {
+				JSONObject prodJSON = new JSONObject();
+				prodJSON.put("productBarCode", prod.getBarCode());
+				prodJSON.put("quantity", prod.getAmount());
+				prodJSON.put("discountRate", prod.getDiscountRate());
+				listProductsJSON.add(prodJSON);
+			}
+			retJSON.put("products", listProductsJSON);
+			listReturnsJSON.add(retJSON);
+		}
+
+		obj.put("returns", listReturnsJSON);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+	return true;
 	}
 
 	public static boolean writeOperations(String fileName, Map<Integer, BalanceOperation> operations) {

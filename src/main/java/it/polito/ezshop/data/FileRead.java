@@ -132,8 +132,57 @@ public class FileRead {
 		return sales;
 	}
 	
-	public static Map<Integer, ReturnTransaction> readReturns(String fileName) {
-		return null;
+	public static HashMap<Integer, ReturnTransaction> readReturns(String fileName) {
+		
+		//Create the map
+		HashMap<Integer, ReturnTransaction> returns= new HashMap<>();
+		JSONParser parser = new JSONParser();
+
+		try (FileReader reader = new FileReader(fileName)) {
+
+			//Parse the total object
+			JSONObject jsonObject = (JSONObject) parser.parse(reader);
+			Integer idGen = Integer.parseInt(jsonObject.get("idGen").toString());
+
+			//Retrieve the array of returns 
+			JSONArray listReturnsJSON = (JSONArray) jsonObject.get("returns");
+
+			//Create each return
+			for (JSONObject retJSON: (Iterable<JSONObject>) listReturnsJSON) {
+				JSONArray listProductsJSON = (JSONArray) retJSON.get("products");
+				List<TicketEntry> products = new ArrayList<TicketEntry>();
+				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
+					TicketEntry prod = new TicketEntryImpl(
+							// create a dummy ProductType, with just the barcode
+							// it will be used later to build the reference with the real ProductType
+							new ProductTypeImpl( (String) productJSON.get("productBarCode"), null, null, null),
+							(Integer) productJSON.get("quantity"),
+							(Double) productJSON.get("discountRate")
+							);
+					products.add(prod);
+				}
+				// create dummy SaleTransactionImpl, with just transactionId
+				SaleTransactionImpl saleTransaction = new SaleTransactionImpl((Integer) retJSON.get("saleTransactionID"), null, null, null, null, null, null, null, null);
+				ReturnTransaction ret = new ReturnTransaction(
+						(Integer) retJSON.get("returnID"),
+						saleTransaction,
+						products,
+						(String) retJSON.get("state"),
+						(boolean) retJSON.get("commit"),
+						(Double) retJSON.get("value"));
+						
+				returns.put(ret.getReturnID(), ret);
+			}
+
+			//Set the id generator for the sales 
+			ReturnTransaction.idGen = idGen;
+
+		} catch (IOException | ParseException e) {
+			//return an empty map if there is some error.
+			returns.clear();
+		}
+
+		return returns;
 	}
 	
 	public static Map<Integer, BalanceOperationImpl> readOperations(String fileName) {
