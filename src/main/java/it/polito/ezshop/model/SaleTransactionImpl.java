@@ -132,7 +132,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		return this.products.add(entry);
 	}
 	
-	public boolean deleteEntry(String barcode) {
+	public TicketEntry deleteEntry(String barcode) {
 		int targetIdx = -1;
 		for (TicketEntry p : products) {
 			if (p.getBarCode().contentEquals(barcode)) {
@@ -141,11 +141,11 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		
 		if (targetIdx == -1) {
-			return false;
+			return null;
 		}
-
+		TicketEntry eliminated = products.get(targetIdx);
 		products.remove(targetIdx);
-		return true;
+		return eliminated;
 	}
 	
 	public Double computeCost() {

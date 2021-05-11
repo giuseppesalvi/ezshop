@@ -87,7 +87,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGen = Integer.parseInt(jsonObject.get("idgen").toString());
+			Integer idGen = Integer.parseInt(jsonObject.get("idGen").toString());
 
 			//Retrieve the array of sales 
 			JSONArray listSalesJSON = (JSONArray) jsonObject.get("sales");
@@ -100,7 +100,7 @@ public class FileRead {
 					TicketEntry prod = new TicketEntryImpl(
 							// create a dummy ProductType, with just the barcode
 							// it will be used later to build the reference with the real ProductType
-							new ProductTypeImpl( (String) productJSON.get("product"), null, null, null),
+							new ProductTypeImpl( (String) productJSON.get("productBarCode"), null, null, null),
 							(Integer) productJSON.get("quantity"),
 							(Double) productJSON.get("discountRate")
 							);
@@ -111,11 +111,11 @@ public class FileRead {
 						products,
 						(Double) saleJSON.get("globalDiscountRate"),
 						(String) saleJSON.get("state"),
-						(String) saleJSON.get("date"),
-						(String) saleJSON.get("time"),
+						(String) saleJSON.get("dateString"),
+						(String) saleJSON.get("timeString"),
 						(Double) saleJSON.get("cost"),
 						(String) saleJSON.get("paymentType"),
-						(String) saleJSON.get("creditCard"));
+						(String) saleJSON.get("creditCardNumber"));
 				
 						
 				sales.put(sale.getTicketNumber(), sale);

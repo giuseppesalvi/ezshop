@@ -67,30 +67,31 @@ public class FileWrite {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
-		obj.put("idgen", SaleTransactionImpl.idGen);
+		// Write the current id generator
+		obj.put("idGen", SaleTransactionImpl.idGen);
+
 		JSONArray listSalesJSON = new JSONArray();
 
-		//Write each user
-		for(SaleTransactionImpl sale : sales.values() ){
+		// Write each sale 
+		for (SaleTransactionImpl sale : sales.values() ){
 			JSONObject saleJSON = new JSONObject();
 			saleJSON.put("transactionID", sale.getTicketNumber()) ;
 			saleJSON.put("globalDiscountRate", sale.getDiscountRate());
 			saleJSON.put("state", sale.getState());
-			saleJSON.put("date", sale.getDate().toString());
-			saleJSON.put("time", sale.getTime().toString());
+			saleJSON.put("dateString", sale.getDate().toString());
+			saleJSON.put("timeString", sale.getTime().toString());
 			saleJSON.put("cost", sale.getPrice());
 			saleJSON.put("paymentType", sale.getPaymentType());
-			if( sale.getCreditCard() != null) {
-				saleJSON.put("creditCard", sale.getCreditCard().getNumber());
+			if (sale.getCreditCard() != null) {
+				saleJSON.put("creditCardNumber", sale.getCreditCard().getNumber());
 			}
 			else {
-				saleJSON.put("creditCard", null);
+				saleJSON.put("creditCardNumber", null);
 			}
 			JSONArray listProductsJSON = new JSONArray();
 			for (TicketEntry prod : sale.getEntries()) {
 				JSONObject prodJSON = new JSONObject();
-				prodJSON.put("product", prod.getBarCode());
+				prodJSON.put("productBarCode", prod.getBarCode());
 				prodJSON.put("quantity", prod.getAmount());
 				prodJSON.put("discountRate", prod.getDiscountRate());
 				listProductsJSON.add(prodJSON);
