@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import it.polito.ezshop.model.BalanceOperationImpl;
 import it.polito.ezshop.model.CreditCard;
 import it.polito.ezshop.model.CustomerImpl;
 import it.polito.ezshop.model.LoyaltyCard;
@@ -151,8 +152,32 @@ public class FileWrite {
 	return true;
 	}
 
-	public static boolean writeOperations(String fileName, Map<Integer, BalanceOperation> operations) {
-		return false;
+	public static boolean writeOperations(String fileName, Map<Integer, BalanceOperationImpl> operations) {
+		JSONObject obj = new JSONObject();
+
+		// Write the current id generator
+		obj.put("idGen", BalanceOperationImpl.idGen);
+
+		JSONArray listOperationsJSON= new JSONArray();
+
+		// Write each sale 
+		for (BalanceOperationImpl op: operations.values() ){
+			JSONObject operationJSON = new JSONObject();
+			operationJSON.put("id", op.getBalanceId()) ;
+			operationJSON.put("dateString", op.getDate().toString());
+			operationJSON.put("amount", op.getMoney());
+			operationJSON.put("type", op.getType());
+			listOperationsJSON.add(operationJSON);
+		}
+
+		obj.put("operations", listOperationsJSON);
+
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 
 	public static boolean writeCreditCards(String fileName, List<CreditCard> creditCards) {

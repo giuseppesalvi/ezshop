@@ -24,7 +24,7 @@ public class EZShop implements EZShopInterface {
         this.sales = FileRead.readSales("sales.json");
         this.products = new HashMap<>();
         this.orders = new HashMap<>();
-        this.operations = new HashMap<>();
+        this.operations = FileRead.readOperations("operations.json");
         this.returns = FileRead.readReturns("returns.json"); 
         this.customers = new HashMap<>();
         this.cards = new HashMap<>();
@@ -1650,8 +1650,18 @@ public class EZShop implements EZShopInterface {
         	// Create new balance operation, to record this sale in the balance
         	BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
         	operations.put(newOp.getBalanceId(), newOp);
-        	// TODO persistence
-        	return rest;
+
+        	// Store changes in persistent memory
+        	if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales)) {
+        		// error : restore previous state
+        		sale.setPaymentType(null);
+        		sale.setState("CLOSED");
+        		operations.remove(newOp.getBalanceId());
+        		return -1;
+        	}
+        	else {
+        		return rest;
+        	}
         }
     }
 
@@ -1723,8 +1733,19 @@ public class EZShop implements EZShopInterface {
       	BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
        	operations.put(newOp.getBalanceId(), newOp);
 
-       	// TODO persistence
-       	return true;
+        // Store changes in persistent memory
+        if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales)) {
+        	// error : restore previous state
+        	sale.setPaymentType(null);
+        	sale.setState("CLOSED");
+        	cCard.setBalance(cCard.getBalance() + price);
+        	operations.remove(newOp.getBalanceId());
+        	return false;
+        }
+        else {
+        	return true;
+        }
+
     }
 
     @Override
@@ -1763,8 +1784,18 @@ public class EZShop implements EZShopInterface {
         // Create new balance operation, to record this return in the balance
        	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
        	operations.put(newOp.getBalanceId(), newOp);
-       	// TODO persistence
-    	return amount;
+
+        // Store changes in persistent memory
+        if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeReturns("returns.json", returns)) {
+        	// error : restore previous state
+        	ret.setState("CLOSED");
+        	operations.remove(newOp.getBalanceId());
+        	return -1;
+        }
+        else {
+        	return amount;
+        }
+
     }
 
     @Override
@@ -1827,8 +1858,19 @@ public class EZShop implements EZShopInterface {
         // Create new balance operation, to record this return in the balance
        	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
        	operations.put(newOp.getBalanceId(), newOp);
-       	// TODO persistence
-    	return amount;
+
+        // Store changes in persistent memory
+        if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeReturns("returns.json", returns)) {
+        	// error : restore previous state
+        	ret.setState("CLOSED");
+        	cCard.setBalance(cCard.getBalance() - amount);
+        	operations.remove(newOp.getBalanceId());
+        	return -1;
+        }
+        else {
+        	return amount;
+        }
+
 
     }
 
@@ -1846,10 +1888,16 @@ public class EZShop implements EZShopInterface {
         if ((this.computeBalance() +toBeAdded ) >= 0){
             BalanceOperationImpl newOne = new BalanceOperationImpl(toBeAdded, (toBeAdded>=0)?"credit":"debit");
             operations.put(newOne.getBalanceId(), newOne);
-            // TODO save in memory and check the result of the operation
-            return true;
-        }
 
+            // Store changes in persistent memory 
+            if(!FileWrite.writeOperations("operations.json", operations)) {
+            	return true;
+            }
+            else {
+            	operations.remove(newOne.getBalanceId());
+            	return false;
+            }
+        }
         return false;
     }
 

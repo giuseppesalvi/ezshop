@@ -185,8 +185,42 @@ public class FileRead {
 		return returns;
 	}
 	
-	public static Map<Integer, BalanceOperationImpl> readOperations(String fileName) {
-		return null;
+	public static HashMap<Integer, BalanceOperationImpl> readOperations(String fileName) {
+
+		//Create the map
+		HashMap<Integer, BalanceOperationImpl> operations= new HashMap<>();
+		JSONParser parser = new JSONParser();
+
+		try (FileReader reader = new FileReader(fileName)) {
+
+			//Parse the total object
+			JSONObject jsonObject = (JSONObject) parser.parse(reader);
+			Integer idGen = Integer.parseInt(jsonObject.get("idGen").toString());
+
+			//Retrieve the array of operations 
+			JSONArray listOperationsJSON = (JSONArray) jsonObject.get("operations");
+
+			//Create each balance operation 
+			for (JSONObject opJSON : (Iterable<JSONObject>) listOperationsJSON) {
+				BalanceOperationImpl op= new BalanceOperationImpl(
+						(Integer) opJSON.get("id"),
+						(String) opJSON.get("dateString"),
+						(Double) opJSON.get("amount"),
+						(String) opJSON.get("type"));
+						
+				operations.put(op.getBalanceId(), op);
+			}
+
+			//Set the id generator for the balance operations 
+			BalanceOperationImpl.idGen = idGen;
+
+		} catch (IOException | ParseException e) {
+			//return an empty map if there is some error.
+			operations.clear();
+		}
+
+		return operations;
+
 	}
 	
 	public static List<CreditCard> readCreditCards(String fileName) {

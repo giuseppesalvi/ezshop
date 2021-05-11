@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class BalanceOperationImpl implements BalanceOperation {
 
-    private Integer idGen = 1;
+    public static Integer idGen = 1;
     private Integer id;
     private LocalDate date;
     private Double amount;
@@ -20,7 +20,14 @@ public class BalanceOperationImpl implements BalanceOperation {
         this.id = idGen++;
     }
 
-    @Override
+    public BalanceOperationImpl(Integer id, String dateString, Double amount, String type) {
+		this.id = id;
+		this.date = LocalDate.parse(dateString);
+		this.amount = amount;
+		this.type = type;
+	}
+
+	@Override
     public int getBalanceId() {
         return id;
     }
