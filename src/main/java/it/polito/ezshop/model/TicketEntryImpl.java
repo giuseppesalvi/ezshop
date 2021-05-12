@@ -5,17 +5,17 @@ import it.polito.ezshop.data.TicketEntry;
 
 public class TicketEntryImpl implements TicketEntry {
 	
-	private ProductType product;
+	private ProductTypeImpl product;
 	private Integer quantity;
 	private Double discountRate;
 
-	public TicketEntryImpl(ProductType product, Integer quantity) {
+	public TicketEntryImpl(ProductTypeImpl product, Integer quantity) {
 		this.product = product;
 		this.quantity = quantity;
 		this.discountRate = 0.0;
 	}
 
-	public TicketEntryImpl(ProductType product, Integer quantity, Double discountRate) {
+	public TicketEntryImpl(ProductTypeImpl product, Integer quantity, Double discountRate) {
 		this.product = product;
 		this.quantity = quantity;
 		this.discountRate = discountRate;
@@ -70,4 +70,12 @@ public class TicketEntryImpl implements TicketEntry {
     public void setDiscountRate(double discountRate) {
     	this.discountRate = discountRate;
     }
+
+	public ProductTypeImpl getProduct() {
+		return product;
+	}
+
+	public void setProduct(ProductTypeImpl product) {
+		this.product = product;
+	}
 }

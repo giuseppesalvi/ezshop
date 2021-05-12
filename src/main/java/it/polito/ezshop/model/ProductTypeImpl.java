@@ -44,6 +44,17 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = null;
         this.position = null;
     }
+     public ProductTypeImpl(String productCode){
+        this.id = null;
+        this.productCode = productCode;
+        this.description = null;
+        this.sellPrice = null;
+        this.notes = null;
+        this.quantity = null;
+        this.position = null;
+    }   
+    //dummy product with barcode
+    
 
      public static boolean checkBarCode(String barCode) {
 

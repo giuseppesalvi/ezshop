@@ -30,9 +30,7 @@ public class EZShop implements EZShopInterface {
         this.cards = FileRead.readCards("cards.json");
         loggedInUser = null;
         
-        // TODO: restore references between classes
-        // sales -> productType
-        // returns -> productType
+        // Restore references between classes
 
         // Customer -> cards
         for (CustomerImpl cus: customers.values()){
@@ -56,6 +54,31 @@ public class EZShop implements EZShopInterface {
         // orders -> productType
         for (OrderImpl ord: orders.values()){
             ord.setProduct(products.get(ord.getProduct().getId()));
+        }
+
+        // sales -> productType
+        for (SaleTransactionImpl sal : sales.values()) {
+        	List<TicketEntry> newEntries = new ArrayList<TicketEntry>();
+        	for (TicketEntry ent : sal.getEntries() ) {
+        		//Retrieve the product from the map 
+        		Optional<ProductTypeImpl> pro = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
+
+        		newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
+        	}
+        	sal.setEntries(newEntries);
+        }
+        
+        // returns -> productType
+        for (ReturnTransaction ret: returns.values()) {
+        	List<TicketEntry> newEntries = new ArrayList<TicketEntry>();
+        	for (TicketEntry ent : ret.getProducts() ) {
+        		//Retrieve the product from the map 
+        		Optional<ProductTypeImpl> pro = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
+        		newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
+        	}
+        	ret.setProducts(newEntries);
         }
 
         // returns -> sales
@@ -953,11 +976,15 @@ public class EZShop implements EZShopInterface {
             throw new InvalidQuantityException();
         }
 
-        // Check if the product exists and the quantity is enough
-        ProductType prod = getProductTypeByBarCode(productCode);
-        if (prod == null || prod.getQuantity() < amount) {
-            return false;
-        }
+        // Retrieve the correct product 
+        Optional<ProductTypeImpl> prod = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
+
+        // Check if the product exists in the map
+    	if (!prod.isPresent() || prod.get().getQuantity() < amount) {
+    		return false;
+    	}
+    	
 
         // Check if the transactionId identifies a started transaction
         if (!sales.containsKey(transactionId)) {
@@ -972,10 +999,10 @@ public class EZShop implements EZShopInterface {
 
         // Add the product to the sale transaction and decrease the amount of product available on the shelves
         // If this operation goes wrong, return false
-        if (!sale.addEntry(new TicketEntryImpl(prod, amount))) {
+        if (!sale.addEntry(new TicketEntryImpl(prod.get(), amount))) {
             return false;
         }
-        prod.setQuantity(prod.getQuantity() - amount);
+        prod.get().setQuantity(prod.get().getQuantity() - amount);
 
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales) || !FileWrite.writeProducts("products.json", products)) {
@@ -1016,11 +1043,14 @@ public class EZShop implements EZShopInterface {
             throw new InvalidQuantityException();
         }
 
-        // Check if the product exists
-        ProductType prod = getProductTypeByBarCode(productCode);
-        if (prod == null) {
-            return false;
-        }
+        // Retrieve the correct product 
+        Optional<ProductTypeImpl> prod = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
+
+        // Check if the product exists in the map
+    	if (!prod.isPresent()) {
+    		return false;
+    	}
 
         // Check if the transactionId identifies a started transaction
         if (!sales.containsKey(transactionId)) {
@@ -1039,7 +1069,7 @@ public class EZShop implements EZShopInterface {
         if (eliminated == null) {
             return false;
         }
-        prod.setQuantity(prod.getQuantity() + amount);
+        prod.get().setQuantity(prod.get().getQuantity() + amount);
 
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales) || !FileWrite.writeProducts("products.json", products)) {
@@ -1080,12 +1110,15 @@ public class EZShop implements EZShopInterface {
             throw new InvalidDiscountRateException();
         }
 
-        // Check if the product exists
-        ProductType prod = getProductTypeByBarCode(productCode);
-        if (prod == null) {
-            return false;
-        }
+        // Retrieve the correct product 
+        Optional<ProductTypeImpl> prod = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
+        // Check if the product exists in the map
+    	if (!prod.isPresent()) {
+    		return false;
+    	}
+ 
         // Check if the transactionId identifies a started transaction
         if (!sales.containsKey(transactionId)) {
             return false;
@@ -1278,7 +1311,7 @@ public class EZShop implements EZShopInterface {
   
     	// Restore quantities in the inventory for every product
     	for (TicketEntry entry: sale.getEntries()) {
-    		for (ProductType p : products.values()) {
+    		for (ProductTypeImpl p : products.values()) {
     			if (entry.getBarCode().contentEquals(p.getBarCode())) {
     				p.setQuantity(p.getQuantity() + entry.getAmount());
     			}
@@ -1408,9 +1441,12 @@ public class EZShop implements EZShopInterface {
     		throw new InvalidQuantityException();
     	}
     	
-    	// Check if the product exists 
-    	ProductType prod = getProductTypeByBarCode(productCode);
-    	if (prod == null) {
+    	// Retrieve the correct product 
+        Optional<ProductTypeImpl> prod = products.values().stream()
+                .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
+
+        // Check if the product exists in the map
+    	if (!prod.isPresent()) {
     		return false;
     	}
     	
@@ -1438,7 +1474,7 @@ public class EZShop implements EZShopInterface {
     	
     	// Add the product in the return transaction
     	// Set its discount rate equal to the one when it was sold
-    	ret.addEntry(new TicketEntryImpl(prod, amount, entrySold.getDiscountRate())); 
+    	ret.addEntry(new TicketEntryImpl(prod.get(), amount, entrySold.getDiscountRate())); 
 
     	// Note: this method doesn't update the productType quantity 
         // Store changes in persistent memory

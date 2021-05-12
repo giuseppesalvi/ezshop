@@ -40,8 +40,17 @@ public class SaleTransactionImpl implements SaleTransaction {
 		this.products = products;
 		this.globalDiscountRate = globalDiscountRate;
 		this.state = state;
-		this.date = LocalDate.parse(dateString);
-		this.time = LocalTime.parse(timeString);
+		if(dateString == null) {
+			this.date = null;
+		}
+		else {
+			this.date = LocalDate.parse(dateString);
+		}
+		if (timeString == null)
+			this.time = null;
+		else {
+			this.time = LocalTime.parse(timeString);
+		}
 		this.cost = cost;
 		this.paymentType = paymentType;
 		this.creditCard = new CreditCard(creditCard, null);

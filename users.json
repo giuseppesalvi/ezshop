@@ -1,1 +1,1 @@
-{"idgen":2,"users":[{"password":"admin","role":"Administrator","id":1,"username":"admin"}]}
+{"idgen":3,"users":[{"password":"admin","role":"Administrator","id":1,"username":"admin"},{"password":"cashier1","role":"Cashier","id":2,"username":"cashier1"}]}

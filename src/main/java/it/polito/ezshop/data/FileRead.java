@@ -229,16 +229,16 @@ public class FileRead {
 				List<TicketEntry> products = new ArrayList<TicketEntry>();
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
 					TicketEntry prod = new TicketEntryImpl(
-							// create a dummy ProductType, with just the barcode
+							// create a dummy ProductType, with just the BarCode 
 							// it will be used later to build the reference with the real ProductType
-							new ProductTypeImpl( (String) productJSON.get("productBarCode"), null, null, null),
-							(Integer) productJSON.get("quantity"),
+							new ProductTypeImpl( (String) productJSON.get("productBarCode")),
+							Integer.parseInt(productJSON.get("quantity").toString()),
 							(Double) productJSON.get("discountRate")
 							);
 					products.add(prod);
 				}
 				SaleTransactionImpl sale = new SaleTransactionImpl(
-						(Integer) saleJSON.get("transactionId"),
+						Integer.parseInt(saleJSON.get("transactionID").toString()),
 						products,
 						(Double) saleJSON.get("globalDiscountRate"),
 						(String) saleJSON.get("state"),
@@ -284,18 +284,18 @@ public class FileRead {
 				List<TicketEntry> products = new ArrayList<TicketEntry>();
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
 					TicketEntry prod = new TicketEntryImpl(
-							// create a dummy ProductType, with just the barcode
+							// create a dummy ProductType, with just the BarCode 
 							// it will be used later to build the reference with the real ProductType
-							new ProductTypeImpl( (String) productJSON.get("productBarCode"), null, null, null),
-							(Integer) productJSON.get("quantity"),
+							new ProductTypeImpl( (String) productJSON.get("productBarCode")),
+							Integer.parseInt(productJSON.get("quantity").toString()),
 							(Double) productJSON.get("discountRate")
 							);
 					products.add(prod);
 				}
 				// create dummy SaleTransactionImpl, with just transactionId
-				SaleTransactionImpl saleTransaction = new SaleTransactionImpl((Integer) retJSON.get("saleTransactionID"), null, null, null, null, null, null, null, null);
+				SaleTransactionImpl saleTransaction = new SaleTransactionImpl(Integer.parseInt(retJSON.get("saleTransactionID").toString()), null, null, null, null, null, null, null, null);
 				ReturnTransaction ret = new ReturnTransaction(
-						(Integer) retJSON.get("returnID"),
+						Integer.parseInt(retJSON.get("returnID").toString()),
 						saleTransaction,
 						products,
 						(String) retJSON.get("state"),
