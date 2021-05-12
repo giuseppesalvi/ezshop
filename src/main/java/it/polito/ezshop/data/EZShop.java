@@ -545,12 +545,14 @@ public class EZShop implements EZShopInterface {
         }
 
         //Create new balanceOperation
-        BalanceOperationImpl newOp = new BalanceOperationImpl(-cost, "order");
+        BalanceOperationImpl newOp = new BalanceOperationImpl(-1*cost, "order");
+        operations.put(newOp.getBalanceId(), newOp);
 
         newOrd.setBalanceId(newOp.getBalanceId());
-        newOrd.setStatus("payed");
+        newOrd.setStatus("PAYED");
         orders.put(newOrd.getOrderId(), newOrd);
-        if (FileWrite.writeOrders("orders.json", orders)){
+        if (FileWrite.writeOrders("orders.json", orders) &&
+                FileWrite.writeOperations("operations.json", operations)){
             return newOrd.getOrderId();
         }
         return -1;
@@ -577,7 +579,7 @@ public class EZShop implements EZShopInterface {
         }
 
         OrderImpl chosen = orders.get(orderId);
-        if (chosen.getStatus().contentEquals("issued")) {
+        if (chosen.getStatus().contentEquals("ISSUED")) {
 
             double cost = chosen.getPricePerUnit() * chosen.getQuantity();
 
@@ -587,16 +589,18 @@ public class EZShop implements EZShopInterface {
             }
 
             //Create new balanceOperation
-            BalanceOperationImpl newOp = new BalanceOperationImpl(-cost, "order");
+            BalanceOperationImpl newOp = new BalanceOperationImpl(-1*cost, "order");
+            operations.put(newOp.getBalanceId(), newOp);
 
             //Update order
             chosen.setBalanceId(newOp.getBalanceId());
-            chosen.setStatus("payed");
-            if (FileWrite.writeOrders("orders.json", orders)){
+            chosen.setStatus("PAYED");
+            if (FileWrite.writeOrders("orders.json", orders) &&
+                    FileWrite.writeOperations("operations.json", operations)){
                 return true;
             }
             return false;
-        } else return chosen.getStatus().contentEquals("payed");
+        } else return chosen.getStatus().contentEquals("PAYED");
     }
 
     @Override
@@ -626,16 +630,16 @@ public class EZShop implements EZShopInterface {
             throw new InvalidLocationException();
         }
 
-        if (chosen.getStatus().contentEquals("payed")) {
+        if (chosen.getStatus().contentEquals("PAYED")) {
             //Update quantity in inventory
             chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
-            chosen.setStatus("completed");
+            chosen.setStatus("COMPLETED");
             if (FileWrite.writeOrders("orders.json", orders) &&
                     FileWrite.writeProducts("products.json", products)){
                 return true;
             }
             return false;
-        } else return chosen.getStatus().contentEquals("completed");
+        } else return chosen.getStatus().contentEquals("COMPLETED");
     }
 
     @Override
