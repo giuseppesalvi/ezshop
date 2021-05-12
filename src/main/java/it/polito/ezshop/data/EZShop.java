@@ -914,7 +914,7 @@ public class EZShop implements EZShopInterface {
         // store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales)) {
         	// error: restore previous state 
-        	sales.remove(newSale.getTicketNumber());
+        	// sales.remove(newSale.getTicketNumber());
         	return -1;
         }
         else {
@@ -976,8 +976,8 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales) || !FileWrite.writeProducts("products.json", products)) {
         	// error: restore previous state
-        	prod.setQuantity(prod.getQuantity() + amount);
-        	sale.deleteEntry(prod.getBarCode());
+        	// prod.setQuantity(prod.getQuantity() + amount);
+        	// sale.deleteEntry(prod.getBarCode());
         	return false;
         }
         else {
@@ -1040,8 +1040,8 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales) || !FileWrite.writeProducts("products.json", products)) {
         	// Error: restore previous state
-        	sale.addEntry(eliminated);
-        	prod.setQuantity(prod.getQuantity() - amount);
+        	// sale.addEntry(eliminated);
+        	// prod.setQuantity(prod.getQuantity() - amount);
         	return false;
         }
         else {
@@ -1093,13 +1093,13 @@ public class EZShop implements EZShopInterface {
             return false;
         }
 
-        double previousDiscountRate = 0.0;
+        // double previousDiscountRate = 0.0;
         TicketEntry target = null;
 
         // Check the product and apply the discountRate
         for (TicketEntry entry : sale.getEntries()) {
         	if (entry.getBarCode().contentEquals(productCode)) {
-        		previousDiscountRate = entry.getDiscountRate();
+        		//previousDiscountRate = entry.getDiscountRate();
         		target = entry;
         		entry.setDiscountRate(discountRate);
         	}
@@ -1112,7 +1112,7 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales)) {
         	// Error : restore previous state
-        	target.setDiscountRate(previousDiscountRate);
+        	// target.setDiscountRate(previousDiscountRate);
         	return false;
         }
         else {
@@ -1230,13 +1230,13 @@ public class EZShop implements EZShopInterface {
             return false;
         }
 
-        String previousState = sale.getState();
+        // String previousState = sale.getState();
         sale.setState("CLOSED");
 
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales)) {
         	// Error: restore previous state
-        	sale.setState(previousState);
+        	// sale.setState(previousState);
         	return false;
         }
         else {
@@ -1287,7 +1287,7 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeSales("sales.json", sales) || !FileWrite.writeProducts("products.json", products)) {
         	// Error : restore previous state
-       		for (TicketEntry entry: sale.getEntries()) {
+       		/* for (TicketEntry entry: sale.getEntries()) {
        			for (ProductType p : products.values()) {
        				if (entry.getBarCode().contentEquals(p.getBarCode())) {
        					p.setQuantity(p.getQuantity() - entry.getAmount());
@@ -1295,6 +1295,7 @@ public class EZShop implements EZShopInterface {
        			}
        		}
         	sales.put(sale.getTicketNumber(), sale);
+        	*/
         	return false;
         }
         else {
@@ -1368,7 +1369,7 @@ public class EZShop implements EZShopInterface {
     	// Store changes in persistent memory
     	if (!FileWrite.writeReturns("returns.json", returns)) {
     		// Error: restore previous state
-    		returns.remove(newRet.getReturnID());
+    		// returns.remove(newRet.getReturnID());
     		return -1;
     	}
     	else {
@@ -1439,7 +1440,7 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
     	if (!FileWrite.writeReturns("returns.json", returns)) {
     		// Error: restore previous state
-    		ret.deleteEntry(productCode);
+    		// ret.deleteEntry(productCode);
     		return false;
     	}
     	else {
@@ -1509,7 +1510,7 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
     	if (!FileWrite.writeReturns("returns.json", returns) || !FileWrite.writeProducts("products.json", products) || !FileWrite.writeSales("sales.json", sales)) {
     		// Error: restore previous state
-    		if (commit) {
+    		/* if (commit) {
     			// Decrease the product quantity available in the shelves
     		for (TicketEntry e : ret.getProducts()) {
     			ProductTypeImpl prod = null;
@@ -1539,6 +1540,7 @@ public class EZShop implements EZShopInterface {
     		}
     		ret.setState("OPEN");
     		ret.setCommit(false);
+    		*/
     		return false;
     	}
     	else {
@@ -1611,7 +1613,7 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
     	if (!FileWrite.writeReturns("returns.json", returns) || !FileWrite.writeProducts("products.json", products) || !FileWrite.writeSales("sales.json", sales)) {
     		// Error: restore previous state
-    		if (ret.isCommit()) {
+    		/*if (ret.isCommit()) {
     		// Increase the product quantity available in the shelves
     		for (TicketEntry e : ret.getProducts()) {
     			ProductTypeImpl prod = null;
@@ -1639,6 +1641,7 @@ public class EZShop implements EZShopInterface {
     		ret.getTransaction().setPrice(ret.getTransaction().computeCost());
 
     		}
+    		*/
     		return false;
     	}
     	else {
@@ -1699,9 +1702,9 @@ public class EZShop implements EZShopInterface {
         	// Store changes in persistent memory
         	if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales)) {
         		// error : restore previous state
-        		sale.setPaymentType(null);
-        		sale.setState("CLOSED");
-        		operations.remove(newOp.getBalanceId());
+        		// sale.setPaymentType(null);
+        		// sale.setState("CLOSED");
+        		// operations.remove(newOp.getBalanceId());
         		return -1;
         	}
         	else {
@@ -1781,10 +1784,10 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales)) {
         	// error : restore previous state
-        	sale.setPaymentType(null);
-        	sale.setState("CLOSED");
-        	cCard.setBalance(cCard.getBalance() + price);
-        	operations.remove(newOp.getBalanceId());
+        	// sale.setPaymentType(null);
+        	// sale.setState("CLOSED");
+        	// cCard.setBalance(cCard.getBalance() + price);
+        	// operations.remove(newOp.getBalanceId());
         	return false;
         }
         else {
@@ -1833,8 +1836,8 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeReturns("returns.json", returns)) {
         	// error : restore previous state
-        	ret.setState("CLOSED");
-        	operations.remove(newOp.getBalanceId());
+        	// ret.setState("CLOSED");
+        	// operations.remove(newOp.getBalanceId());
         	return -1;
         }
         else {
@@ -1907,9 +1910,9 @@ public class EZShop implements EZShopInterface {
         // Store changes in persistent memory
         if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeReturns("returns.json", returns)) {
         	// error : restore previous state
-        	ret.setState("CLOSED");
-        	cCard.setBalance(cCard.getBalance() - amount);
-        	operations.remove(newOp.getBalanceId());
+        	// ret.setState("CLOSED");
+        	// cCard.setBalance(cCard.getBalance() - amount);
+        	// operations.remove(newOp.getBalanceId());
         	return -1;
         }
         else {
@@ -1936,11 +1939,11 @@ public class EZShop implements EZShopInterface {
 
             // Store changes in persistent memory 
             if(!FileWrite.writeOperations("operations.json", operations)) {
-            	return true;
+            	return false;
             }
             else {
-            	operations.remove(newOne.getBalanceId());
-            	return false;
+            	//operations.remove(newOne.getBalanceId());
+            	return true;
             }
         }
         return false;
