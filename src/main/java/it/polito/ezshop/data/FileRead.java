@@ -337,8 +337,8 @@ public class FileRead {
 					.collect(Collectors.toList());
 
 		} catch (IOException e) {
-			// return null if there is some error.
-			return null;
+			// return an empty list if there is some error.
+			return new ArrayList<CreditCard>();
 		}
 	}
 
