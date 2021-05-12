@@ -71,14 +71,15 @@ public class EZShop implements EZShopInterface {
         
         // returns -> productType
         for (ReturnTransaction ret: returns.values()) {
-        	List<TicketEntry> newEntries = new ArrayList<TicketEntry>();
-        	for (TicketEntry ent : ret.getProducts() ) {
+        	//List<TicketEntryImpl> newEntries = new ArrayList<TicketEntryImpl>();
+        	for (TicketEntryImpl ent : ret.getProducts() ) {
         		//Retrieve the product from the map 
         		Optional<ProductTypeImpl> pro = products.values().stream()
                 .filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
-        		newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
+        		//newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
+        		ent.setProduct(pro.get());
         	}
-        	ret.setProducts(newEntries);
+        	//ret.setProducts(newEntries);
         }
 
         // returns -> sales
@@ -1364,7 +1365,12 @@ public class EZShop implements EZShopInterface {
         SaleTransactionImpl sale = sales.get(transactionId);
 
         // Check if the transactionId identifies a closed transaction
-        if (!sale.getState().contentEquals("CLOSED")) {
+        // if (!sale.getState().contentEquals("CLOSED")) {
+        //     return null;
+        //  }
+
+        // Check if the transactionId is still open  
+        if (sale.getState().contentEquals("OPEN")) {
             return null;
         }
 
@@ -1519,7 +1525,7 @@ public class EZShop implements EZShopInterface {
     	if (commit) {
 
     		// Increase the product quantity available in the shelves
-    		for (TicketEntry e : ret.getProducts()) {
+    		/*for (TicketEntry e : ret.getProducts()) {
     			ProductTypeImpl prod = null;
     			for (ProductTypeImpl p : products.values()) {
     				if(p.getBarCode().equals(e.getBarCode())) {
@@ -1530,6 +1536,11 @@ public class EZShop implements EZShopInterface {
     				return false;
     			}
     			prod.setQuantity(prod.getQuantity() + e.getAmount());
+    		}
+    		*/
+    		// Increase the product quantity available in the shelves
+    		for (TicketEntryImpl e : ret.getProducts()) {
+    			e.getProduct().setQuantity(e.getProduct().getQuantity() + e.getAmount());
     		}
 
     		// Update the sale transaction status: decrease the number of units sold by the number of returned one
@@ -1870,7 +1881,7 @@ public class EZShop implements EZShopInterface {
         ret.setState("PAYED");
 
         // Create new balance operation, to record this return in the balance
-       	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
+       	BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "return");
        	operations.put(newOp.getBalanceId(), newOp);
 
         // Store changes in persistent memory
@@ -1944,7 +1955,7 @@ public class EZShop implements EZShopInterface {
         ret.setState("PAYED");
 
         // Create new balance operation, to record this return in the balance
-       	BalanceOperationImpl newOp = new BalanceOperationImpl(amount, "return");
+       	BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "return");
        	operations.put(newOp.getBalanceId(), newOp);
 
         // Store changes in persistent memory

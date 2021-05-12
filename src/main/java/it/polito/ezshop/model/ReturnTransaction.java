@@ -9,7 +9,7 @@ public class ReturnTransaction {
 	public static Integer idGen = 1;
 	private Integer returnID;
 	private SaleTransactionImpl transaction;
-	private List<TicketEntry> products;
+	private List<TicketEntryImpl> products;
 	private String state;
 	private boolean commit;
 	private Double value;
@@ -17,13 +17,13 @@ public class ReturnTransaction {
 	public ReturnTransaction(SaleTransactionImpl transaction) {
 		this.returnID = idGen++;
 		this.transaction = transaction;
-		this.products = new ArrayList<TicketEntry>();
+		this.products = new ArrayList<TicketEntryImpl>();
 		this.state = "OPEN";
 		this.commit = false;
 		this.value = 0.0;
 	}
 
-	public ReturnTransaction(Integer returnID, SaleTransactionImpl transaction, List<TicketEntry> products,
+	public ReturnTransaction(Integer returnID, SaleTransactionImpl transaction, List<TicketEntryImpl> products,
 			String state, boolean commit, Double value) {
 		this.returnID = returnID;
 		this.transaction = transaction;
@@ -49,11 +49,11 @@ public class ReturnTransaction {
 		this.transaction = transaction;
 	}
 
-	public List<TicketEntry> getProducts() {
+	public List<TicketEntryImpl> getProducts() {
 		return products;
 	}
 
-	public void setProducts(List<TicketEntry> products) {
+	public void setProducts(List<TicketEntryImpl> products) {
 		this.products = products;
 	}
 
@@ -94,7 +94,7 @@ public class ReturnTransaction {
 		return amount;
 	}
 
-	public boolean addEntry(TicketEntry entry) {
+	public boolean addEntry(TicketEntryImpl entry) {
 		return this.products.add(entry);
 	}
 	

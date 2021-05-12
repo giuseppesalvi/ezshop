@@ -281,9 +281,9 @@ public class FileRead {
 			//Create each return
 			for (JSONObject retJSON: (Iterable<JSONObject>) listReturnsJSON) {
 				JSONArray listProductsJSON = (JSONArray) retJSON.get("products");
-				List<TicketEntry> products = new ArrayList<TicketEntry>();
+				List<TicketEntryImpl> products = new ArrayList<TicketEntryImpl>();
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
-					TicketEntry prod = new TicketEntryImpl(
+					TicketEntryImpl prod = new TicketEntryImpl(
 							// create a dummy ProductType, with just the BarCode 
 							// it will be used later to build the reference with the real ProductType
 							new ProductTypeImpl( (String) productJSON.get("productBarCode")),
