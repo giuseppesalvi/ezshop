@@ -1,13 +1,10 @@
 package it.polito.ezshop.data;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import it.polito.ezshop.model.*;
 import org.json.simple.JSONArray;
@@ -27,7 +24,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
+			int idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
 
 			//Retrieve the array of users
 			JSONArray userString = (JSONArray) jsonObject.get("users");
@@ -35,10 +32,11 @@ public class FileRead {
 			//Create each user
 			for (JSONObject currUser : (Iterable<JSONObject>) userString) {
 				UserImpl curr = new UserImpl(
-						(String) currUser.get("username"),
-						(String) currUser.get("password"),
-						(String) currUser.get("role"),
+						currUser.get("username").toString(),
+						currUser.get("password").toString(),
+						currUser.get("role").toString(),
 						Integer.parseInt(currUser.get("id").toString()));
+
 				users.put(curr.getId(), curr);
 			}
 
@@ -63,7 +61,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
+			int idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
 
 			//Retrieve the array of products
 			JSONArray productString = (JSONArray) jsonObject.get("products");
@@ -71,19 +69,19 @@ public class FileRead {
 			//Create each user
 			for (JSONObject currProduct : (Iterable<JSONObject>) productString) {
 				ProductTypeImpl curr = new ProductTypeImpl(
-						(String) currProduct.get("productCode"),
-						(String) currProduct.get("description"),
+						currProduct.get("productCode").toString(),
+						currProduct.get("description").toString(),
 						Double.parseDouble(currProduct.get("sellPrice").toString()),
-						(String) currProduct.get("notes"),
+						currProduct.get("notes").toString(),
 						Integer.parseInt(currProduct.get("quantity").toString()),
-						(String) currProduct.get("position"),
+						currProduct.get("position").toString(),
 						Integer.parseInt(currProduct.get("id").toString())
 						);
 				products.put(curr.getId(), curr);
 			}
 
 			//Set the id generator for the users
-			UserImpl.idGen = idGenerator;
+			ProductTypeImpl.idGen = idGenerator;
 
 		} catch (IOException | ParseException e) {
 			//return an empty map if there is some error.
@@ -102,7 +100,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
+			int idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
 
 			//Retrieve the array of orders
 			JSONArray orderString = (JSONArray) jsonObject.get("orders");
@@ -115,15 +113,15 @@ public class FileRead {
 						),
 						Integer.parseInt(currOrder.get("quantity").toString()),
 						Double.parseDouble(currOrder.get("pricePerUnit").toString()),
-						(String) currOrder.get("status"),
-						Integer.parseInt(currOrder.get("balanceId").toString()),
+						currOrder.get("status").toString(),
+						(currOrder.get("balanceId")==null)?null:Integer.parseInt(currOrder.get("balanceId").toString()),
 						Integer.parseInt(currOrder.get("id").toString())
 				);
 				orders.put(curr.getOrderId(), curr);
 			}
 
 			//Set the id generator for the users
-			UserImpl.idGen = idGenerator;
+			OrderImpl.idGen = idGenerator;
 
 		} catch (IOException | ParseException e) {
 			//return an empty map if there is some error.
@@ -144,7 +142,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
+			int idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
 
 			//Retrieve the array of customers
 			JSONArray customerString = (JSONArray) jsonObject.get("customers");
@@ -152,7 +150,7 @@ public class FileRead {
 			//Create each user
 			for (JSONObject currCustomer : (Iterable<JSONObject>) customerString) {
 				CustomerImpl curr = new CustomerImpl(
-						(String) currCustomer.get("customerName"),
+						currCustomer.get("customerName").toString(),
 						Integer.parseInt(currCustomer.get("id").toString()),
 						new LoyaltyCard(
 							currCustomer.get("cardId").toString()
@@ -162,7 +160,7 @@ public class FileRead {
 			}
 
 			//Set the id generator for the users
-			UserImpl.idGen = idGenerator;
+			CustomerImpl.idGen = idGenerator;
 
 		} catch (IOException | ParseException e) {
 			//return an empty map if there is some error.
@@ -182,7 +180,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
+			int idGenerator = Integer.parseInt(jsonObject.get("idgen").toString());
 
 			//Retrieve the array of cards
 			JSONArray cardString = (JSONArray) jsonObject.get("cards");
@@ -190,7 +188,7 @@ public class FileRead {
 			//Create each user
 			for (JSONObject currCard : (Iterable<JSONObject>) cardString) {
 				LoyaltyCard curr = new LoyaltyCard(
-						(String) currCard.get("id"),
+						currCard.get("id").toString(),
 						new CustomerImpl(
 							Integer.parseInt(currCard.get("customerId").toString())
 						),
@@ -200,7 +198,7 @@ public class FileRead {
 			}
 
 			//Set the id generator for the users
-			UserImpl.idGen = idGenerator;
+			LoyaltyCard.idGen = idGenerator;
 
 		} catch (IOException | ParseException e) {
 			//return an empty map if there is some error.
@@ -328,7 +326,7 @@ public class FileRead {
 
 			//Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
-			Integer idGen = Integer.parseInt(jsonObject.get("idGen").toString());
+			int idGen = Integer.parseInt(jsonObject.get("idGen").toString());
 
 			//Retrieve the array of operations 
 			JSONArray listOperationsJSON = (JSONArray) jsonObject.get("operations");
@@ -336,10 +334,10 @@ public class FileRead {
 			//Create each balance operation 
 			for (JSONObject opJSON : (Iterable<JSONObject>) listOperationsJSON) {
 				BalanceOperationImpl op= new BalanceOperationImpl(
-						(Integer) opJSON.get("id"),
-						(String) opJSON.get("dateString"),
-						(Double) opJSON.get("amount"),
-						(String) opJSON.get("type"));
+						Integer.parseInt(opJSON.get("id").toString()),
+						opJSON.get("dateString").toString(),
+						Double.parseDouble(opJSON.get("amount").toString()),
+						opJSON.get("type").toString());
 						
 				operations.put(op.getBalanceId(), op);
 			}
