@@ -1624,7 +1624,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Read the list of credit cards from the file
-		List<CreditCard> creditCardsList = FileRead.readCreditCards("CreditCards.txt");
+		List<CreditCard> creditCardsList = FileRead.readCreditCards("creditcards.txt");
 
 		// Search the CreditCard in the list
 		CreditCard cCard = null;
@@ -1670,7 +1670,7 @@ public class EZShop implements EZShopInterface {
 		operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales)) {
+		if (!FileWrite.writeOperations("operations.json", operations) || !FileWrite.writeSales("sales.json", sales) || !FileWrite.writeCreditCards("creditcards.txt", creditCardsList)) {
 			return false;
 		} else {
 			return true;
@@ -1758,7 +1758,7 @@ public class EZShop implements EZShopInterface {
 		double amount = ret.getValue();
 
 		// Read the list of credit cards from the file
-		List<CreditCard> creditCardsList = FileRead.readCreditCards("CreditCards.txt");
+		List<CreditCard> creditCardsList = FileRead.readCreditCards("creditcards.txt");
 
 		// Search the CreditCard in the list
 		CreditCard cCard = null;
@@ -1785,7 +1785,8 @@ public class EZShop implements EZShopInterface {
 
 		// Store changes in persistent memory
 		if (!FileWrite.writeOperations("operations.json", operations)
-				|| !FileWrite.writeReturns("returns.json", returns)) {
+				|| !FileWrite.writeReturns("returns.json", returns)
+				|| !FileWrite.writeCreditCards("creditcards.txt", creditCardsList)) {
 			return -1;
 		} else {
 			return amount;

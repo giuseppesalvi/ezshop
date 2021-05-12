@@ -1,10 +1,14 @@
 package it.polito.ezshop.data;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import it.polito.ezshop.model.*;
 import org.json.simple.JSONArray;
@@ -327,7 +331,15 @@ public class FileRead {
 	}
 
 	public static List<CreditCard> readCreditCards(String fileName) {
-		return null;
+		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+			return stream.filter(line -> !line.startsWith("#"))
+					.map(line -> new CreditCard(line.split(";")[0], Double.parseDouble(line.split(";")[1])))
+					.collect(Collectors.toList());
+
+		} catch (IOException e) {
+			// return null if there is some error.
+			return null;
+		}
 	}
 
 }

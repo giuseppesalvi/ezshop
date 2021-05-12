@@ -2,6 +2,8 @@ package it.polito.ezshop.data;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -284,7 +286,16 @@ public class FileWrite {
 	}
 
 	public static boolean writeCreditCards(String fileName, List<CreditCard> creditCards) {
-		return false;
+		try (FileWriter file = new FileWriter(fileName)) {
+			file.write("#<creditCardNumber>;<balance>\n");
+			for(CreditCard c : creditCards) {
+				file.write(c.getNumber().concat(";").concat(c.getBalance().toString()).concat("\n"));
+			}
+		} catch (IOException e) {
+			// return null if there is some error.
+			return false;
+		}
+		return true;
 	}
 
 }
