@@ -23,12 +23,12 @@ public class FileWrite {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
+		// Write the current id generator
 		obj.put("idgen", UserImpl.idGen);
 		JSONArray listUser = new JSONArray();
 
-		//Write each user
-		for(UserImpl user: users.values()){
+		// Write each user
+		for (UserImpl user : users.values()) {
 			JSONObject jsonUser = new JSONObject();
 			jsonUser.put("username", user.getUsername());
 			jsonUser.put("password", user.getPassword());
@@ -52,12 +52,12 @@ public class FileWrite {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
+		// Write the current id generator
 		obj.put("idgen", ProductTypeImpl.idGen);
 		JSONArray listUser = new JSONArray();
 
-		//Write each user
-		for(ProductTypeImpl product : products.values()){
+		// Write each user
+		for (ProductTypeImpl product : products.values()) {
 			JSONObject jsonProduct = new JSONObject();
 			jsonProduct.put("productCode", product.getBarCode());
 			jsonProduct.put("description", product.getProductDescription());
@@ -84,12 +84,12 @@ public class FileWrite {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
+		// Write the current id generator
 		obj.put("idgen", OrderImpl.idGen);
 		JSONArray listOrder = new JSONArray();
 
-		//Write each order
-		for(OrderImpl order : orders.values()){
+		// Write each order
+		for (OrderImpl order : orders.values()) {
 			JSONObject jsonOrder = new JSONObject();
 			jsonOrder.put("productId", order.getProduct().getId());
 			jsonOrder.put("quantity", order.getQuantity());
@@ -115,16 +115,16 @@ public class FileWrite {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
+		// Write the current id generator
 		obj.put("idgen", CustomerImpl.idGen);
 		JSONArray listCustomer = new JSONArray();
 
-		//Write each order
-		for(CustomerImpl customer : customers.values()){
+		// Write each order
+		for (CustomerImpl customer : customers.values()) {
 			JSONObject jsonCustomer = new JSONObject();
 			jsonCustomer.put("id", customer.getId());
 			jsonCustomer.put("customerName", customer.getCustomerName());
-			jsonCustomer.put("cardId", (customer.getCard() == null)?"":customer.getCard().getCardId() );
+			jsonCustomer.put("cardId", (customer.getCard() == null) ? "" : customer.getCard().getCardId());
 			listCustomer.add(jsonCustomer);
 		}
 
@@ -139,20 +139,20 @@ public class FileWrite {
 		return true;
 
 	}
-	
+
 	public static boolean writeCards(String fileName, Map<String, LoyaltyCard> loyaltyCards) {
 
 		JSONObject obj = new JSONObject();
 
-		//Write the current id generator
+		// Write the current id generator
 		obj.put("idgen", LoyaltyCard.idGen);
 		JSONArray listCards = new JSONArray();
 
-		//Write each order
-		for(LoyaltyCard card : loyaltyCards.values()){
+		// Write each order
+		for (LoyaltyCard card : loyaltyCards.values()) {
 			JSONObject jsonCards = new JSONObject();
 			jsonCards.put("id", card.getCardId());
-			jsonCards.put("customerId", (card.getCustomer() == null)?"-1": card.getCustomer().getId());
+			jsonCards.put("customerId", (card.getCustomer() == null) ? "-1" : card.getCustomer().getId());
 			jsonCards.put("points", card.getPoints());
 			listCards.add(jsonCards);
 		}
@@ -177,10 +177,10 @@ public class FileWrite {
 
 		JSONArray listSalesJSON = new JSONArray();
 
-		// Write each sale 
-		for (SaleTransactionImpl sale : sales.values() ){
+		// Write each sale
+		for (SaleTransactionImpl sale : sales.values()) {
 			JSONObject saleJSON = new JSONObject();
-			saleJSON.put("transactionID", sale.getTicketNumber()) ;
+			saleJSON.put("transactionID", sale.getTicketNumber());
 			saleJSON.put("globalDiscountRate", sale.getDiscountRate());
 			saleJSON.put("state", sale.getState());
 			saleJSON.put("dateString", sale.getDate().toString());
@@ -189,8 +189,7 @@ public class FileWrite {
 			saleJSON.put("paymentType", sale.getPaymentType());
 			if (sale.getCreditCard() != null) {
 				saleJSON.put("creditCardNumber", sale.getCreditCard().getNumber());
-			}
-			else {
+			} else {
 				saleJSON.put("creditCardNumber", null);
 			}
 			JSONArray listProductsJSON = new JSONArray();
@@ -217,7 +216,7 @@ public class FileWrite {
 	}
 
 	public static boolean writeReturns(String fileName, Map<Integer, ReturnTransaction> returns) {
-	
+
 		JSONObject obj = new JSONObject();
 
 		// Write the current id generator
@@ -225,10 +224,10 @@ public class FileWrite {
 
 		JSONArray listReturnsJSON = new JSONArray();
 
-		// Write each return transaction 
-		for (ReturnTransaction ret: returns.values() ){
+		// Write each return transaction
+		for (ReturnTransaction ret : returns.values()) {
 			JSONObject retJSON = new JSONObject();
-			retJSON.put("returnID", ret.getReturnID()) ;
+			retJSON.put("returnID", ret.getReturnID());
 			retJSON.put("saleTransactionID", ret.getTransaction().getTicketNumber());
 			retJSON.put("state", ret.getState());
 			retJSON.put("commit", ret.isCommit());
@@ -253,7 +252,7 @@ public class FileWrite {
 			return false;
 		}
 
-	return true;
+		return true;
 	}
 
 	public static boolean writeOperations(String fileName, Map<Integer, BalanceOperationImpl> operations) {
@@ -262,12 +261,12 @@ public class FileWrite {
 		// Write the current id generator
 		obj.put("idGen", BalanceOperationImpl.idGen);
 
-		JSONArray listOperationsJSON= new JSONArray();
+		JSONArray listOperationsJSON = new JSONArray();
 
-		// Write each sale 
-		for (BalanceOperationImpl op: operations.values() ){
+		// Write each sale
+		for (BalanceOperationImpl op : operations.values()) {
 			JSONObject operationJSON = new JSONObject();
-			operationJSON.put("id", op.getBalanceId()) ;
+			operationJSON.put("id", op.getBalanceId());
 			operationJSON.put("dateString", op.getDate().toString());
 			operationJSON.put("amount", op.getMoney());
 			operationJSON.put("type", op.getType());

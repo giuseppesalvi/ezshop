@@ -1,6 +1,5 @@
 package it.polito.ezshop.model;
 
-import it.polito.ezshop.data.ProductType;
 import it.polito.ezshop.data.TicketEntry;
 
 public class TicketEntryImpl implements TicketEntry {
