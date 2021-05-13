@@ -26,6 +26,41 @@ Version:
     to start tests
     >
 
+**Criteria for method *checkValidity*:**
+	
+
+ - validity of String creditCard (null, empty string) 
+ - creditCard represents a number 
+ - creditCard passes lunh algorithm test
+
+**Predicates for method *checkValidity*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of String creditCard | yes |
+|                               | no |
+| creditCard represents a number | yes |
+|                                 | no |
+| creditCard passes luhn algorithm | yes |
+|                                  | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of String creditCard | creditCard represents a number | creditCard passes luhn algorithm | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|-------|-------|
+| no | * | * | Invalid | T0a(null ; false) <br /> T0b("" ; false) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityWithInvalidString|
+| * | no | * | Invalid | T1("01ab45" ; false) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityWithCreditCardNotANumber |
+| yes | yes | yes | Valid | T2 ("4485370086510891" ; true) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityLuhnCheckPassed |
+| " | " | no | Valid | T3("4485370086510892"" ; false) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityLuhnCheckNotPassed |
+
+
  ### **Class *class_name* - method *name***
 
 

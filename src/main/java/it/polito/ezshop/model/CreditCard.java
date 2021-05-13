@@ -26,21 +26,35 @@ public class CreditCard {
 		this.balance = balance;
 	}
 
+	/* This method applies Luhn algorithm to verify if a number is valid */
 	public static boolean checkValidity(String creditCard) {
-		int sum = 0;
-		boolean alternate = false;
-		for (int i = creditCard.length() - 1; i >= 0; i--) {
-			int n = Integer.parseInt(creditCard.substring(i, i + 1));
-			if (alternate) {
-				n *= 2;
-				if (n > 9) {
-					n = (n % 10) + 1;
+
+		if (creditCard == null || creditCard.isEmpty())
+			// creditCard is an invalid String
+			return false;
+	
+		try {
+			// Luhn algorithm
+			int sum = 0;
+			boolean alternate = false;
+			for (int i = creditCard.length() - 1; i >= 0; i--) {
+				int n = Integer.parseInt(creditCard.substring(i, i + 1));
+				if (alternate) {
+					n *= 2;
+					if (n > 9) {
+						n = (n % 10) + 1;
+					}
 				}
+				sum += n;
+				alternate = !alternate;
 			}
-			sum += n;
-			alternate = !alternate;
+			return (sum % 10 == 0);
 		}
-		return (sum % 10 == 0);
+		catch ( NumberFormatException e ) {
+			// creditCard is not a number
+			return false;
+			
+		}
 	}
 	
 	
