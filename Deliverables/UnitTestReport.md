@@ -25,6 +25,7 @@ Version:
     <JUnit test classes must be in src/test/java/it/polito/ezshop   You find here, and you can use,  class TestEzShops.java that is executed  
     to start tests
     >
+ ### **Class *CreditCard* - method *checkValidity***
 
 **Criteria for method *checkValidity*:**
 	
@@ -122,10 +123,10 @@ Version:
 
 | Unit name | JUnit test case |
 |--|--|
-|||
-|||
-||||
-
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
+| | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
+| | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoopMultipleIterations|
+| | src/test/java/it/polito/ezshop/test/CreditCardTests.testGettersSettersConstructors|
 ### Code coverage report
 
     <Add here the screenshot report of the statement and branch coverage obtained using
@@ -139,9 +140,10 @@ Version:
 
 |Unit name | Loop rows | Number of iterations | JUnit test case |
 |---|---|---|---|
-|||||
-|||||
-||||||
+| CreditCard | 40 - 50 | 0 | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations |
+||| 1 |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop1Iterations|
+||| multiple |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
+
 
 
 
