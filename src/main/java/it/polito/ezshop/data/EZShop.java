@@ -34,7 +34,7 @@ public class EZShop implements EZShopInterface {
 
 		// Customer -> cards
 		for (CustomerImpl cus : customers.values()) {
-			if (!cus.getCard().getCardId().equals("")) {
+			if (cus.getCard() != null && !cus.getCard().getCardId().equals("")) {
 				cus.setCard(cards.get(cus.getCard().getCardId()));
 			} else {
 				cus.setCard(null);
@@ -44,7 +44,7 @@ public class EZShop implements EZShopInterface {
 
 		// Cards -> customer
 		for (LoyaltyCard loy : cards.values()) {
-			if (loy.getCustomer().getId() != -1) {
+			if (loy.getCustomer() != null && loy.getCustomer().getId() != -1) {
 				loy.setCustomer(customers.get(loy.getCustomer().getId()));
 			} else {
 				loy.setCustomer(null);

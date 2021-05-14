@@ -145,8 +145,8 @@ public class FileRead {
 			// Create each user
 			for (JSONObject currCustomer : (Iterable<JSONObject>) customerString) {
 				CustomerImpl curr = new CustomerImpl(currCustomer.get("customerName").toString(),
-						Integer.parseInt(currCustomer.get("id").toString()),
-						new LoyaltyCard(currCustomer.get("cardId").toString()));
+						Integer.parseInt(currCustomer.get("id").toString()), currCustomer.get("cardId") == null ? null
+								: new LoyaltyCard(currCustomer.get("cardId").toString()));
 				customers.put(curr.getId(), curr);
 			}
 
@@ -178,10 +178,13 @@ public class FileRead {
 
 			// Create each user
 			for (JSONObject currCard : (Iterable<JSONObject>) cardString) {
-				LoyaltyCard curr = new LoyaltyCard(currCard.get("id").toString(),
-						new CustomerImpl(Integer.parseInt(currCard.get("customerId").toString())),
-						Integer.parseInt(currCard.get("points").toString()));
-				cards.put(curr.getCardId(), curr);
+				if (currCard.get("id") != null) {
+					LoyaltyCard curr = new LoyaltyCard(currCard.get("id").toString(),
+							currCard.get("customerId") == null ? null
+									: new CustomerImpl(Integer.parseInt(currCard.get("customerId").toString())),
+							Integer.parseInt(currCard.get("points").toString()));
+					cards.put(curr.getCardId(), curr);
+				}
 			}
 
 			// Set the id generator for the users
