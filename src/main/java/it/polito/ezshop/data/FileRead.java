@@ -18,13 +18,13 @@ import org.json.simple.parser.ParseException;
 
 public class FileRead {
 
-	public static HashMap<Integer, UserImpl> readUsers(String fileName) {
+	public static HashMap<Integer, UserImpl> readUsers() {
 
 		// Create the map
 		HashMap<Integer, UserImpl> users = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/users.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -52,13 +52,13 @@ public class FileRead {
 		return users;
 	}
 
-	public static HashMap<Integer, ProductTypeImpl> readProducts(String fileName) {
+	public static HashMap<Integer, ProductTypeImpl> readProducts() {
 
 		// Create the map
 		HashMap<Integer, ProductTypeImpl> products = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/products.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -88,12 +88,12 @@ public class FileRead {
 		return products;
 	}
 
-	public static HashMap<Integer, OrderImpl> readOrders(String fileName) {
+	public static HashMap<Integer, OrderImpl> readOrders() {
 		// Create the map
 		HashMap<Integer, OrderImpl> orders = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/orders.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -127,13 +127,13 @@ public class FileRead {
 
 	}
 
-	public static HashMap<Integer, CustomerImpl> readCustomers(String fileName) {
+	public static HashMap<Integer, CustomerImpl> readCustomers() {
 
 		// Create the map
 		HashMap<Integer, CustomerImpl> customers = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/customers.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -161,13 +161,13 @@ public class FileRead {
 		return customers;
 	}
 
-	public static HashMap<String, LoyaltyCard> readCards(String fileName) {
+	public static HashMap<String, LoyaltyCard> readCards() {
 
 		// Create the map
 		HashMap<String, LoyaltyCard> cards = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/cards.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -198,13 +198,13 @@ public class FileRead {
 		return cards;
 	}
 
-	public static HashMap<Integer, SaleTransactionImpl> readSales(String fileName) {
+	public static HashMap<Integer, SaleTransactionImpl> readSales() {
 
 		// Create the map
 		HashMap<Integer, SaleTransactionImpl> sales = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/sales.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -247,13 +247,13 @@ public class FileRead {
 		return sales;
 	}
 
-	public static HashMap<Integer, ReturnTransaction> readReturns(String fileName) {
+	public static HashMap<Integer, ReturnTransaction> readReturns() {
 
 		// Create the map
 		HashMap<Integer, ReturnTransaction> returns = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/returns.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -297,13 +297,13 @@ public class FileRead {
 		return returns;
 	}
 
-	public static HashMap<Integer, BalanceOperationImpl> readOperations(String fileName) {
+	public static HashMap<Integer, BalanceOperationImpl> readOperations() {
 
 		// Create the map
 		HashMap<Integer, BalanceOperationImpl> operations = new HashMap<>();
 		JSONParser parser = new JSONParser();
 
-		try (FileReader reader = new FileReader(fileName)) {
+		try (FileReader reader = new FileReader("db/operations.json")) {
 
 			// Parse the total object
 			JSONObject jsonObject = (JSONObject) parser.parse(reader);
@@ -333,15 +333,15 @@ public class FileRead {
 
 	}
 
-	public static List<CreditCard> readCreditCards(String fileName) {
-		try (Stream<String> stream = Files.lines(Paths.get(fileName))) {
+	public static List<CreditCard> readCreditCards() {
+		try (Stream<String> stream = Files.lines(Paths.get("creditcards.txt"))) {
 			return stream.filter(line -> !line.startsWith("#"))
 					.map(line -> new CreditCard(line.split(";")[0], Double.parseDouble(line.split(";")[1])))
 					.collect(Collectors.toList());
 
 		} catch (IOException e) {
 			// return an empty list if there is some error.
-			return new ArrayList<CreditCard>();
+			return new ArrayList<>();
 		}
 	}
 

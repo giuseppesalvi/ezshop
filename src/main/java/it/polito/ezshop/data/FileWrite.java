@@ -21,7 +21,7 @@ import org.json.simple.JSONObject;
 
 public class FileWrite {
 
-	public static boolean writeUsers(String fileName, Map<Integer, UserImpl> users) {
+	public static boolean writeUsers(Map<Integer, UserImpl> users) {
 
 		JSONObject obj = new JSONObject();
 
@@ -41,7 +41,7 @@ public class FileWrite {
 
 		obj.put("users", listUser);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/users.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -50,7 +50,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeProducts(String fileName, Map<Integer, ProductTypeImpl> products) {
+	public static boolean writeProducts(Map<Integer, ProductTypeImpl> products) {
 
 		JSONObject obj = new JSONObject();
 
@@ -73,7 +73,7 @@ public class FileWrite {
 
 		obj.put("products", listUser);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/products.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -82,7 +82,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeOrders(String fileName, Map<Integer, OrderImpl> orders) {
+	public static boolean writeOrders(Map<Integer, OrderImpl> orders) {
 
 		JSONObject obj = new JSONObject();
 
@@ -104,7 +104,7 @@ public class FileWrite {
 
 		obj.put("orders", listOrder);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/orders.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -113,7 +113,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeCustomers(String fileName, Map<Integer, CustomerImpl> customers) {
+	public static boolean writeCustomers(Map<Integer, CustomerImpl> customers) {
 
 		JSONObject obj = new JSONObject();
 
@@ -132,7 +132,7 @@ public class FileWrite {
 
 		obj.put("customers", listCustomer);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/customers.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -142,7 +142,7 @@ public class FileWrite {
 
 	}
 
-	public static boolean writeCards(String fileName, Map<String, LoyaltyCard> loyaltyCards) {
+	public static boolean writeCards(Map<String, LoyaltyCard> loyaltyCards) {
 
 		JSONObject obj = new JSONObject();
 
@@ -161,7 +161,7 @@ public class FileWrite {
 
 		obj.put("cards", listCards);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/cards.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -170,7 +170,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeSales(String fileName, Map<Integer, SaleTransactionImpl> sales) {
+	public static boolean writeSales(Map<Integer, SaleTransactionImpl> sales) {
 
 		JSONObject obj = new JSONObject();
 
@@ -208,7 +208,7 @@ public class FileWrite {
 
 		obj.put("sales", listSalesJSON);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/sales.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -217,7 +217,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeReturns(String fileName, Map<Integer, ReturnTransaction> returns) {
+	public static boolean writeReturns(Map<Integer, ReturnTransaction> returns) {
 
 		JSONObject obj = new JSONObject();
 
@@ -248,7 +248,7 @@ public class FileWrite {
 
 		obj.put("returns", listReturnsJSON);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/returns.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -257,7 +257,7 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeOperations(String fileName, Map<Integer, BalanceOperationImpl> operations) {
+	public static boolean writeOperations(Map<Integer, BalanceOperationImpl> operations) {
 		JSONObject obj = new JSONObject();
 
 		// Write the current id generator
@@ -277,7 +277,7 @@ public class FileWrite {
 
 		obj.put("operations", listOperationsJSON);
 
-		try (FileWriter file = new FileWriter(fileName)) {
+		try (FileWriter file = new FileWriter("db/operations.json")) {
 			file.write(obj.toJSONString());
 		} catch (IOException e) {
 			return false;
@@ -285,8 +285,8 @@ public class FileWrite {
 		return true;
 	}
 
-	public static boolean writeCreditCards(String fileName, List<CreditCard> creditCards) {
-		try (FileWriter file = new FileWriter(fileName)) {
+	public static boolean writeCreditCards(List<CreditCard> creditCards) {
+		try (FileWriter file = new FileWriter("creditcards.txt")) {
 			file.write("#<creditCardNumber>;<balance>\n");
 			for(CreditCard c : creditCards) {
 				file.write(c.getNumber().concat(";").concat(c.getBalance().toString()).concat("\n"));

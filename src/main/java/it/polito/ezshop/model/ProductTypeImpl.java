@@ -89,7 +89,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setLocation(String location) {
-        position.setPosition(location);
+        position = new Position(location);
     }
 
     @Override
