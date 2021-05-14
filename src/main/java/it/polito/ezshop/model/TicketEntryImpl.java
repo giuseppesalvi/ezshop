@@ -27,7 +27,7 @@ public class TicketEntryImpl implements TicketEntry {
 
    	@Override
     public void setBarCode(String barCode) {
-    	this.product.setBarCode(barCode);
+    	this.product = new ProductTypeImpl(barCode);
     }
 
     @Override
