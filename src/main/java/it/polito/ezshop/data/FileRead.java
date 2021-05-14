@@ -69,11 +69,14 @@ public class FileRead {
 
 			// Create each user
 			for (JSONObject currProduct : (Iterable<JSONObject>) productString) {
-				ProductTypeImpl curr = new ProductTypeImpl(currProduct.get("productCode").toString(),
+				ProductTypeImpl curr = new ProductTypeImpl(
+						currProduct.get("productCode").toString(),
 						currProduct.get("description").toString(),
 						Double.parseDouble(currProduct.get("sellPrice").toString()),
-						currProduct.get("notes").toString(), Integer.parseInt(currProduct.get("quantity").toString()),
-						currProduct.get("position").toString(), Integer.parseInt(currProduct.get("id").toString()));
+						currProduct.get("notes").toString(), //could be null
+						Integer.parseInt(currProduct.get("quantity").toString()),
+						currProduct.get("position").toString(), //could be null
+						Integer.parseInt(currProduct.get("id").toString()));
 				products.put(curr.getId(), curr);
 			}
 

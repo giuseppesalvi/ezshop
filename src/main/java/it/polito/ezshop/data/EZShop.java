@@ -22,12 +22,12 @@ public class EZShop implements EZShopInterface {
 	public Integer createUser(String username, String password, String role)
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
 		// Check username correctness
-		if (username.isEmpty() || username == null) {
+		if (username == null || username.isEmpty()) {
 			throw new InvalidUsernameException();
 		}
 
 		// Check password correctness
-		if (password.isEmpty() || password == null) {
+		if (password == null || password.isEmpty()) {
 			throw new InvalidPasswordException();
 		}
 
@@ -37,8 +37,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check role correctness
-		if (role.isEmpty() || role == null || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
-				&& !role.contentEquals("ShopManager"))) {
+		if (role == null || role.isEmpty() ||
+				(!role.contentEquals("Administrator") &&
+						!role.contentEquals("Cashier") &&
+						!role.contentEquals("ShopManager"))) {
 			throw new InvalidRoleException();
 		}
 
@@ -68,8 +70,7 @@ public class EZShop implements EZShopInterface {
 		if (EZShopMaps.users.containsKey(id)) {
 			// UserImpl eliminated = EZShopMaps.users.get(id);
 			EZShopMaps.users.remove(id);
-			if (FileWrite.writeUsers(EZShopMaps.users))
-				return true;
+			return FileWrite.writeUsers(EZShopMaps.users);
 		}
 
 		return false;
@@ -122,7 +123,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check role correctness
-		if (role.isEmpty() || role == null || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
+		if (role == null || role.isEmpty() || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
 				&& !role.contentEquals("ShopManager"))) {
 			throw new InvalidRoleException();
 		}
@@ -132,8 +133,7 @@ public class EZShop implements EZShopInterface {
 
 			EZShopMaps.users.get(id).setRole(role);
 
-			if (FileWrite.writeUsers(EZShopMaps.users))
-				return true;
+			return FileWrite.writeUsers(EZShopMaps.users);
 		}
 
 		return false;
@@ -143,12 +143,12 @@ public class EZShop implements EZShopInterface {
 	public User login(String username, String password) throws InvalidUsernameException, InvalidPasswordException {
 
 		// Check username correctness
-		if (username.isEmpty() || username == null) {
+		if (username == null || username.isEmpty()) {
 			throw new InvalidUsernameException();
 		}
 
 		// Check password correctness
-		if (password.isEmpty() || password == null) {
+		if (password == null || password.isEmpty()) {
 			throw new InvalidPasswordException();
 		}
 
@@ -190,12 +190,12 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check description correctness
-		if (description.isEmpty() || description == null) {
+		if (description == null || description.isEmpty()) {
 			throw new InvalidProductDescriptionException();
 		}
 
 		// Check productCode correctness
-		if (productCode.isEmpty() || productCode == null || !ProductTypeImpl.checkBarCode(productCode)) {
+		if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
 			throw new InvalidProductCodeException();
 		}
 
@@ -231,12 +231,12 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check description correctness
-		if (newDescription.isEmpty() || newDescription == null) {
+		if (newDescription == null || newDescription.isEmpty()) {
 			throw new InvalidProductDescriptionException();
 		}
 
 		// Check productCode correctness
-		if (newCode.isEmpty() || newCode == null || !ProductTypeImpl.checkBarCode(newCode)) {
+		if (newCode == null || newCode.isEmpty() || !ProductTypeImpl.checkBarCode(newCode)) {
 			throw new InvalidProductCodeException();
 		}
 
@@ -263,9 +263,7 @@ public class EZShop implements EZShopInterface {
 			chosen.setNote(newNote);
 			chosen.setProductDescription(newDescription);
 			chosen.setPricePerUnit(newPrice);
-			if (FileWrite.writeProducts(EZShopMaps.products)) {
-				return true;
-			}
+			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
 		return false;
@@ -287,9 +285,7 @@ public class EZShop implements EZShopInterface {
 
 		if (EZShopMaps.products.containsKey(id)) {
 			EZShopMaps.products.remove(id);
-			if (FileWrite.writeProducts(EZShopMaps.products)) {
-				return true;
-			}
+			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
 		return false;
@@ -318,7 +314,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check productCode correctness
-		if (barCode.isEmpty() || barCode == null || !ProductTypeImpl.checkBarCode(barCode)) {
+		if (barCode == null || barCode.isEmpty() || !ProductTypeImpl.checkBarCode(barCode)) {
 			throw new InvalidProductCodeException();
 		}
 
@@ -369,9 +365,7 @@ public class EZShop implements EZShopInterface {
 				return false;
 			}
 			chosen.setQuantity(chosen.getQuantity() + toBeAdded);
-			if (FileWrite.writeProducts(EZShopMaps.products)) {
-				return true;
-			}
+			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
 		return false;
@@ -393,7 +387,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check newPos correctness
-		if (!newPos.matches(".+-.+-.+") && !newPos.isEmpty()) {
+		if (newPos == null || (!newPos.matches(".+-.+-.+") && !newPos.isEmpty())) {
 			throw new InvalidLocationException();
 		}
 
@@ -406,9 +400,7 @@ public class EZShop implements EZShopInterface {
 					return false;
 			}
 			chosen.setLocation(newPos);
-			if (FileWrite.writeProducts(EZShopMaps.products)) {
-				return true;
-			}
+			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
 		return false;
@@ -535,11 +527,8 @@ public class EZShop implements EZShopInterface {
 			// Update order
 			chosen.setBalanceId(newOp.getBalanceId());
 			chosen.setStatus("PAYED");
-			if (FileWrite.writeOrders(EZShopMaps.orders)
-					&& FileWrite.writeOperations(EZShopMaps.operations)) {
-				return true;
-			}
-			return false;
+			return FileWrite.writeOrders(EZShopMaps.orders)
+					&& FileWrite.writeOperations(EZShopMaps.operations);
 		} else
 			return chosen.getStatus().contentEquals("PAYED");
 	}
@@ -575,11 +564,8 @@ public class EZShop implements EZShopInterface {
 			// Update quantity in inventory
 			chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
 			chosen.setStatus("COMPLETED");
-			if (FileWrite.writeOrders(EZShopMaps.orders) &&
-					FileWrite.writeProducts(EZShopMaps.products)) {
-				return true;
-			}
-			return false;
+			return FileWrite.writeOrders(EZShopMaps.orders) &&
+					FileWrite.writeProducts(EZShopMaps.products);
 		} else
 			return chosen.getStatus().contentEquals("COMPLETED");
 	}
@@ -607,7 +593,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check customer name correctness
-		if (customerName.isEmpty() || customerName == null) {
+		if (customerName == null || customerName.isEmpty()) {
 			throw new InvalidCustomerNameException();
 		}
 
@@ -636,17 +622,17 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check customer name correctness
-		if (newCustomerName.isEmpty() || newCustomerName == null) {
+		if (newCustomerName == null || newCustomerName.isEmpty()) {
 			throw new InvalidCustomerNameException();
 		}
 
 		// Check id correctness
-		if (id <= 0 || id == null) {
+		if (id == null || id <= 0) {
 			throw new InvalidCustomerIdException();
 		}
 
 		// Check card correctness
-		if (!newCustomerCard.matches("^[0-9]{10}$") && !newCustomerCard.isEmpty() && newCustomerCard != null) {
+		if (newCustomerCard != null && !newCustomerCard.matches("^[0-9]{10}$") && !newCustomerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -662,21 +648,22 @@ public class EZShop implements EZShopInterface {
 
 			chosen.setCustomerName(newCustomerName);
 
-			if (newCustomerCard.matches("^[0-9]{10}$")) {
-				if (EZShopMaps.cards.containsKey(newCustomerCard) && EZShopMaps.cards.get(newCustomerCard).getCustomer() == null) {
+			if (newCustomerCard != null) {
+				if (newCustomerCard.matches("^[0-9]{10}$")) {
+					if (EZShopMaps.cards.containsKey(newCustomerCard) && EZShopMaps.cards.get(newCustomerCard).getCustomer() == null) {
+						// Double reference
+						chosen.setCard(EZShopMaps.cards.get(newCustomerCard));
+						EZShopMaps.cards.get(newCustomerCard).setCustomer(chosen);
+					}
+				} else if (newCustomerCard.isEmpty()) {
 					// Double reference
-					chosen.setCard(EZShopMaps.cards.get(newCustomerCard));
-					EZShopMaps.cards.get(newCustomerCard).setCustomer(chosen);
-				}
-			} else if (newCustomerCard.isEmpty()) {
-				// Double reference
-				chosen.getCard().setCustomer(null);
-				chosen.setCustomerCard(null);
-			} // null case does not modify anything
+					chosen.getCard().setCustomer(null);
+					chosen.setCustomerCard(null);
+				} // null case does not modify anything
 
-			if (FileWrite.writeCustomers(EZShopMaps.customers)
-					&& FileWrite.writeCards(EZShopMaps.cards))
-				return true;
+				return FileWrite.writeCustomers(EZShopMaps.customers)
+						&& FileWrite.writeCards(EZShopMaps.cards);
+			}
 		}
 
 		return false;
@@ -693,7 +680,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check id correctness
-		if (id <= 0 || id == null) {
+		if (id == null || id <= 0) {
 			throw new InvalidCustomerIdException();
 		}
 
@@ -704,9 +691,8 @@ public class EZShop implements EZShopInterface {
 				EZShopMaps.customers.get(id).getCard().setPoints(0);
 			}
 			EZShopMaps.customers.remove(id);
-			if (FileWrite.writeCustomers(EZShopMaps.customers)
-					&& FileWrite.writeCards(EZShopMaps.cards))
-				return true;
+			return FileWrite.writeCustomers(EZShopMaps.customers)
+					&& FileWrite.writeCards(EZShopMaps.cards);
 		}
 
 		return false;
@@ -723,7 +709,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check id correctness
-		if (id <= 0 || id == null) {
+		if (id == null || id <= 0) {
 			throw new InvalidCustomerIdException();
 		}
 
@@ -776,12 +762,12 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check id correctness
-		if (customerId <= 0 || customerId == null) {
+		if (customerId == null || customerId <= 0) {
 			throw new InvalidCustomerIdException();
 		}
 
 		// Check card correctness
-		if (!customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty() && customerCard != null) {
+		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -796,9 +782,8 @@ public class EZShop implements EZShopInterface {
 			// Double reference
 			EZShopMaps.customers.get(customerId).setCard(EZShopMaps.cards.get(customerCard));
 			EZShopMaps.cards.get(customerCard).setCustomer(EZShopMaps.customers.get(customerId));
-			if (FileWrite.writeCustomers(EZShopMaps.customers)
-					&& FileWrite.writeCards(EZShopMaps.cards))
-				return true;
+			return FileWrite.writeCustomers(EZShopMaps.customers)
+					&& FileWrite.writeCards(EZShopMaps.cards);
 		}
 		return false;
 	}
@@ -815,7 +800,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check card correctness
-		if (!customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty() && customerCard != null) {
+		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -824,8 +809,7 @@ public class EZShop implements EZShopInterface {
 				return false;
 			}
 			EZShopMaps.cards.get(customerCard).setPoints(EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded);
-			if (FileWrite.writeCards(EZShopMaps.cards))
-				return true;
+			return FileWrite.writeCards(EZShopMaps.cards);
 		}
 		return false;
 	}

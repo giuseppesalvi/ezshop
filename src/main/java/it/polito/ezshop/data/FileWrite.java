@@ -64,9 +64,9 @@ public class FileWrite {
 			jsonProduct.put("productCode", product.getBarCode());
 			jsonProduct.put("description", product.getProductDescription());
 			jsonProduct.put("sellPrice", product.getPricePerUnit());
-			jsonProduct.put("notes", product.getNote());
+			jsonProduct.put("notes", product.getNote()); //could be null
 			jsonProduct.put("quantity", product.getQuantity());
-			jsonProduct.put("position", product.getLocation());
+			jsonProduct.put("position", product.getLocation()); //could be null
 			jsonProduct.put("id", product.getId());
 			listUser.add(jsonProduct);
 		}

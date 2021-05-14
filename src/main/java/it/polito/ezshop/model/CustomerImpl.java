@@ -45,7 +45,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerCard(String customerCard) {
-        this.card.setCardId(customerCard);
+        //this.card.setCardId(customerCard);
     }
 
     @Override

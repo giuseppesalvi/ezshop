@@ -1,5 +1,6 @@
 package it.polito.ezshop.model;
 
+import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.data.ProductType;
 
 public class ProductTypeImpl implements ProductType {
@@ -13,6 +14,7 @@ public class ProductTypeImpl implements ProductType {
     private Integer quantity;
     private Position position;
 
+    //Constructor for new products
     public ProductTypeImpl(String productCode, String description, Double sellPrice, String notes) {
         this.productCode = productCode;
         this.description = description;
@@ -23,6 +25,7 @@ public class ProductTypeImpl implements ProductType {
         this.id = idGen++;
     }
 
+    //Constructor for products with already an ID
     public ProductTypeImpl(String productCode, String description, Double sellPrice,
                            String notes, Integer quantity, String position, Integer id) {
         this.productCode = productCode;
@@ -34,7 +37,7 @@ public class ProductTypeImpl implements ProductType {
         this.id = id;
     }
 
-    //dummy product
+    //dummy product with id
     public ProductTypeImpl(Integer id){
         this.id = id;
         this.productCode = null;
@@ -44,6 +47,8 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = null;
         this.position = null;
     }
+
+    //dummy product with barcode
      public ProductTypeImpl(String productCode){
         this.id = null;
         this.productCode = productCode;
@@ -53,12 +58,9 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = null;
         this.position = null;
     }   
-    //dummy product with barcode
-    
 
      public static boolean checkBarCode(String barCode) {
-
-        if (barCode.matches("^[0-9]{12,14}$")) {
+        if (barCode != null && barCode.matches("^[0-9]{12,14}$")) {
             int sum = 0;
             boolean x3 = true;
             for (int i = barCode.length() - 2; i >= 0; i--, x3 = !x3) {
@@ -68,7 +70,6 @@ public class ProductTypeImpl implements ProductType {
             if (sum == (Character.getNumericValue(barCode.charAt(barCode.length()-1))))
                 return true;
         }
-
         return false;
     }
 
@@ -79,7 +80,8 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+        if (quantity != null && quantity > 0)
+            this.quantity = quantity;
     }
 
     @Override
@@ -89,7 +91,12 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setLocation(String location) {
-        position = new Position(location);
+        if (location != null && !location.isEmpty() && location.matches(".+-.+-.+"))
+            //Test if the position is equal to the current one
+            if (position != null && !position.getPosition().contentEquals(location))
+                //Uniqueness
+                if (EZShopMaps.products.values().stream().noneMatch(p -> p.getLocation().contentEquals(location)))
+                    position = new Position(location);
     }
 
     @Override
@@ -99,6 +106,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setNote(String note) {
+        //Note can be equal to null
         this.notes = note;
     }
 
@@ -109,7 +117,8 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setProductDescription(String productDescription) {
-        this.description = productDescription;
+        if (productDescription != null && !productDescription.isEmpty())
+            this.description = productDescription;
     }
 
     @Override
@@ -119,7 +128,10 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setBarCode(String barCode) {
-        this.productCode = barCode;
+        if (barCode != null && !barCode.isEmpty() && !this.productCode.equals(barCode)){
+            if (checkBarCode(barCode))
+                this.productCode = barCode;
+        }
     }
 
     @Override
@@ -129,7 +141,8 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setPricePerUnit(Double pricePerUnit) {
-        this.sellPrice = pricePerUnit;
+        if (pricePerUnit!= null && pricePerUnit > 0)
+            this.sellPrice = pricePerUnit;
     }
 
     @Override
@@ -139,6 +152,10 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setId(Integer id) {
-        this.id = id;
+        if (id != null && !EZShopMaps.products.containsKey(id)){
+            this.id = id;
+            if (id > idGen)
+                idGen = id+1;
+        }
     }
 }
