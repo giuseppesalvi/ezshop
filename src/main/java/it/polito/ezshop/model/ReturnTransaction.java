@@ -45,7 +45,6 @@ public class ReturnTransaction {
 
 	public void setTransaction(SaleTransactionImpl transaction) {
 		this.transaction = transaction;
-		FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public List<TicketEntryImpl> getProducts() {
@@ -58,7 +57,6 @@ public class ReturnTransaction {
 		} else {
 			this.products = products;
 		}
-			FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public String getState() {
@@ -68,7 +66,6 @@ public class ReturnTransaction {
 	public void setState(String state) {
 		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
 			this.state = state;
-			FileWrite.writeReturns(EZShopMaps.returns);
 		}
 	}
 
@@ -78,7 +75,6 @@ public class ReturnTransaction {
 
 	public void setCommit(boolean commit) {
 		this.commit = commit;
-		FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public Double getValue() {
@@ -89,7 +85,6 @@ public class ReturnTransaction {
 
 	public void setValue(Double value) {
 		this.value = value;
-		FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public Double computeValue() {
@@ -104,8 +99,7 @@ public class ReturnTransaction {
 	}
 
 	public boolean addEntry(TicketEntryImpl entry) {
-		this.products.add(entry);
-		return FileWrite.writeReturns(EZShopMaps.returns);
+		return this.products.add(entry);
 	}
 
 	public TicketEntry deleteEntry(String barcode) {
@@ -121,7 +115,6 @@ public class ReturnTransaction {
 		}
 		TicketEntry eliminated = products.get(targetIdx);
 		products.remove(targetIdx);
-		FileWrite.writeReturns(EZShopMaps.returns);
 		return eliminated;
 	}
 

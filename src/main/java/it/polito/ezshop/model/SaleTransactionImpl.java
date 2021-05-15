@@ -71,7 +71,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 			if (ticketNumber > idGen)
 				idGen = ticketNumber + 1;
 			this.transactionID = ticketNumber;
-			FileWrite.writeSales(EZShopMaps.sales);
 		}
 
     }
@@ -89,7 +88,6 @@ public class SaleTransactionImpl implements SaleTransaction {
     	else {
     		this.products = entries;
     	}
-    	FileWrite.writeSales(EZShopMaps.sales);
     }
 
     @Override
@@ -101,7 +99,6 @@ public class SaleTransactionImpl implements SaleTransaction {
     public void setDiscountRate(double discountRate) {
     	if (discountRate >= 0 && discountRate < 1) {
     		this.globalDiscountRate = discountRate;
-    		FileWrite.writeSales(EZShopMaps.sales);
     	}
     }
 
@@ -116,7 +113,6 @@ public class SaleTransactionImpl implements SaleTransaction {
     public void setPrice(double price) {
     	if (price > 0) {
     		this.cost = price;
-    		FileWrite.writeSales(EZShopMaps.sales);
     	}
     }
 
@@ -127,7 +123,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public void setState(String state) {
 		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
 			this.state = state;
-			FileWrite.writeSales(EZShopMaps.sales);
 		}
 	}
 	
@@ -138,7 +133,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public void setPaymentType(String paymentType) {
 		if (state == null || state == "cash" || state == "creditCard") {
 			this.paymentType = paymentType;
-			FileWrite.writeSales(EZShopMaps.sales);
 		}
 
 	}
@@ -149,7 +143,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	public void setCreditCard(CreditCard creditCard) {
 		this.creditCard = creditCard;
-		FileWrite.writeSales(EZShopMaps.sales);
 	}
 
 	public LocalDate getDate() {
@@ -159,7 +152,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public void setDate(LocalDate date) {
 		if (date != null) {
 			this.date = date;
-			FileWrite.writeSales(EZShopMaps.sales);
 		}
 	}
 
@@ -170,14 +162,12 @@ public class SaleTransactionImpl implements SaleTransaction {
 	public void setTime(LocalTime time) {
 		if (time != null) {
 			this.time = time;
-			FileWrite.writeSales(EZShopMaps.sales);
 		}
 
 	}
 
 	public boolean addEntry(TicketEntry entry) {
-		 this.products.add(entry);
-		return FileWrite.writeSales(EZShopMaps.sales);
+		return this.products.add(entry);
 	}
 	
 	public TicketEntry deleteEntry(String barcode) {
@@ -193,7 +183,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		TicketEntry eliminated = products.get(targetIdx);
 		products.remove(targetIdx);
- 		FileWrite.writeSales(EZShopMaps.sales);
 		return eliminated;
 	}
 	

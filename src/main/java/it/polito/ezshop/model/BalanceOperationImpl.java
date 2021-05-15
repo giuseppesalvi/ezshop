@@ -39,7 +39,6 @@ public class BalanceOperationImpl implements BalanceOperation {
 			if (balanceId > idGen)
 				idGen = balanceId + 1;
 			this.id = balanceId;
-			FileWrite.writeOperations(EZShopMaps.operations);
 		}
 	}
 
@@ -52,7 +51,6 @@ public class BalanceOperationImpl implements BalanceOperation {
 	public void setDate(LocalDate date) {
 		if (date != null) {
 			this.date = date;
-			FileWrite.writeOperations(EZShopMaps.operations);
 		}
 	}
 
@@ -64,7 +62,6 @@ public class BalanceOperationImpl implements BalanceOperation {
 	@Override
 	public void setMoney(double money) {
 		this.amount = money;
-		FileWrite.writeOperations(EZShopMaps.operations);
 	}
 
 	@Override
@@ -77,7 +74,6 @@ public class BalanceOperationImpl implements BalanceOperation {
 		if (type != null
 				&& (type == "SALE" || type == "ORDER" || type == "RETURN" || type == "CREDIT" || type == "DEBIT")) {
 			this.type = type;
-			FileWrite.writeOperations(EZShopMaps.operations);
 		}
 	}
 }
