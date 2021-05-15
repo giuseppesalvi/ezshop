@@ -12,6 +12,7 @@ public class ProductTypeImpl implements ProductType {
     private String notes;
     private Integer id;
     private Integer quantity;
+    private boolean eliminated;
     private Position position;
 
     //Constructor for new products
@@ -23,6 +24,7 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = 0;
         this.position = new Position(" ", " ", " ");
         this.id = idGen++;
+        this.eliminated = false;
     }
 
     //Constructor for products with already an ID
@@ -35,6 +37,7 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = quantity;
         this.position = new Position(position);
         this.id = id;
+        this.eliminated = false;
     }
 
     //dummy product with id
@@ -46,6 +49,7 @@ public class ProductTypeImpl implements ProductType {
         this.notes = null;
         this.quantity = null;
         this.position = null;
+        this.eliminated = false;
     }
 
     //dummy product with barcode
@@ -57,6 +61,7 @@ public class ProductTypeImpl implements ProductType {
         this.notes = null;
         this.quantity = null;
         this.position = null;
+        this.eliminated = false;
     }   
 
      public static boolean checkBarCode(String barCode) {
@@ -91,7 +96,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setLocation(String location) {
-        if (location != null && !location.isEmpty() && location.matches(".+-.+-.+"))
+        if (location != null && !location.isEmpty() && location.matches("\\w+-\\w+-\\w+"))
             //Test if the position is equal to the current one
             if (position != null && !position.getPosition().contentEquals(location))
                 //Uniqueness
@@ -157,5 +162,13 @@ public class ProductTypeImpl implements ProductType {
             if (id > idGen)
                 idGen = id+1;
         }
+    }
+
+    public boolean getEliminated(){
+        return this.eliminated;
+    }
+
+    public void invertEliminated(){
+        this.eliminated = !this.eliminated;
     }
 }

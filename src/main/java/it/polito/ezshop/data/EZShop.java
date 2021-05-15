@@ -387,7 +387,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check newPos correctness
-		if (newPos == null || (!newPos.matches(".+-.+-.+") && !newPos.isEmpty())) {
+		if (newPos == null || (!newPos.matches("\\w+-\\w+-\\w+") && !newPos.isEmpty())) {
 			throw new InvalidLocationException();
 		}
 
