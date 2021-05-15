@@ -1,6 +1,7 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.Order;
 import it.polito.ezshop.data.ProductType;
 
@@ -47,6 +48,8 @@ public class OrderImpl implements Order {
         if (balanceId != null && !EZShopMaps.operations.containsKey(balanceId)){
             EZShopMaps.operations.get(this.balanceId).setBalanceId(balanceId);
             this.balanceId = balanceId;
+            FileWrite.writeOperations(EZShopMaps.operations);
+            FileWrite.writeOrders(EZShopMaps.orders);
         }
     }
 
@@ -61,6 +64,7 @@ public class OrderImpl implements Order {
             Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
                     .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
             prod.ifPresent(productType -> this.product = productType);
+            FileWrite.writeOrders(EZShopMaps.orders);
         }
     }
 
@@ -71,8 +75,10 @@ public class OrderImpl implements Order {
 
     @Override
     public void setPricePerUnit(double pricePerUnit) {
-        if (pricePerUnit > 0)
+        if (pricePerUnit > 0) {
             this.pricePerUnit = pricePerUnit;
+            FileWrite.writeOrders(EZShopMaps.orders);
+        }
     }
 
     @Override
@@ -82,8 +88,10 @@ public class OrderImpl implements Order {
 
     @Override
     public void setQuantity(int quantity) {
-        if (quantity > 0)
+        if (quantity > 0) {
             this.quantity = quantity;
+            FileWrite.writeOrders(EZShopMaps.orders);
+        }
     }
 
     @Override
@@ -98,6 +106,7 @@ public class OrderImpl implements Order {
                     status.contentEquals("PAYED") ||
                     status.contentEquals("COMPLETED"))){
             this.status = status;
+            FileWrite.writeOrders(EZShopMaps.orders);
         }
     }
 
@@ -112,6 +121,7 @@ public class OrderImpl implements Order {
             this.id = orderId;
             if (orderId > idGen)
                 idGen = orderId+1;
+            FileWrite.writeOrders(EZShopMaps.orders);
         }
     }
 
@@ -120,7 +130,9 @@ public class OrderImpl implements Order {
     }
 
     public void setProduct(ProductType product) {
-        if (product != null)
+        if (product != null) {
             this.product = product;
+            FileWrite.writeOrders(EZShopMaps.orders);
+        }
     }
 }
