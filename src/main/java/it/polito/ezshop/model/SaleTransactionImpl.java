@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
@@ -65,6 +67,13 @@ public class SaleTransactionImpl implements SaleTransaction {
     @Override
     public void setTicketNumber(Integer ticketNumber) {
     	this.transactionID = ticketNumber;
+    	if (ticketNumber > 0 && !EZShopMaps.sales.containsKey(ticketNumber)) {
+			if (ticketNumber > idGen)
+				idGen = ticketNumber + 1;
+			this.transactionID = ticketNumber;
+			FileWrite.writeSales(EZShopMaps.sales);
+		}
+
     }
 
     @Override
@@ -74,7 +83,13 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setEntries(List<TicketEntry> entries) {
-    	this.products = entries;
+    	if (entries == null) {
+    		this.products = new ArrayList<TicketEntry>();
+    	}
+    	else {
+    		this.products = entries;
+    	}
+    	FileWrite.writeSales(EZShopMaps.sales);
     }
 
     @Override
@@ -84,7 +99,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setDiscountRate(double discountRate) {
-    	this.globalDiscountRate = discountRate;
+    	if (discountRate >= 0 && discountRate < 1) {
+    		this.globalDiscountRate = discountRate;
+    		FileWrite.writeSales(EZShopMaps.sales);
+    	}
     }
 
     @Override
@@ -96,7 +114,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setPrice(double price) {
-    	this.cost = price;
+    	if (price > 0) {
+    		this.cost = price;
+    		FileWrite.writeSales(EZShopMaps.sales);
+    	}
     }
 
 	public String getState() {
@@ -104,7 +125,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setState(String state) {
-		this.state = state;
+		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
+			this.state = state;
+			FileWrite.writeSales(EZShopMaps.sales);
+		}
 	}
 	
 	public String getPaymentType() {
@@ -112,7 +136,11 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setPaymentType(String paymentType) {
-		this.paymentType = paymentType;
+		if (state == null || state == "cash" || state == "creditCard") {
+			this.paymentType = paymentType;
+			FileWrite.writeSales(EZShopMaps.sales);
+		}
+
 	}
 
 	public CreditCard getCreditCard() {
@@ -121,6 +149,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
 	public void setCreditCard(CreditCard creditCard) {
 		this.creditCard = creditCard;
+		FileWrite.writeSales(EZShopMaps.sales);
 	}
 
 	public LocalDate getDate() {
@@ -128,7 +157,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setDate(LocalDate date) {
-		this.date = date;
+		if (date != null) {
+			this.date = date;
+			FileWrite.writeSales(EZShopMaps.sales);
+		}
 	}
 
 	public LocalTime getTime() {
@@ -136,11 +168,16 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setTime(LocalTime time) {
-		this.time = time;
+		if (time != null) {
+			this.time = time;
+			FileWrite.writeSales(EZShopMaps.sales);
+		}
+
 	}
 
 	public boolean addEntry(TicketEntry entry) {
-		return this.products.add(entry);
+		 this.products.add(entry);
+		return FileWrite.writeSales(EZShopMaps.sales);
 	}
 	
 	public TicketEntry deleteEntry(String barcode) {
@@ -156,6 +193,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		TicketEntry eliminated = products.get(targetIdx);
 		products.remove(targetIdx);
+ 		FileWrite.writeSales(EZShopMaps.sales);
 		return eliminated;
 	}
 	
