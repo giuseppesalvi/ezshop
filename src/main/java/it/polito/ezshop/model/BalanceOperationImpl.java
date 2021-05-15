@@ -74,7 +74,8 @@ public class BalanceOperationImpl implements BalanceOperation {
 
 	@Override
 	public void setType(String type) {
-		if (type == "SALE" || type == "ORDER" || type == "RETURN" || type == "CREDIT" || type == "DEBIT") {
+		if (type != null
+				&& (type == "SALE" || type == "ORDER" || type == "RETURN" || type == "CREDIT" || type == "DEBIT")) {
 			this.type = type;
 			FileWrite.writeOperations(EZShopMaps.operations);
 		}

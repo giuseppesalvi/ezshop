@@ -3,6 +3,8 @@ package it.polito.ezshop.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransaction {
@@ -37,16 +39,13 @@ public class ReturnTransaction {
 		return returnID;
 	}
 
-	public void setReturnID(Integer returnID) {
-		this.returnID = returnID;
-	}
-
 	public SaleTransactionImpl getTransaction() {
 		return transaction;
 	}
 
 	public void setTransaction(SaleTransactionImpl transaction) {
 		this.transaction = transaction;
+		FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public List<TicketEntryImpl> getProducts() {
@@ -54,7 +53,12 @@ public class ReturnTransaction {
 	}
 
 	public void setProducts(List<TicketEntryImpl> products) {
-		this.products = products;
+		if (products == null) {
+			this.products = new ArrayList<TicketEntryImpl>();
+		} else {
+			this.products = products;
+		}
+			FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public String getState() {
@@ -62,7 +66,10 @@ public class ReturnTransaction {
 	}
 
 	public void setState(String state) {
-		this.state = state;
+		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
+			this.state = state;
+			FileWrite.writeReturns(EZShopMaps.returns);
+		}
 	}
 
 	public boolean isCommit() {
@@ -71,6 +78,7 @@ public class ReturnTransaction {
 
 	public void setCommit(boolean commit) {
 		this.commit = commit;
+		FileWrite.writeReturns(EZShopMaps.returns);
 	}
 
 	public Double getValue() {
@@ -81,13 +89,14 @@ public class ReturnTransaction {
 
 	public void setValue(Double value) {
 		this.value = value;
+		FileWrite.writeReturns(EZShopMaps.returns);
 	}
-	
+
 	public Double computeValue() {
 		Double amount = 0.0;
 		for (TicketEntry prod : products) {
 			// For each product add its price after discount * its quantity
-			amount += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate() ) * prod.getAmount();
+			amount += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate()) * prod.getAmount();
 		}
 		// Apply sale DiscountRate
 		amount = amount * (1.00 - transaction.getDiscountRate());
@@ -95,9 +104,10 @@ public class ReturnTransaction {
 	}
 
 	public boolean addEntry(TicketEntryImpl entry) {
-		return this.products.add(entry);
+		this.products.add(entry);
+		return FileWrite.writeReturns(EZShopMaps.returns);
 	}
-	
+
 	public TicketEntry deleteEntry(String barcode) {
 		int targetIdx = -1;
 		for (TicketEntry p : products) {
@@ -105,12 +115,13 @@ public class ReturnTransaction {
 				targetIdx = products.indexOf(p);
 			}
 		}
-		
+
 		if (targetIdx == -1) {
 			return null;
 		}
 		TicketEntry eliminated = products.get(targetIdx);
 		products.remove(targetIdx);
+		FileWrite.writeReturns(EZShopMaps.returns);
 		return eliminated;
 	}
 
