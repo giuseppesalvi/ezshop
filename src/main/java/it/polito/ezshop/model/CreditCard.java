@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import it.polito.ezshop.exceptions.InvalidCreditCardException;
+
 public class CreditCard {
 
 	private String number;
@@ -14,8 +16,13 @@ public class CreditCard {
 		return number;
 	}
 
-	public void setNumber(String number) {
-		this.number = number;
+	public void setNumber(String number) throws InvalidCreditCardException {
+		if (!checkValidity(number)) {
+			throw new InvalidCreditCardException();
+		} else {
+			this.number = number;
+		}
+
 	}
 
 	public Double getBalance() {
@@ -23,7 +30,8 @@ public class CreditCard {
 	}
 
 	public void setBalance(Double balance) {
-		this.balance = balance;
+		if (balance != null)
+			this.balance = balance;
 	}
 
 	/* This method applies Luhn algorithm to verify if a number is valid */
@@ -32,7 +40,7 @@ public class CreditCard {
 		if (creditCard == null || creditCard.isEmpty())
 			// creditCard is an invalid String
 			return false;
-	
+
 		try {
 			// Luhn algorithm
 			int sum = 0;
@@ -49,13 +57,11 @@ public class CreditCard {
 				alternate = !alternate;
 			}
 			return (sum % 10 == 0);
-		}
-		catch ( NumberFormatException e ) {
+		} catch (NumberFormatException e) {
 			// creditCard is not a number
 			return false;
-			
+
 		}
 	}
-	
-	
+
 }

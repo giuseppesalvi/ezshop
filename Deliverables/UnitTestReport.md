@@ -62,29 +62,18 @@ Version:
 | " | " | no | Valid | T3("4485370086510892"" ; false) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityLuhnCheckNotPassed |
 
 
- ### **Class *Position* - method *setPosition***
+ ### **Class *CreditCard* - method *setNumber***
 
-
-
-**Criteria for method *setPosition*:**
+**Criteria for method *setNumber*:**
 	
+ - validity of String number 
 
- - Validity of String position
-
-
-
-
-
-**Predicates for method *setPosition*:**
+**Predicates for method *setNumber*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
-|    Validity of String position      |   yes        |
-|          |     no      |
-
-
-
-
+| validity of String number | yes |
+|                           | no |
 
 **Boundaries**:
 
@@ -93,10 +82,63 @@ Version:
 |          |                 |
 |          |                 |
 
+**Combination of predicates**:
 
+| validity of String number| Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+| no | Invalid | CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setNumber(null) <br/> -> InvalidCreditCardException| src/test/java/it/polito/ezshop/test/CreditCardTests.testSetNumberWithInvalidString|
+| yes | Valid |  CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setNumber("5100293991053009") <br/> c1.getNumber() -> "5100293991053009"| src/test/java/it/polito/ezshop/test/CreditCardTests.testSetNumberWithValidString|
+
+
+ ### **Class *CreditCard* - method *setBalance***
+
+**Criteria for method *setBalance*:**
+	
+ - validity of Double balance 
+
+**Predicates for method *setBalance*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of Double balance | yes |
+|                            | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
 
 **Combination of predicates**:
 
+| validity of Double balance | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+| no | Invalid | CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setBalance(null) <br/> c1.getBalance() -> 100.00 | src/test/java/it/polito/ezshop/test/CreditCardTests.testSetBalanceWithNull|
+| yes | Valid |  CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setBalance(50.00) <br/> c1.getBalance() -> 50.00 | src/test/java/it/polito/ezshop/test/CreditCardTests.testSetBalanceWithValidBalance|
+
+
+ ### **Class *Position* - method *setPosition***
+
+**Criteria for method *setPosition*:**
+	
+ - Validity of String position
+
+**Predicates for method *setPosition*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+|    Validity of String position      |   yes        |
+|          |     no      |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
 
 | Validity of String position | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
@@ -118,9 +160,8 @@ Version:
 | Unit name | JUnit test case |
 |--|--|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
-| | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
-| | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoopMultipleIterations|
-| | src/test/java/it/polito/ezshop/test/CreditCardTests.testGettersSettersConstructors|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoopMultipleIterations|
 ### Code coverage report
 
     <Add here the screenshot report of the statement and branch coverage obtained using
@@ -135,8 +176,8 @@ Version:
 |Unit name | Loop rows | Number of iterations | JUnit test case |
 |---|---|---|---|
 | CreditCard | 40 - 50 | 0 | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations |
-||| 1 |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop1Iterations|
-||| multiple |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
+| CreditCard | 40 - 50 | 1 |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop1Iterations|
+| CreditCard | 40 - 50 | multiple |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
 
 
 
