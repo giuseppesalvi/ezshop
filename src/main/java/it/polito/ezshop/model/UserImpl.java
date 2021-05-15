@@ -1,6 +1,7 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
@@ -38,6 +39,7 @@ public class UserImpl implements User {
             this.id = id;
             if (id > idGen)
                 idGen = id+1;
+            FileWrite.writeUsers(EZShopMaps.users);
         }
     }
 
@@ -50,8 +52,10 @@ public class UserImpl implements User {
     public void setUsername(String username) {
         if (username != null &&
                 !username.isEmpty() &&
-                EZShopMaps.users.values().stream().noneMatch(u -> u.getUsername().contentEquals(username)))
+                EZShopMaps.users.values().stream().noneMatch(u -> u.getUsername().contentEquals(username))) {
             this.username = username;
+            FileWrite.writeUsers(EZShopMaps.users);
+        }
     }
 
     @Override
@@ -61,8 +65,10 @@ public class UserImpl implements User {
 
     @Override
     public void setPassword(String password) {
-        if (password != null && !password.isEmpty())
+        if (password != null && !password.isEmpty()) {
             this.password = password;
+            FileWrite.writeUsers(EZShopMaps.users);
+        }
     }
 
     @Override
@@ -76,8 +82,10 @@ public class UserImpl implements User {
                 !role.isEmpty() &&
                 (role.contentEquals("Administrator") ||
                         role.contentEquals("Cashier") ||
-                        role.contentEquals("ShopManager")))
-        this.role = role;
+                        role.contentEquals("ShopManager"))) {
+            this.role = role;
+            FileWrite.writeUsers(EZShopMaps.users);
+        }
     }
 
 }
