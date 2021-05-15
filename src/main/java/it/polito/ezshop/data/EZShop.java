@@ -37,10 +37,8 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check role correctness
-		if (role == null || role.isEmpty() ||
-				(!role.contentEquals("Administrator") &&
-						!role.contentEquals("Cashier") &&
-						!role.contentEquals("ShopManager"))) {
+		if (role == null || role.isEmpty() || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
+				&& !role.contentEquals("ShopManager"))) {
 			throw new InvalidRoleException();
 		}
 
@@ -153,8 +151,8 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieving user with that username
-		Optional<UserImpl> optionalUser = EZShopMaps.users.values().stream().filter(u -> u.getUsername().contentEquals(username))
-				.findFirst();
+		Optional<UserImpl> optionalUser = EZShopMaps.users.values().stream()
+				.filter(u -> u.getUsername().contentEquals(username)).findFirst();
 
 		// Checking if username and password match
 		if (optionalUser.isPresent() && optionalUser.get().getPassword().contentEquals(password)) {
@@ -478,14 +476,13 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Create new balanceOperation
-		BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "order");
+		BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "ORDER");
 		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 		newOrd.setBalanceId(newOp.getBalanceId());
 		newOrd.setStatus("PAYED");
 		EZShopMaps.orders.put(newOrd.getOrderId(), newOrd);
-		if (FileWrite.writeOrders(EZShopMaps.orders) &&
-				FileWrite.writeOperations(EZShopMaps.operations)) {
+		if (FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeOperations(EZShopMaps.operations)) {
 			return newOrd.getOrderId();
 		}
 		return -1;
@@ -521,14 +518,13 @@ public class EZShop implements EZShopInterface {
 			}
 
 			// Create new balanceOperation
-			BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "order");
+			BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "ORDER");
 			EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 			// Update order
 			chosen.setBalanceId(newOp.getBalanceId());
 			chosen.setStatus("PAYED");
-			return FileWrite.writeOrders(EZShopMaps.orders)
-					&& FileWrite.writeOperations(EZShopMaps.operations);
+			return FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeOperations(EZShopMaps.operations);
 		} else
 			return chosen.getStatus().contentEquals("PAYED");
 	}
@@ -564,8 +560,7 @@ public class EZShop implements EZShopInterface {
 			// Update quantity in inventory
 			chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
 			chosen.setStatus("COMPLETED");
-			return FileWrite.writeOrders(EZShopMaps.orders) &&
-					FileWrite.writeProducts(EZShopMaps.products);
+			return FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeProducts(EZShopMaps.products);
 		} else
 			return chosen.getStatus().contentEquals("COMPLETED");
 	}
@@ -642,7 +637,8 @@ public class EZShop implements EZShopInterface {
 			if (!chosen.getCustomerName().contentEquals(newCustomerName)) {
 				// The new customer name differs from the original one thus we need to check if
 				// it is still unique.
-				if (EZShopMaps.customers.values().stream().anyMatch(p -> p.getCustomerName().contentEquals(newCustomerName)))
+				if (EZShopMaps.customers.values().stream()
+						.anyMatch(p -> p.getCustomerName().contentEquals(newCustomerName)))
 					return false;
 			}
 
@@ -650,7 +646,8 @@ public class EZShop implements EZShopInterface {
 
 			if (newCustomerCard != null) {
 				if (newCustomerCard.matches("^[0-9]{10}$")) {
-					if (EZShopMaps.cards.containsKey(newCustomerCard) && EZShopMaps.cards.get(newCustomerCard).getCustomer() == null) {
+					if (EZShopMaps.cards.containsKey(newCustomerCard)
+							&& EZShopMaps.cards.get(newCustomerCard).getCustomer() == null) {
 						// Double reference
 						chosen.setCard(EZShopMaps.cards.get(newCustomerCard));
 						EZShopMaps.cards.get(newCustomerCard).setCustomer(chosen);
@@ -661,8 +658,7 @@ public class EZShop implements EZShopInterface {
 					chosen.setCustomerCard(null);
 				} // null case does not modify anything
 
-				return FileWrite.writeCustomers(EZShopMaps.customers)
-						&& FileWrite.writeCards(EZShopMaps.cards);
+				return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
 			}
 		}
 
@@ -691,8 +687,7 @@ public class EZShop implements EZShopInterface {
 				EZShopMaps.customers.get(id).getCard().setPoints(0);
 			}
 			EZShopMaps.customers.remove(id);
-			return FileWrite.writeCustomers(EZShopMaps.customers)
-					&& FileWrite.writeCards(EZShopMaps.cards);
+			return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
 		}
 
 		return false;
@@ -782,8 +777,7 @@ public class EZShop implements EZShopInterface {
 			// Double reference
 			EZShopMaps.customers.get(customerId).setCard(EZShopMaps.cards.get(customerCard));
 			EZShopMaps.cards.get(customerCard).setCustomer(EZShopMaps.customers.get(customerId));
-			return FileWrite.writeCustomers(EZShopMaps.customers)
-					&& FileWrite.writeCards(EZShopMaps.cards);
+			return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
 		}
 		return false;
 	}
@@ -808,7 +802,8 @@ public class EZShop implements EZShopInterface {
 			if ((EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded) < 0) {
 				return false;
 			}
-			EZShopMaps.cards.get(customerCard).setPoints(EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded);
+			EZShopMaps.cards.get(customerCard)
+					.setPoints(EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded);
 			return FileWrite.writeCards(EZShopMaps.cards);
 		}
 		return false;
@@ -1506,12 +1501,11 @@ public class EZShop implements EZShopInterface {
 			sale.setState("PAYED");
 
 			// Create new balance operation, to record this sale in the balance
-			BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
+			BalanceOperationImpl newOp = new BalanceOperationImpl(price, "SALE");
 			EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 			// Store changes in persistent memory
-			if (!FileWrite.writeOperations(EZShopMaps.operations)
-					|| !FileWrite.writeSales(EZShopMaps.sales)) {
+			if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeSales(EZShopMaps.sales)) {
 				return -1;
 			} else {
 				return rest;
@@ -1583,13 +1577,12 @@ public class EZShop implements EZShopInterface {
 		sale.setCreditCard(cCard);
 
 		// Create new balance operation, to record this sale in the balance
-		BalanceOperationImpl newOp = new BalanceOperationImpl(price, "sale");
+		BalanceOperationImpl newOp = new BalanceOperationImpl(price, "SALE");
 		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations) ||
-				!FileWrite.writeSales(EZShopMaps.sales) ||
-				!FileWrite.writeCreditCards(creditCardsList)) {
+		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeSales(EZShopMaps.sales)
+				|| !FileWrite.writeCreditCards(creditCardsList)) {
 			return false;
 		} else {
 			return true;
@@ -1629,12 +1622,11 @@ public class EZShop implements EZShopInterface {
 		ret.setState("PAYED");
 
 		// Create new balance operation, to record this return in the balance
-		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "return");
+		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "RETURN");
 		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations)
-				|| !FileWrite.writeReturns(EZShopMaps.returns)) {
+		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeReturns(EZShopMaps.returns)) {
 			return -1;
 		} else {
 			return amount;
@@ -1699,12 +1691,11 @@ public class EZShop implements EZShopInterface {
 		ret.setState("PAYED");
 
 		// Create new balance operation, to record this return in the balance
-		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "return");
+		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "RETURN");
 		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations)
-				|| !FileWrite.writeReturns(EZShopMaps.returns)
+		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeReturns(EZShopMaps.returns)
 				|| !FileWrite.writeCreditCards(creditCardsList)) {
 			return -1;
 		} else {
@@ -1723,15 +1714,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		if ((this.computeBalance() + toBeAdded) >= 0) {
-			BalanceOperationImpl newOne = new BalanceOperationImpl(toBeAdded, (toBeAdded >= 0) ? "credit" : "debit");
+			BalanceOperationImpl newOne = new BalanceOperationImpl(toBeAdded, (toBeAdded >= 0) ? "CREDIT" : "DEBIT");
 			EZShopMaps.operations.put(newOne.getBalanceId(), newOne);
 
-			// Store changes in persistent memory
-			if (!FileWrite.writeOperations(EZShopMaps.operations)) {
-				return false;
-			} else {
-				return true;
-			}
+			// Store changes in persistent memory and return result of the operation
+			return FileWrite.writeOperations(EZShopMaps.operations);
 		}
 		return false;
 	}
