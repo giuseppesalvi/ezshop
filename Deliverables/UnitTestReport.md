@@ -62,28 +62,25 @@ Version:
 | " | " | no | Valid | T3("4485370086510892"" ; false) | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityLuhnCheckNotPassed |
 
 
- ### **Class *class_name* - method *name***
+ ### **Class *Position* - method *setPosition***
 
 
 
-**Criteria for method *name*:**
+**Criteria for method *setPosition*:**
 	
 
- - 
- - 
+ - Validity of String position
 
 
 
 
 
-**Predicates for method *name*:**
+**Predicates for method *setPosition*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
-|          |           |
-|          |           |
-|          |           |
-|          |           |
+|    Validity of String position      |   yes        |
+|          |     no      |
 
 
 
@@ -101,13 +98,10 @@ Version:
 **Combination of predicates**:
 
 
-| Criteria 1 | Criteria 2 | ... | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|-------|
-|||||||
-|||||||
-|||||||
-|||||||
-|||||||
+| Validity of String position | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|no|invalid |T0("456def456") <br /> T0("")| src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithInvalidString | 
+|yes|valid| T1("456-def-456", true) | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString | 
 
 
 

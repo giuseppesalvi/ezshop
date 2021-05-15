@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import it.polito.ezshop.exceptions.InvalidPositionException;
+
 public class Position {
 
     private String aisleID, rackID, levelID;
@@ -21,11 +23,13 @@ public class Position {
         return aisleID+"-"+rackID+"-"+levelID;
     }
 
-    public void setPosition(String position){
-        String[] pos = position.split("-");
-        this.aisleID = pos[0];
-        this.rackID = pos[1];
-        this.levelID = pos[2];
+    public void setPosition(String position) throws InvalidPositionException {
+        if (position.matches("\\w+-\\w+-\\w+")) {
+            String[] pos = position.split("-");
+            this.aisleID = pos[0];
+            this.rackID = pos[1];
+            this.levelID = pos[2];
+        } else throw new InvalidPositionException();
     }
 
 }
