@@ -823,8 +823,6 @@ public class EZShop implements EZShopInterface {
 
 		// store changes in persistent memory
 		if (!FileWrite.writeSales(EZShopMaps.sales)) {
-			// error: restore previous state
-			// EZShopMaps.sales.remove(newSale.getTicketNumber());
 			return -1;
 		} else {
 			return newSale.getTicketNumber();
@@ -862,8 +860,8 @@ public class EZShop implements EZShopInterface {
 		Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
 				.filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
-		// Check if the product exists in the map
-		if (!prod.isPresent() || prod.get().getQuantity() < amount) {
+		// Check if the product exists in the map and the quantity available is enough
+		if (!prod.isPresent() || prod.get().getEliminated() || prod.get().getQuantity() < amount) {
 			return false;
 		}
 
@@ -949,6 +947,9 @@ public class EZShop implements EZShopInterface {
 			return false;
 		}
 		prod.get().setQuantity(prod.get().getQuantity() + amount);
+		if (prod.get().getEliminated() ) {
+			prod.get().invertEliminated();
+		}
 
 		// Store changes in persistent memory
 		if (!FileWrite.writeSales(EZShopMaps.sales) || !FileWrite.writeProducts(EZShopMaps.products)) {
@@ -1172,6 +1173,9 @@ public class EZShop implements EZShopInterface {
 			for (ProductTypeImpl p : EZShopMaps.products.values()) {
 				if (entry.getBarCode().contentEquals(p.getBarCode())) {
 					p.setQuantity(p.getQuantity() + entry.getAmount());
+					if (p.getEliminated() ) {
+						p.invertEliminated();
+					}
 				}
 			}
 		}
@@ -1357,6 +1361,9 @@ public class EZShop implements EZShopInterface {
 			// Increase the product quantity available in the shelves
 			for (TicketEntryImpl e : ret.getProducts()) {
 				e.getProduct().setQuantity(e.getProduct().getQuantity() + e.getAmount());
+				if (e.getProduct().getEliminated()) {
+					e.getProduct().invertEliminated();
+				}
 			}
 
 			// Update the sale transaction status: decrease the number of units sold by the
@@ -1428,6 +1435,9 @@ public class EZShop implements EZShopInterface {
 					return false;
 				}
 				prod.setQuantity(prod.getQuantity() - e.getAmount());
+				if (prod.getQuantity() == 0) {
+					prod.invertEliminated();
+				}
 			}
 
 			// Update the sale transaction status: increase the number of units sold by the
