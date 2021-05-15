@@ -11,9 +11,12 @@ public class PositionTests {
     @Test
     public void testSetPositionWithValidString() throws InvalidPositionException {
         // I can set valid string without errors.
-        Position position = new Position("123-abc-123");
-        position.setPosition("456-def-456");
-        assertEquals(position.getPosition(),"456-def-456");
+        Position position0 = new Position("123-abc-123");
+        Position position1 = new Position("123","abc","123");
+        position0.setPosition("456-def-456");
+        position1.setPosition("456-def-456");
+        assertEquals(position0.getPosition(),"456-def-456");
+        assertEquals(position1.getPosition(),"456-def-456");
     }
 
     @Test
