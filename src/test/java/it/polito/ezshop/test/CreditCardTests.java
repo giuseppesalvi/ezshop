@@ -2,11 +2,12 @@ package it.polito.ezshop.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import it.polito.ezshop.exceptions.InvalidCreditCardException;
 import it.polito.ezshop.model.CreditCard;
 
 public class CreditCardTests {
@@ -34,19 +35,37 @@ public class CreditCardTests {
 		assertFalse(CreditCard.checkValidity("4485370086510892"));
 	}
 	
-	// White box tests
-	
-	@Test
-	public void testGettersSettersConstructors() {
+	@Test 
+	public void testSetNumberWithInvalidString() throws InvalidCreditCardException {
 		CreditCard card = new CreditCard("4485370086510891", 100.00);
-		assertNotNull(card);
-		assertEquals(card.getNumber(),"4485370086510891");
-		assertEquals(card.getBalance(), (Double)100.00);
-		card.setNumber("4485370086510892");
-		card.setBalance(90.00);
-		assertEquals(card.getNumber(),"4485370086510892");
-		assertEquals(card.getBalance(), (Double)90.00);
+		assertThrows(InvalidCreditCardException.class, () -> card.setNumber(null)); 
+		assertThrows(InvalidCreditCardException.class, () -> card.setNumber("")); 
+		assertThrows(InvalidCreditCardException.class, () -> card.setNumber("012234abvs1232"));
+
 	}
+	
+	@Test 
+	public void testSetNumberWithValidString() throws InvalidCreditCardException {
+		CreditCard card = new CreditCard("4485370086510891", 100.00);
+		card.setNumber("5100293991053009");
+		assertEquals(card.getNumber(), "5100293991053009");
+	}
+	
+	@Test 
+	public void testSetBalanceWithNull(){
+		CreditCard card = new CreditCard("4485370086510891", 100.00);
+		card.setBalance(null);
+		assertEquals(card.getBalance(), (Double) 100.00);
+	}
+	
+	@Test 
+	public void testSetBalanceWithValidBalance(){
+		CreditCard card = new CreditCard("4485370086510891", 100.00);
+		card.setBalance(50.00);
+		assertEquals(card.getBalance(), (Double) 50.00);
+	}
+	
+	// White box tests
 	
 	@Test 
 	public void testCheckValidityForLoop0Iterations() {
