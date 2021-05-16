@@ -1,5 +1,7 @@
 package it.polito.ezshop.test;
 
+import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.model.Position;
 import it.polito.ezshop.model.ProductTypeImpl;
 import org.junit.Test;
 
@@ -26,13 +28,30 @@ public class ProductTypeImplTests {
     }
     @Test
     public void testGetLocation() {
-        // TODO new object
+        ProductTypeImpl productType = new ProductTypeImpl(
+                null,
+                null,
+                null,
+                null,
+                null,
+                "123-abc-123",
+                null);
+        assertEquals(productType.getLocation(),"123-abc-123");
     }
-
     @Test
     public void testSetLocation() {
+        ProductTypeImpl productType = new ProductTypeImpl(
+                null,
+                null,
+                null,
+                null,
+                null,
+                "123-abc-123",
+                null);
+        EZShopMaps.loadMaps();
+        productType.setLocation("456-abc-456");
+        assertEquals(productType.getLocation(),"456-abc-456");
     }
-
     @Test
     public void testGetNote() {
         ProductTypeImpl productType = new ProductTypeImpl(123);
@@ -43,19 +62,16 @@ public class ProductTypeImplTests {
     public void testSetNote() {
         // TODO add invalid inputs
     }
-
     @Test
     public void testGetProductDescription() {
         ProductTypeImpl productType = new ProductTypeImpl(123);
         productType.setProductDescription("desc");
         assertEquals(productType.getProductDescription(),"desc");
     }
-
     @Test
     public void testSetProductDescription() {
         // TODO add invalid inputs
     }
-
     @Test
     public void testGetBarCode() {
         ProductTypeImpl productType = new ProductTypeImpl("978020137964");
@@ -83,6 +99,14 @@ public class ProductTypeImplTests {
     @Test
     public void testSetId() {
         // TODO new class
+        ProductTypeImpl productType = new ProductTypeImpl(
+                null,
+                null,
+                null,
+                null);
+        EZShopMaps.loadMaps();
+        productType.setId(456);
+        assertEquals(java.util.Optional.of(productType.getId()),java.util.Optional.of(456));
     }
     @Test
     public void testGetEliminated() {

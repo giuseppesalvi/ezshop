@@ -1,5 +1,6 @@
 package it.polito.ezshop.test;
 
+import it.polito.ezshop.model.CustomerImpl;
 import it.polito.ezshop.model.LoyaltyCard;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -19,9 +20,16 @@ public class LoyaltyCardTests {
     }
     @Test
     public void testGetCustomer() {
+        CustomerImpl customer = new CustomerImpl("name");
+        LoyaltyCard card = new LoyaltyCard("123",customer,100);
+        assertEquals(card.getCustomer(),customer);
     }
     @Test
     public void testSetCustomer() {
+        CustomerImpl customer = new CustomerImpl("name");
+        LoyaltyCard card = new LoyaltyCard("123");
+        card.setCustomer(customer);
+        assertEquals(card.getCustomer(),customer);
     }
     @Test
     public void testGetCardId() {

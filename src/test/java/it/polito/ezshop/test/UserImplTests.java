@@ -69,5 +69,9 @@ public class UserImplTests {
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setRole("Administrator");
         assertEquals(user.getRole(),"Administrator");
+        user.setRole("Cashier");
+        assertEquals(user.getRole(),"Cashier");
+        user.setRole("ShopManager");
+        assertEquals(user.getRole(),"ShopManager");
     }
 }

@@ -20,7 +20,18 @@ public class CustomerImplTests {
         customer.setCustomerName("name");
         assertEquals(customer.getCustomerName(), "name");
     }
-
+    @Test
+    public void testGetCustomerCard (){
+        LoyaltyCard card = new LoyaltyCard("123");
+        CustomerImpl customer = new CustomerImpl("name",123,card);
+        assertEquals(customer.getCustomerCard(),"123");
+    }
+    @Test
+    public void testSetCustomerCard(){
+        // Dummy test
+        CustomerImpl customer = new CustomerImpl("name");
+        customer.setCustomerCard("123");
+    }
     @Test
     public void testGetId() {
         CustomerImpl customer = new CustomerImpl(1 );
