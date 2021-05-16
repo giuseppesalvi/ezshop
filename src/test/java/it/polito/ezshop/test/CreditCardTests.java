@@ -35,13 +35,10 @@ public class CreditCardTests {
 		assertFalse(CreditCard.checkValidity("4485370086510892"));
 	}
 	
-	@Test 
+	@Test
 	public void testSetNumberWithInvalidString() throws InvalidCreditCardException {
 		CreditCard card = new CreditCard("4485370086510891", 100.00);
-		assertThrows(InvalidCreditCardException.class, () -> card.setNumber(null)); 
-		assertThrows(InvalidCreditCardException.class, () -> card.setNumber("")); 
-		assertThrows(InvalidCreditCardException.class, () -> card.setNumber("012234abvs1232"));
-
+		assertThrows(InvalidCreditCardException.class, () -> card.setNumber(null));
 	}
 	
 	@Test 
