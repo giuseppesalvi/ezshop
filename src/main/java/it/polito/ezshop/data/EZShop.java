@@ -204,12 +204,26 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if barcode already exists
-		if (EZShopMaps.products.values().stream().anyMatch(p -> p.getBarCode().contentEquals(productCode))) {
+		if (EZShopMaps.products.values().stream()
+				.anyMatch(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))) {
 			return -1;
 		}
 
-		ProductTypeImpl newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
-		EZShopMaps.products.put(newOne.getId(), newOne);
+		Optional<ProductTypeImpl> prevElim = EZShopMaps.products.values().stream()
+				.filter(p-> p.getBarCode().contentEquals(productCode)).findFirst();
+		ProductTypeImpl newOne;
+
+		//Check if it is already present as eliminated
+		if (prevElim.isPresent()){
+			newOne = prevElim.get();
+			newOne.setProductDescription(description);
+			newOne.setNote(note);
+			newOne.setPricePerUnit(pricePerUnit);
+		}else {
+			newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
+			EZShopMaps.products.put(newOne.getId(), newOne);
+		}
+
 		if (FileWrite.writeProducts(EZShopMaps.products)) {
 			return newOne.getId();
 		}
@@ -286,6 +300,7 @@ public class EZShop implements EZShopInterface {
 		if (EZShopMaps.products.containsKey(id) && !EZShopMaps.products.get(id).getEliminated()) {
 			EZShopMaps.products.get(id).invertEliminated();
 			EZShopMaps.products.get(id).setQuantity(0);
+			EZShopMaps.products.get(id).setLocation(" - - ");
 			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
@@ -577,7 +592,8 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check location of product
-		if (chosen.getProduct().getLocation() == null) {
+		if (chosen.getProduct().getLocation() == null ||
+				chosen.getProduct().getLocation().contentEquals(" - - ")) {
 			throw new InvalidLocationException();
 		}
 
@@ -681,7 +697,7 @@ public class EZShop implements EZShopInterface {
 				} else if (newCustomerCard.isEmpty()) {
 					// Double reference
 					chosen.getCard().setCustomer(null);
-					chosen.setCustomerCard(null);
+					chosen.setCard(null);
 				} // null case does not modify anything
 
 				return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);

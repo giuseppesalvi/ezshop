@@ -51,16 +51,13 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerCard(String customerCard) {
-        if (customerCard != null && customerCard.matches("^[0-9]{10}$")) {
-            if (EZShopMaps.cards.containsKey(customerCard)){
-                //if card has already a customer attached I should detach it
-                if (EZShopMaps.cards.get(customerCard).getCustomer() != null) {
-                    EZShopMaps.cards.get(customerCard).getCustomer().setCustomerCard(null);
+        if (customerCard != null) {
+            if (customerCard.matches("^[0-9]{10}$")) {
+                if (EZShopMaps.cards.containsKey(customerCard)){
+                    this.setCard(EZShopMaps.cards.get(customerCard));
                 }
-
-                // Double reference
-                this.card = EZShopMaps.cards.get(customerCard);
-                EZShopMaps.cards.get(customerCard).setCustomer(this);
+            } else if (customerCard.isEmpty()){
+                this.setCard(null);
             }
         }
     }
@@ -95,11 +92,19 @@ public class CustomerImpl implements Customer {
     }
 
     public void setCard(LoyaltyCard card) {
-        if (card != null){
-            if (card.getCustomer() != null){
+        //Trying to set the same card, do nothing
+        if (this.card != null){
+            if (this.card.equals(card))
+                return;
+        }
+
+        this.card = card;
+
+        //Null is valid
+        if (card != null) {
+            if (card.getCustomer() != null && !this.customerId.equals(card.getCustomer().getId())) {
                 card.getCustomer().setCard(null);
             }
-            this.card = card;
             card.setCustomer(this);
         }
     }

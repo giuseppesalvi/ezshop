@@ -67,7 +67,7 @@ public class EZShopMaps {
 
         // Customer -> EZShopMaps.cards
         for (CustomerImpl cus : EZShopMaps.customers.values()) {
-            if (cus.getCard() != null && !cus.getCard().getCardId().equals("")) {
+            if (cus.getCard() != null) {
                 cus.setCard(EZShopMaps.cards.get(cus.getCard().getCardId()));
             } else {
                 cus.setCard(null);
@@ -77,7 +77,7 @@ public class EZShopMaps {
 
         // Cards -> customer
         for (LoyaltyCard loy : EZShopMaps.cards.values()) {
-            if (loy.getCustomer() != null && loy.getCustomer().getId() != -1) {
+            if (loy.getCustomer() != null) {
                 loy.setCustomer(EZShopMaps.customers.get(loy.getCustomer().getId()));
             } else {
                 loy.setCustomer(null);

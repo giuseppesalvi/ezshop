@@ -44,12 +44,20 @@ public class LoyaltyCard {
     }
 
     public void setCustomer(CustomerImpl customer) {
-        if (customer != null){
-            if (customer.getCard() != null) {
+        //Trying to set the same customer, do nothing
+        if (this.customer != null){
+            if (this.customer.equals(customer))
+                return;
+        }
+
+        this.customer = customer;
+
+        //Null is valid
+        if (customer != null) {
+            if (customer.getCard() != null && !this.cardId.equals(customer.getCustomerCard())) {
                 customer.getCard().setCustomer(null);
             }
             customer.setCard(this);
-            this.customer = customer;
         }
     }
 
