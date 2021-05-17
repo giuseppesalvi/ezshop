@@ -58,15 +58,21 @@ Version:
 
 **Criteria for *setType*:**
 	
-
  - validity of string type
+ - match of string
 
-**Predicates for getter *setMoney*:**
+**Predicates for *setType*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
 | validity of string type | yes |
 |                               | no |
+| type match | "SALE" |
+| 				| "ORDER" |
+|				| "RETURN" |
+| 				| "CREDIT" |
+|				| "DEBIT" |
+|				| other |
 
 **Boundaries**:
 
@@ -77,10 +83,15 @@ Version:
 
 **Combination of predicates**:
 
-| validity of string type | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-| no | Invalid | T0{"test", invalid} ||
-| yes | Valid |  T1{"SALE", true}| |
+| validity of string type | string match | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|------|
+|no		|* 			|Invalid	|	|	|
+|yes 	|SALE		|Valid		|	|	|
+|yes 	|ORDER		|Valid 	|	|	|
+|yes 	|RETURN	|Valid 	| 	|	|
+|yes 	|CREDIT	|Valid 	| 	|	|
+|yes 	|DEBIT 	|Valid 	| 	|	|
+|yes 	|other 	|Valid 	| 	|	|
 
 
  ### **Class *CreditCard* - method *checkValidity***
