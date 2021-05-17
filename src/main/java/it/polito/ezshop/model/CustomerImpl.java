@@ -2,8 +2,6 @@ package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.Customer;
 import it.polito.ezshop.data.EZShopMaps;
-import it.polito.ezshop.data.FileWrite;
-import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 
 public class CustomerImpl implements Customer {
 
