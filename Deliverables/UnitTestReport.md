@@ -25,6 +25,64 @@ Version:
     <JUnit test classes must be in src/test/java/it/polito/ezshop   You find here, and you can use,  class TestEzShops.java that is executed  
     to start tests
     >
+
+### **Class *BalanceOperationImpl* - *setDate***
+
+**Criteria for *setDate*:**
+	
+
+ - validity of date format
+
+**Predicates for *setDate*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of Date format | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of Date format | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+| no | Invalid | T0("20-01-01"; invalid) ||
+| yes | Valid |  T1("2020-01-01"; true) | |
+
+### **Class *BalanceOperationImpl* - *setType***
+
+**Criteria for *setType*:**
+	
+
+ - validity of string type
+
+**Predicates for getter *setMoney*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of string type | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of string type | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+| no | Invalid | T0{"test", invalid} ||
+| yes | Valid |  T1{"SALE", true}| |
+
+
  ### **Class *CreditCard* - method *checkValidity***
 
 **Criteria for method *checkValidity*:**
