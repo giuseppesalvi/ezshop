@@ -86,12 +86,12 @@ Version:
 | validity of string type | string match | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|------|
 |no		|* 			|Invalid	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType(null) <br />  -> Invalid||
-|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />obj.setType("SALE")<br /> ob.getType()-> "SALE"| |
-|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("ORDER")<br /> ob.getType()-> "ORDER"||
-|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("RETURN")<br /> ob.getType()-> "RETURN"||
-|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("CREDIT")<br /> ob.getType()-> "CREDIT"||
-|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("DEBIT")<br /> ob.getType()-> "DEBIT"||
-|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("test")<br /> ob.getType()-> ""||
+|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />obj.setType("SALE")<br /> obj.getType()-> "SALE"| |
+|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("ORDER")<br /> obj.getType()-> "ORDER"||
+|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("RETURN")<br /> obj.getType()-> "RETURN"||
+|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("CREDIT")<br /> obj.getType()-> "CREDIT"||
+|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("DEBIT")<br /> obj.getType()-> "DEBIT"||
+|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("test")<br /> obj.getType()-> ""||
 
 
 
