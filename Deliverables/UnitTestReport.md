@@ -54,6 +54,33 @@ Version:
 | no | Invalid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(20-03-01) <br />  -> Invalid date||
 | yes | Valid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(2020-04-09) <br />  obj.getDate()-> 2020-04-09||
 
+### **Class *BalanceOperationImpl* - *setMoney***
+
+**Criteria for *setMoney*:**
+	
+ - validity of double money
+
+**Predicates for getter *setMoney*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of double money | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of Double amount | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+| no | Invalid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setMoney(null) <br /> -> Invalid entry||
+| yes | Valid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setMoney(5000) <br /> obj.getMoney() -> 5000||
+
 ### **Class *BalanceOperationImpl* - *setType***
 
 **Criteria for *setType*:**
