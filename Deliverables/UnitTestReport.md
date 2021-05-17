@@ -67,7 +67,7 @@ Version:
 | -------- | --------- |
 | validity of string type | yes |
 |                               | no |
-| type match | "SALE" |
+| string match | "SALE" |
 | 				| "ORDER" |
 |				| "RETURN" |
 | 				| "CREDIT" |
@@ -85,13 +85,14 @@ Version:
 
 | validity of string type | string match | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|------|
-|no		|* 			|Invalid	|	|	|
-|yes 	|SALE		|Valid		|	|	|
-|yes 	|ORDER		|Valid 	|	|	|
-|yes 	|RETURN	|Valid 	| 	|	|
-|yes 	|CREDIT	|Valid 	| 	|	|
-|yes 	|DEBIT 	|Valid 	| 	|	|
-|yes 	|other 	|Valid 	| 	|	|
+|no		|* 			|Invalid	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType(null) <br />  -> Invalid||
+|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />obj.setType("SALE")<br /> ob.getType()-> "SALE"| |
+|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("ORDER")<br /> ob.getType()-> "ORDER"||
+|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("RETURN")<br /> ob.getType()-> "RETURN"||
+|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("CREDIT")<br /> ob.getType()-> "CREDIT"||
+|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("DEBIT")<br /> ob.getType()-> "DEBIT"||
+|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("test")<br /> ob.getType()-> ""||
+
 
 
  ### **Class *CreditCard* - method *checkValidity***
