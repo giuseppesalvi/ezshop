@@ -811,14 +811,7 @@ public class EZShop implements EZShopInterface {
 		if (EZShopMaps.customers.containsKey(customerId) && EZShopMaps.cards.containsKey(customerCard)
 				&& EZShopMaps.cards.get(customerCard).getCustomer() == null) {
 
-			// Customer has already a card, detach it
-			if (EZShopMaps.customers.get(customerId).getCard() != null) {
-				EZShopMaps.customers.get(customerId).getCard().setCustomer(null);
-			}
-
-			// Double reference
-			EZShopMaps.customers.get(customerId).setCard(EZShopMaps.cards.get(customerCard));
-			EZShopMaps.cards.get(customerCard).setCustomer(EZShopMaps.customers.get(customerId));
+			EZShopMaps.customers.get(customerId).setCustomerCard(customerCard);
 			return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
 		}
 		return false;
