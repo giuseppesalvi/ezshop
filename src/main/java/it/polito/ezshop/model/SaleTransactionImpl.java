@@ -66,7 +66,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setTicketNumber(Integer ticketNumber) {
-    	this.transactionID = ticketNumber;
     	if (ticketNumber > 0 && !EZShopMaps.sales.containsKey(ticketNumber)) {
 			if (ticketNumber > idGen)
 				idGen = ticketNumber + 1;

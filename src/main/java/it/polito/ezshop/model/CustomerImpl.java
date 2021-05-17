@@ -1,6 +1,9 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.Customer;
+import it.polito.ezshop.data.EZShopMaps;
+import it.polito.ezshop.data.FileWrite;
+import it.polito.ezshop.exceptions.InvalidCustomerCardException;
 
 public class CustomerImpl implements Customer {
 
@@ -9,12 +12,14 @@ public class CustomerImpl implements Customer {
     private Integer customerId;
     private LoyaltyCard card;
 
+    //Constructor for new customers
     public CustomerImpl(String customerName) {
         this.customerName = customerName;
         this.card = null;
         this.customerId = idGen++;
     }
 
+    //Constructor for customers with already an ID
     public CustomerImpl(String customerName, Integer customerId, LoyaltyCard card) {
         this.customerName = customerName;
         this.customerId = customerId;
@@ -35,7 +40,8 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+        if (customerName != null && !customerName.isEmpty())
+            this.customerName = customerName;
     }
 
     @Override
@@ -45,7 +51,18 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerCard(String customerCard) {
-        //this.card.setCardId(customerCard);
+        if (customerCard != null && customerCard.matches("^[0-9]{10}$")) {
+            if (EZShopMaps.cards.containsKey(customerCard)){
+                //if card has already a customer attached I should detach it
+                if (EZShopMaps.cards.get(customerCard).getCustomer() != null) {
+                    EZShopMaps.cards.get(customerCard).getCustomer().setCustomerCard(null);
+                }
+
+                // Double reference
+                this.card = EZShopMaps.cards.get(customerCard);
+                EZShopMaps.cards.get(customerCard).setCustomer(this);
+            }
+        }
     }
 
     @Override
@@ -55,7 +72,11 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setId(Integer id) {
-        this.customerId = id;
+        if (id != null && !EZShopMaps.customers.containsKey(id)){
+            this.customerId = id;
+            if (id > idGen)
+                idGen = id+1;
+        }
     }
 
     @Override
@@ -65,7 +86,8 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setPoints(Integer points) {
-        this.card.setPoints(points);
+        if (this.card != null && points!= null && points > 0)
+            this.card.setPoints(points);
     }
 
     public LoyaltyCard getCard() {
@@ -73,6 +95,12 @@ public class CustomerImpl implements Customer {
     }
 
     public void setCard(LoyaltyCard card) {
-        this.card = card;
+        if (card != null){
+            if (card.getCustomer() != null){
+                card.getCustomer().setCard(null);
+            }
+            this.card = card;
+            card.setCustomer(this);
+        }
     }
 }

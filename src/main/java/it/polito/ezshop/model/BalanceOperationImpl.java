@@ -2,7 +2,6 @@ package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.BalanceOperation;
 import it.polito.ezshop.data.EZShopMaps;
-import it.polito.ezshop.data.FileWrite;
 
 import java.time.LocalDate;
 

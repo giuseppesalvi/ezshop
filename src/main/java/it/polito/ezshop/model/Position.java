@@ -24,7 +24,7 @@ public class Position {
     }
 
     public void setPosition(String position) throws InvalidPositionException {
-        if (position.matches("\\w+-\\w+-\\w+")) {
+        if (position.matches("\\d+-[a-zA-Z]+-\\d+")) {
             String[] pos = position.split("-");
             this.aisleID = pos[0];
             this.rackID = pos[1];

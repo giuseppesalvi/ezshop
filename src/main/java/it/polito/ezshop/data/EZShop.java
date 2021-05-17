@@ -182,7 +182,8 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
+		if (EZShopMaps.loggedInUser == null ||
+				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
 				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
@@ -249,7 +250,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if product exists
-		if (EZShopMaps.products.containsKey(id)) {
+		if (EZShopMaps.products.containsKey(id) && !EZShopMaps.products.get(id).getEliminated()) {
 			ProductTypeImpl chosen = EZShopMaps.products.get(id);
 			if (!chosen.getBarCode().contentEquals(newCode)) {
 				// The new barcode differs from the original one thus we need to check if it is
@@ -271,7 +272,8 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
+		if (EZShopMaps.loggedInUser == null ||
+				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
 				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
@@ -281,8 +283,9 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductIdException();
 		}
 
-		if (EZShopMaps.products.containsKey(id)) {
-			EZShopMaps.products.remove(id);
+		if (EZShopMaps.products.containsKey(id) && !EZShopMaps.products.get(id).getEliminated()) {
+			EZShopMaps.products.get(id).invertEliminated();
+			EZShopMaps.products.get(id).setQuantity(0);
 			return FileWrite.writeProducts(EZShopMaps.products);
 		}
 
@@ -297,7 +300,8 @@ public class EZShop implements EZShopInterface {
 			throw new UnauthorizedException();
 		}
 
-		return new ArrayList<>(EZShopMaps.products.values());
+		return EZShopMaps.products.values().stream()
+				.filter(p -> !p.getEliminated()).collect(Collectors.toList());
 
 	}
 
@@ -318,7 +322,8 @@ public class EZShop implements EZShopInterface {
 
 		// Retrieve the correct one
 		Optional<ProductTypeImpl> productOptional = EZShopMaps.products.values().stream()
-				.filter(p -> p.getBarCode().contentEquals(barCode)).findFirst();
+				.filter(p -> (p.getBarCode().contentEquals(barCode) && !p.getEliminated()))
+				.findFirst();
 
 		return productOptional.orElse(null);
 
@@ -338,7 +343,8 @@ public class EZShop implements EZShopInterface {
 			description = "";
 
 		String finalVal = description;
-		return EZShopMaps.products.values().stream().filter(p -> p.getProductDescription().contains(finalVal))
+		return EZShopMaps.products.values().stream()
+				.filter(p -> (p.getProductDescription().contains(finalVal) && !p.getEliminated()))
 				.collect(Collectors.toList());
 	}
 
@@ -357,7 +363,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductIdException();
 		}
 
-		if (EZShopMaps.products.containsKey(productId)) {
+		if (EZShopMaps.products.containsKey(productId) && !EZShopMaps.products.get(productId).getEliminated()) {
 			ProductTypeImpl chosen = EZShopMaps.products.get(productId);
 			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation() == null) {
 				return false;
@@ -374,8 +380,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (EZShopMaps.loggedInUser == null ||
+				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator") &&
+						!EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -385,11 +392,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check newPos correctness
-		if (newPos == null || (!newPos.matches("\\w+-\\w+-\\w+") && !newPos.isEmpty())) {
+		if (newPos == null || (!newPos.matches("\\d+-[a-zA-Z]+-\\d+") && !newPos.isEmpty())) {
 			throw new InvalidLocationException();
 		}
 
-		if (EZShopMaps.products.containsKey(productId)) {
+		if (EZShopMaps.products.containsKey(productId) && !EZShopMaps.products.get(productId).getEliminated()) {
 			ProductTypeImpl chosen = EZShopMaps.products.get(productId);
 			if (!chosen.getLocation().contentEquals(newPos)) {
 				// The new location differs from the original one thus we need to check if it is
@@ -425,11 +432,18 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException();
 		}
 
-		// Check correctness of barcode and retrieve the correct one if exists
-		ProductType chosen = this.getProductTypeByBarCode(productCode);
+		// Check productCode correctness
+		if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+			throw new InvalidProductCodeException();
+		}
 
-		if (chosen != null) {
-			OrderImpl newOne = new OrderImpl(chosen, quantity, pricePerUnit);
+		// Retrieve the correct one
+		Optional<ProductTypeImpl> chosen = EZShopMaps.products.values().stream()
+				.filter(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))
+				.findFirst();
+
+		if (chosen.isPresent()) {
+			OrderImpl newOne = new OrderImpl(chosen.get(), quantity, pricePerUnit);
 			EZShopMaps.orders.put(newOne.getOrderId(), newOne);
 			if (FileWrite.writeOrders(EZShopMaps.orders)) {
 				return newOne.getOrderId();
@@ -460,14 +474,21 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidQuantityException();
 		}
 
-		// Check correctness of barcode and retrieve the correct one if exists
-		ProductType chosen = this.getProductTypeByBarCode(productCode);
+		// Check productCode correctness
+		if (productCode == null || productCode.isEmpty() || !ProductTypeImpl.checkBarCode(productCode)) {
+			throw new InvalidProductCodeException();
+		}
 
-		if (chosen == null) {
+		// Retrieve the correct one
+		Optional<ProductTypeImpl> chosen = EZShopMaps.products.values().stream()
+				.filter(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))
+				.findFirst();
+
+		if (!chosen.isPresent()) {
 			return -1;
 		}
 
-		OrderImpl newOrd = new OrderImpl(chosen, quantity, pricePerUnit);
+		OrderImpl newOrd = new OrderImpl(chosen.get(), quantity, pricePerUnit);
 		double cost = quantity * pricePerUnit;
 
 		// Check balance
@@ -551,6 +572,10 @@ public class EZShop implements EZShopInterface {
 
 		OrderImpl chosen = EZShopMaps.orders.get(orderId);
 
+		if (chosen.getProduct().getEliminated()){
+			chosen.getProduct().invertEliminated();
+		}
+
 		// Check location of product
 		if (chosen.getProduct().getLocation() == null) {
 			throw new InvalidLocationException();
@@ -581,7 +606,8 @@ public class EZShop implements EZShopInterface {
 	public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
+		if (EZShopMaps.loggedInUser == null ||
+				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
 				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
 				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();

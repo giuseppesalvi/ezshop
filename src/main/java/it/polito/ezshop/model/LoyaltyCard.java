@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import it.polito.ezshop.data.EZShopMaps;
+
 public class LoyaltyCard {
 
     public static Integer idGen = 1;
@@ -7,12 +9,14 @@ public class LoyaltyCard {
     private CustomerImpl customer;
     private Integer points;
 
+    //Constructor for new loyalty card
     public LoyaltyCard() {
         this.cardId = String.format("%010d", idGen++);
         this.customer = null;
         this.points = 0;
     }
 
+    //Constructor for loyalty card with already an ID
     public LoyaltyCard(String cardId, CustomerImpl customer, Integer points) {
         this.cardId = cardId;
         this.customer = customer;
@@ -31,7 +35,8 @@ public class LoyaltyCard {
     }
 
     public void setPoints(Integer points) {
-        this.points = points;
+        if (points != null && points > 0)
+            this.points = points;
     }
 
     public CustomerImpl getCustomer() {
@@ -39,7 +44,13 @@ public class LoyaltyCard {
     }
 
     public void setCustomer(CustomerImpl customer) {
-        this.customer = customer;
+        if (customer != null){
+            if (customer.getCard() != null) {
+                customer.getCard().setCustomer(null);
+            }
+            customer.setCard(this);
+            this.customer = customer;
+        }
     }
 
     public String getCardId() {
@@ -47,6 +58,10 @@ public class LoyaltyCard {
     }
 
     public void setCardId(String cardId) {
-        this.cardId = cardId;
+        if (cardId != null && !EZShopMaps.cards.containsKey(cardId)){
+            this.cardId = cardId;
+            if (Integer.parseInt(cardId) > idGen)
+                idGen = Integer.parseInt(cardId)+1;
+        }
     }
 }

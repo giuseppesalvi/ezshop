@@ -1,7 +1,6 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.EZShopMaps;
-import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
@@ -13,7 +12,7 @@ public class UserImpl implements User {
     private Integer id;
 
     //Constructor for new users
-    public UserImpl(String username, String password, String role) {
+    public UserImpl(String username, String password, String role){
         this.username = username;
         this.password = password;
         this.role = role;
@@ -39,7 +38,6 @@ public class UserImpl implements User {
             this.id = id;
             if (id > idGen)
                 idGen = id+1;
-            FileWrite.writeUsers(EZShopMaps.users);
         }
     }
 
@@ -54,7 +52,6 @@ public class UserImpl implements User {
                 !username.isEmpty() &&
                 EZShopMaps.users.values().stream().noneMatch(u -> u.getUsername().contentEquals(username))) {
             this.username = username;
-            FileWrite.writeUsers(EZShopMaps.users);
         }
     }
 
@@ -67,7 +64,6 @@ public class UserImpl implements User {
     public void setPassword(String password) {
         if (password != null && !password.isEmpty()) {
             this.password = password;
-            FileWrite.writeUsers(EZShopMaps.users);
         }
     }
 
@@ -79,12 +75,10 @@ public class UserImpl implements User {
     @Override
     public void setRole(String role) {
         if (role != null &&
-                !role.isEmpty() &&
                 (role.contentEquals("Administrator") ||
                         role.contentEquals("Cashier") ||
                         role.contentEquals("ShopManager"))) {
             this.role = role;
-            FileWrite.writeUsers(EZShopMaps.users);
         }
     }
 
