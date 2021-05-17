@@ -37,7 +37,7 @@ Version:
 
 | Criteria | Predicate |
 | -------- | --------- |
-| validity of Date format | yes |
+| validity of date format | yes |
 |                               | no |
 
 **Boundaries**:
@@ -51,8 +51,8 @@ Version:
 
 | validity of Date format | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
-| no | Invalid | T0("20-01-01"; invalid) ||
-| yes | Valid |  T1("2020-01-01"; true) | |
+| no | Invalid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(20-03-01) <br />  -> Invalid date||
+| yes | Valid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(2020-04-09) <br />  obj.getDate()-> 2020-04-09||
 
 ### **Class *BalanceOperationImpl* - *setType***
 
