@@ -60,7 +60,7 @@ Version:
 	
  - validity of double money
 
-**Predicates for getter *setMoney*:**
+**Predicates for *setMoney*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
