@@ -5,6 +5,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.security.InvalidParameterException;
+
 import org.junit.Test;
 
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
@@ -49,14 +51,13 @@ public class CreditCardTests {
 	}
 	
 	@Test 
-	public void testSetBalanceWithNull(){
+	public void testSetBalanceWithNull() throws InvalidParameterException{
 		CreditCard card = new CreditCard("4485370086510891", 100.00);
-		card.setBalance(null);
-		assertEquals(card.getBalance(), (Double) 100.00);
+		assertThrows(InvalidParameterException.class, () -> card.setBalance(null));
 	}
 	
 	@Test 
-	public void testSetBalanceWithValidBalance(){
+	public void testSetBalanceWithValidBalance() throws InvalidParameterException{
 		CreditCard card = new CreditCard("4485370086510891", 100.00);
 		card.setBalance(50.00);
 		assertEquals(card.getBalance(), (Double) 50.00);

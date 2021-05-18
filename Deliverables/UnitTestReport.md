@@ -26,132 +26,6 @@ Version:
     to start tests
     >
 
-### **Class *BalanceOperationImpl* - *setDate***
-
-**Criteria for *setDate*:**
-	
-
- - validity of LocalDate date 
-
-**Predicates for *setDate*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of LocalDate date | yes |
-|                               | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of LocalDate Date| Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-| no | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setDate(null) <br />  -> obj.getDate() -> 2020-03-01 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetDateWithInvalidLocalDate |
-| yes | Valid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setDate(LocalDate.parse("2020-04-09")) <br />  obj.getDate()-> 2020-04-09 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetDateWithValidLocalDate|
-
-### **Class *BalanceOperationImpl* - *setMoney***
-
-**Criteria for *setMoney*:**
-	
- - validity of double money
-
-**Predicates for *setMoney*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of double money | yes |
-|                               | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of Double money | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-| no | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setMoney(null) <br /> -> obj.getMoney() -> 10000.00|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetMoneyWithInvalidMoney|
-| yes | Valid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setMoney(5000.00) <br /> obj.getMoney() -> 5000.00|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetMoneyWithValidMoney|
-
-### **Class *BalanceOperationImpl* - *setType***
-
-**Criteria for *setType*:**
-	
- - validity of string type
- - match of string
-
-**Predicates for *setType*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of string type | yes |
-|                               | no |
-| string match | "SALE" |
-| 				| "ORDER" |
-|				| "RETURN" |
-| 				| "CREDIT" |
-|				| "DEBIT" |
-|				| other |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of string type | string match | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|------|
-|no		|* 			|Invalid	|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType(null) <br />  obj.getType -> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithNull|
-|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />obj.setType("SALE")<br /> obj.getType()-> "SALE"| src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithSale|
-|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "SALE"} <br /> obj.setType("ORDER")<br /> obj.getType()-> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithOrder|
-|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />  obj.setType("RETURN")<br /> obj.getType()-> "RETURN"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithReturn|
-|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />  obj.setType("CREDIT")<br /> obj.getType()-> "CREDIT"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithCredit|
-|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType("DEBIT")<br /> obj.getType()-> "DEBIT"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithDebit|
-|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType("test")<br /> obj.getType()-> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithNoMatch|
-
-### **Class *BalanceOperationImpl* - *setBalanceId***
-
-**Criteria for *setBalanceId*:**
-	
- - sign of balanceId
- - id already used 
-
-**Predicates for *setBalanceId*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| sign of balanceId | (minInt, 0] |
-|                   | (0, maxInt) |
-| id already used | yes |
-|                 | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-| sign of balanceId | 0, 1 |
-|          |                 |
-
-**Combination of predicates**:
-
-| sign of balanceId | id already used | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| (minInt, 0] | | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setBalanceId(-20) <br /> -> obj.getBalanceId() -> 123 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithNegativeNumber |
-| (0, maxInt) | yes | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> BalanceOperationImpl obj2 {124, "2020-03-02", 300.00, "SALE"} <br />  obj.setBalanceId(123) <br /> obj.getBalanceId() -> 123 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithAlreadyUsedId |
-| " | no | Valid |   BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> BalanceOperationImpl obj2 {124, "2020-03-02", 300.00, "SALE"} <br />  obj.setBalanceId(125) <br /> obj.getBalanceId() -> 125 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithValidId|
-  
-
 
  ### **Class *CreditCard* - method *checkValidity***
 
@@ -242,232 +116,8 @@ Version:
 
 | validity of Double balance | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
-| no | Invalid | CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setBalance(null) <br/> c1.getBalance() -> 100.00 | src/test/java/it/polito/ezshop/test/CreditCardTests.testSetBalanceWithNull|
+| no | Invalid | CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setBalance(null) <br/> ->InvalidParameterException | src/test/java/it/polito/ezshop/test/CreditCardTests.testSetBalanceWithNull|
 | yes | Valid |  CreditCard c1 = {"4485370086510891", 100.00} <br/> c1.setBalance(50.00) <br/> c1.getBalance() -> 50.00 | src/test/java/it/polito/ezshop/test/CreditCardTests.testSetBalanceWithValidBalance|
-
-
-### **Class *OrderImpl* -  *setBalanceId***
-
-**Criteria for *setBalanceId*:**
-	
- - validity of integer balance id
- - balance id is not already present
-
-**Predicates for *setProductCode*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of integer balance id | yes |
-|                               | no |
-| balance id is already present | yes |
-|                  | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| id already present | validity of integer balance id |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| yes | * |Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setBalanceId(1245) <br /> -> Invalid Entry id already present||
-| * |no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setBalanceId(null) <br /> -> Invalid entry||
-| no |yes| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setBalanceId(2134) <br /> obj.getBalanceId()-> 2134||
-
-### **Class *OrderImpl* -  *setProductCode***
-
-**Criteria for *setProductCode*:**
-	
- - validity of string ProductCode
- - Product code is not empty
-
-**Predicates for *setProductCode*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of string product code | yes |
-|                               | no |
-| product code empty | yes |
-|                  | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| product code empty | validity of string product code |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| yes | * |Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setProductCode("") <br /> -> Empty String Invalid entry||
-| * |no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setProductCode(null) <br /> -> Invalid entry||
-| no |yes| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setProductCode("AZ12345") <br /> obj.getProductCode()-> AZ12345||
-
-
-
-### **Class *OrderImpl* -  *setPricePerUnit***
-
-**Criteria for *setPricePerUnit*:**
-	
- - validity of double pricePerUnit
- - validity of sign
-
-**Predicates for *setPricePerUnit*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of double pricePerUnit | yes |
-|                               | no |
-| validity of sign | yes |
-|                  | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of sign | validity of double pricePerUnit |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| no | * |Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setpricePerUnit(-10) <br /> -> Invalid entry||
-| * |no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setpricePerUnit(null) <br /> -> Invalid entry||
-| yes |yes| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setpricePerUnit(5) <br /> obj.getpricePerUnit()-> 5||
-
-
-### **Class *OrderImpl* -  *setQuantity***
-
-**Criteria for *setQuantity*:**
-	
- - validity of integer quantity
- - validity of sign
-
-**Predicates for *setPricePerUnit*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of integer quantity | yes |
-|                               | no |
-| validity of sign | yes |
-|                  | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of sign | validity of integer quantity |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| no | * |Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setQuantity(-10) <br /> -> Invalid entry||
-| * |no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setQuantity(null) <br /> -> Invalid entry||
-| yes |yes| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setQuantity(2) <br /> obj.getQuantity()-> 2||
-
-
-### **Class *OrderImpl* - *setStatus***
-
-**Criteria for *setStatus*:**
-	
- - validity of string status
- - match of status
-
-**Predicates for *setStatus*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of string status | yes |
-|                               | no |
-| status match | "ISSUED" |
-| 				| "PAYED" |
-|				| "COMPLETED" |
-|				| other |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of string status | status match | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|------|
-|no		|* 			|Invalid	|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus(null) <br /> -> Invalid Entry||
-|yes 	|ISSUED		|Valid		|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("ISSUED") <br /> obj.getStatus()-> ISSUED||
-|yes 	|PAYED		|Valid 	|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("PAYED") <br /> obj.getStatus()-> PAYED||
-|yes 	|COMPLETED	|Valid 	| 	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("COMPLETED") <br /> obj.getStatus()-> COMPLETED||
-|yes 	|other 	|Valid 	| 	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("TEST") <br /> obj.getStatus()-> ||
-
-
-### **Class *OrderImpl* -  *setOrderId***
-
-**Criteria for *setOrderId*:**
-	
- - validity of integer order id
- - order id is not already present
-
-**Predicates for *setOrderId*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of integer order id | yes |
-|                               | no |
-| order id is already present | yes |
-|                  				| no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of integer order id| order id already present |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|-------|
-| no |*| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(null) <br /> -> Invalid entry||
-| yes | yes |Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(34) <br /> -> Invalid Entry id already present||
-| yes |no| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(48) <br /> obj.getOrderId()-> 48||
-
-
-### **Class *OrderImpl* -  *setProduct***
-
-**Criteria for *setProduct*:**
-	
- - validity of product
-
-**Predicates for *setProduct*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of product | yes |
-|                     | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of product |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-|no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setProduct(null) <br /> -> Invalid entry||
-|yes |Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setProduct(newproduct2) <br /> obj.getProduct()-> newproduct2||
 
 
  ### **Class *Position* - method *setPosition***
@@ -624,7 +274,52 @@ Version:
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
-| BalanceOperationImpl | src/test/java/it/polito/ezshop/test/BalanceOperationImpl.testConstructors|
+| BalanceOperationImpl | src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testGettersSettersConstructors|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCustomerName|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCustomerName|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCustomerCard|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCustomerCard|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetId|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetId|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetPoints|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetPoints|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCard|
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCard|
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetPoints |
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetPoints |
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetCustomer |
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetCustomer |
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetCardId |
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetCardId |
+| OrderImpl | src/test/java/it/polito/ezshop/test/OrderImplTests.testGettersSettersConstructors |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetQuantity |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetQuantity |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetLocation |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetLocation |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetNote |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetNote |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetProductDescription |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetProductDescription |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetBarCode |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetBarCode |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetPricePerUnit |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetPricePerUnit |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetId |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetId |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetEliminated |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testInvertEliminated |
+| ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransactionTests.testGettersSettersConstructors |
+| SaleTransactionImpl | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testGettersSettersConstructors |
+| TicketEntryImpl | src/test/java/it/polito/ezshop/test/TicketEntryImplTests.testGettersSettersConstructors |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testUserImpl |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetId |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetIdWithValidId |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetUsername |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetUsername |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetPassword |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetPassword |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetRole |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetRole |
 
 ### Code coverage report
 

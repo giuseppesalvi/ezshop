@@ -1,7 +1,6 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.BalanceOperation;
-import it.polito.ezshop.data.EZShopMaps;
 
 import java.time.LocalDate;
 
@@ -34,11 +33,7 @@ public class BalanceOperationImpl implements BalanceOperation {
 
 	@Override
 	public void setBalanceId(int balanceId) {
-		if (balanceId > 0 && !EZShopMaps.operations.containsKey(balanceId)) {
-			if (balanceId > idGen)
-				idGen = balanceId + 1;
-			this.id = balanceId;
-		}
+		this.id = balanceId;
 	}
 
 	@Override
@@ -48,9 +43,7 @@ public class BalanceOperationImpl implements BalanceOperation {
 
 	@Override
 	public void setDate(LocalDate date) {
-		if (date != null) {
-			this.date = date;
-		}
+		this.date = date;
 	}
 
 	@Override
@@ -70,9 +63,6 @@ public class BalanceOperationImpl implements BalanceOperation {
 
 	@Override
 	public void setType(String type) {
-		if (type != null
-				&& (type == "SALE" || type == "ORDER" || type == "RETURN" || type == "CREDIT" || type == "DEBIT")) {
-			this.type = type;
-		}
+		this.type = type;
 	}
 }

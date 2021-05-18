@@ -1,7 +1,5 @@
 package it.polito.ezshop.model;
 
-import it.polito.ezshop.data.EZShopMaps;
-import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.SaleTransaction;
 import it.polito.ezshop.data.TicketEntry;
 
@@ -55,7 +53,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		this.cost = cost;
 		this.paymentType = paymentType;
-		this.creditCard = new CreditCard(creditCard, null);
+		if (creditCard == null)
+			this.creditCard = null;
+		else
+			this.creditCard = new CreditCard(creditCard, null);
 	}
 
 
@@ -66,12 +67,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setTicketNumber(Integer ticketNumber) {
-    	if (ticketNumber > 0 && !EZShopMaps.sales.containsKey(ticketNumber)) {
-			if (ticketNumber > idGen)
-				idGen = ticketNumber + 1;
-			this.transactionID = ticketNumber;
-		}
-
+    	this.transactionID = ticketNumber;
     }
 
     @Override
@@ -96,9 +92,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setDiscountRate(double discountRate) {
-    	if (discountRate >= 0 && discountRate < 1) {
-    		this.globalDiscountRate = discountRate;
-    	}
+    	this.globalDiscountRate = discountRate;
     }
 
     @Override
@@ -110,9 +104,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     @Override
     public void setPrice(double price) {
-    	if (price > 0) {
-    		this.cost = price;
-    	}
+    	this.cost = price;
     }
 
 	public String getState() {
@@ -120,9 +112,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setState(String state) {
-		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
-			this.state = state;
-		}
+		this.state = state;
 	}
 	
 	public String getPaymentType() {
@@ -130,10 +120,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setPaymentType(String paymentType) {
-		if (state == null || state == "cash" || state == "creditCard") {
-			this.paymentType = paymentType;
-		}
-
+		this.paymentType = paymentType;
 	}
 
 	public CreditCard getCreditCard() {
@@ -149,9 +136,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setDate(LocalDate date) {
-		if (date != null) {
-			this.date = date;
-		}
+		this.date = date;
 	}
 
 	public LocalTime getTime() {
@@ -159,10 +144,7 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public void setTime(LocalTime time) {
-		if (time != null) {
-			this.time = time;
-		}
-
+		this.time = time;
 	}
 
 	public boolean addEntry(TicketEntry entry) {

@@ -5,7 +5,7 @@ Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
 Date: 17/05/2021
 
-Version: 1.1.1
+Version: 1.1.2
 
 
 # Contents
@@ -154,70 +154,64 @@ package model {
 package data {
 
     Class EZShop{
-    
-    +reset() : void
-    +createUser(String username, String password, String role) : Integer
-    +deleteUser(Integer id) : boolean
-    +getAllUser() : List<User>
-    +getUser(Integer id) : User
-    +updateUserRights(Integer id, String role) : boolean
-    +login(String username, String password) : User
-    +logout() : boolean
-    +createProductType(String description, String productCode, double pricePerUnit, String note) : Integer
-    +updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) : boolean
-    +deleteProductType(Integer id) : boolean
-    +getAllProductTypes() : List<ProductType>
-    +getProductTypeByBarCode(String barcode) : ProductType
-    +getProductTypesByDescription(String description) : List<ProductType> 
-    +updateQuantity(Integer productId, int toBeAdded) : boolean
-    +updatePosition(Integer productId, String newPos) : boolean
-    +issueOrder(String productCode, int quantity, double pricePerUnit) : Integer
-    +payOrderFor(String productCode, int quantity, double pricePerUnit) : Integer
-    +payOrder(Integer orderId) : boolean
-    +recordOrderArrival(Integer orderId) : boolean
-    +getAllOrders() : List<Order>
-    +defineCustomer(String customerName) : Integer
-    +modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) : boolean
-    +deleteCustomer(Integer id) : boolean
-    +getCustomer(Integer id) : Customer
-    +getAllCustomers() : List<Customer>
-    +createCard() : String
-    +attachCardToCustomer(String customerCard, Integer customerId) : boolean
-    +modifyPointsOnCard(String customerCard, int pointsToBeAdded) : boolean
-    +startSaleTransaction() : Integer
-    +addProductToSale(Integer transactionId, String productCode, int amount) : boolean
-    +deleteProductFromSale(Integer transactionId, String productCode, int amount) : boolean
-    +applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) : boolean
-    +applyDiscountRateToSale(Integer transactionId, double discountRate) : boolean
-    +computePointsForSale(Integer transactionId) : int
-    +endSaleTransaction(Integer transactionId) : boolean
-    +deleteSaleTransaction(Integer transactionId) : boolean
-    +getSaleTransaction(Integer transactionId) : SaleTransaction
-    +startReturnTransaction(Integer transactionId) : Integer
-    +returnProduct(Integer returnId, String productCode, int amount) : boolean
-    +endReturnTransaction(Integer returnId, boolean commit) : boolean
-    +deleteReturnTransaction(Integer returnId) : boolean
-    +receiveCashPayment(Integer transactionId, double cash) : double
-    +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
-    +returnCashPayment(Integer returnId) : double
-    +returnCreditCardPayment(Integer returnId, String creditCard) : double
-    +recordBalanceUpdate(double toBeAdded) : boolean
-    +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
-    +computeBalance() : double
-    }
-
-    Class EZShopMaps {
-        - {static} users : Map<Integer,UserImpl>
-        - {static} products : Map<Integer,ProductTypeImpl>
-        - {static} orders : Map<Integer,OrderImpl>
-        - {static} customers : Map<Integer,CustomerImpl>
-        - {static} cards : Map<String,LoyaltyCard>
-        - {static} sales : Map<Integer,SaleTransactionImpl>
-        - {static} returns : Map<Integer,ReturnTransaction>
-        - {static} operations : Map<Integer,BalanceOperationImpl>
-        - {static} loggedInUser : User
-        + {static} eraseMaps : void
-        + {static} loadMaps : void
+        -users : Map<Integer,UserImpl>
+        -products : Map<Integer,ProductTypeImpl>
+        -orders : Map<Integer,OrderImpl>
+        -customers : Map<Integer,CustomerImpl>
+        -cards : Map<String,LoyaltyCard>
+        -sales : Map<Integer,SaleTransactionImpl>
+        -returns : Map<Integer,ReturnTransaction>
+        -operations : Map<Integer,BalanceOperationImpl>
+        -loggedInUser : User
+        +reset() : void
+        +createUser(String username, String password, String role) : Integer
+        +deleteUser(Integer id) : boolean
+        +getAllUser() : List<User>
+        +getUser(Integer id) : User
+        +updateUserRights(Integer id, String role) : boolean
+        +login(String username, String password) : User
+        +logout() : boolean
+        +createProductType(String description, String productCode, double pricePerUnit, String note) : Integer
+        +updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) : boolean
+        +deleteProductType(Integer id) : boolean
+        +getAllProductTypes() : List<ProductType>
+        +getProductTypeByBarCode(String barcode) : ProductType
+        +getProductTypesByDescription(String description) : List<ProductType> 
+        +updateQuantity(Integer productId, int toBeAdded) : boolean
+        +updatePosition(Integer productId, String newPos) : boolean
+        +issueOrder(String productCode, int quantity, double pricePerUnit) : Integer
+        +payOrderFor(String productCode, int quantity, double pricePerUnit) : Integer
+        +payOrder(Integer orderId) : boolean
+        +recordOrderArrival(Integer orderId) : boolean
+        +getAllOrders() : List<Order>
+        +defineCustomer(String customerName) : Integer
+        +modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) : boolean
+        +deleteCustomer(Integer id) : boolean
+        +getCustomer(Integer id) : Customer
+        +getAllCustomers() : List<Customer>
+        +createCard() : String
+        +attachCardToCustomer(String customerCard, Integer customerId) : boolean
+        +modifyPointsOnCard(String customerCard, int pointsToBeAdded) : boolean
+        +startSaleTransaction() : Integer
+        +addProductToSale(Integer transactionId, String productCode, int amount) : boolean
+        +deleteProductFromSale(Integer transactionId, String productCode, int amount) : boolean
+        +applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) : boolean
+        +applyDiscountRateToSale(Integer transactionId, double discountRate) : boolean
+        +computePointsForSale(Integer transactionId) : int
+        +endSaleTransaction(Integer transactionId) : boolean
+        +deleteSaleTransaction(Integer transactionId) : boolean
+        +getSaleTransaction(Integer transactionId) : SaleTransaction
+        +startReturnTransaction(Integer transactionId) : Integer
+        +returnProduct(Integer returnId, String productCode, int amount) : boolean
+        +endReturnTransaction(Integer returnId, boolean commit) : boolean
+        +deleteReturnTransaction(Integer returnId) : boolean
+        +receiveCashPayment(Integer transactionId, double cash) : double
+        +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
+        +returnCashPayment(Integer returnId) : double
+        +returnCreditCardPayment(Integer returnId, String creditCard) : double
+        +recordBalanceUpdate(double toBeAdded) : boolean
+        +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
+        +computeBalance() : double
     }
 
     Class FileRead{
@@ -287,7 +281,6 @@ EZShop -up-> "*" BalanceOperationImpl
 EZShop -up-> "*" CreditCard
 EZShop -up-> "*" SaleTransactionImpl
 EZShop -up-> "*" ReturnTransaction
-EZShop -- EZShopMaps
 
 @enduml
 ```

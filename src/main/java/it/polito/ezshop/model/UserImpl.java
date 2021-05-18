@@ -1,6 +1,5 @@
 package it.polito.ezshop.model;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.data.User;
 
 public class UserImpl implements User {
@@ -34,11 +33,7 @@ public class UserImpl implements User {
 
     @Override
     public void setId(Integer id) {
-        if (id != null && !EZShopMaps.users.containsKey(id)) {
-            this.id = id;
-            if (id > idGen)
-                idGen = id+1;
-        }
+        this.id = id;
     }
 
     @Override
@@ -48,11 +43,7 @@ public class UserImpl implements User {
 
     @Override
     public void setUsername(String username) {
-        if (username != null &&
-                !username.isEmpty() &&
-                EZShopMaps.users.values().stream().noneMatch(u -> u.getUsername().contentEquals(username))) {
-            this.username = username;
-        }
+        this.username = username;
     }
 
     @Override
@@ -62,9 +53,7 @@ public class UserImpl implements User {
 
     @Override
     public void setPassword(String password) {
-        if (password != null && !password.isEmpty()) {
-            this.password = password;
-        }
+        this.password = password;
     }
 
     @Override
@@ -74,12 +63,7 @@ public class UserImpl implements User {
 
     @Override
     public void setRole(String role) {
-        if (role != null &&
-                (role.contentEquals("Administrator") ||
-                        role.contentEquals("Cashier") ||
-                        role.contentEquals("ShopManager"))) {
-            this.role = role;
-        }
+       this.role = role;
     }
 
 }

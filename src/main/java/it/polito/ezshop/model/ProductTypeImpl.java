@@ -1,6 +1,5 @@
 package it.polito.ezshop.model;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.data.ProductType;
 
 public class ProductTypeImpl implements ProductType {
@@ -29,7 +28,7 @@ public class ProductTypeImpl implements ProductType {
 
     //Constructor for products with already an ID
     public ProductTypeImpl(String productCode, String description, Double sellPrice,
-                           String notes, Integer quantity, String position, Integer id) {
+                           String notes, Integer quantity, String position, Boolean el, Integer id) {
         this.productCode = productCode;
         this.description = description;
         this.sellPrice = sellPrice;
@@ -37,7 +36,7 @@ public class ProductTypeImpl implements ProductType {
         this.quantity = quantity;
         this.position = new Position(position);
         this.id = id;
-        this.eliminated = false;
+        this.eliminated = el;
     }
 
     //dummy product with id
@@ -53,7 +52,7 @@ public class ProductTypeImpl implements ProductType {
     }
 
     //dummy product with barcode
-     public ProductTypeImpl(String productCode){
+    public ProductTypeImpl(String productCode){
         this.id = null;
         this.productCode = productCode;
         this.description = null;
@@ -64,7 +63,7 @@ public class ProductTypeImpl implements ProductType {
         this.eliminated = false;
     }   
 
-     public static boolean checkBarCode(String barCode) {
+    public static boolean checkBarCode(String barCode) {
         if (barCode != null && barCode.matches("^[0-9]{12,14}$")) {
             int sum = 0;
             boolean x3 = true;
@@ -85,8 +84,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setQuantity(Integer quantity) {
-        if (quantity != null && quantity > 0)
-            this.quantity = quantity;
+        this.quantity = quantity;
     }
 
     @Override
@@ -96,12 +94,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setLocation(String location) {
-        if (location != null && !location.isEmpty() && location.matches("\\w+-\\w+-\\w+"))
-            //Test if the position is equal to the current one
-            if (position != null && !position.getPosition().contentEquals(location))
-                //Uniqueness
-                if (EZShopMaps.products.values().stream().noneMatch(p -> p.getLocation().contentEquals(location)))
-                    position = new Position(location);
+        this.position = new Position(location);
     }
 
     @Override
@@ -111,7 +104,6 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setNote(String note) {
-        //Note can be equal to null
         this.notes = note;
     }
 
@@ -122,8 +114,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setProductDescription(String productDescription) {
-        if (productDescription != null && !productDescription.isEmpty())
-            this.description = productDescription;
+        this.description = productDescription;
     }
 
     @Override
@@ -133,10 +124,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setBarCode(String barCode) {
-        if (barCode != null && !barCode.isEmpty() && !this.productCode.equals(barCode)){
-            if (checkBarCode(barCode))
-                this.productCode = barCode;
-        }
+        this.productCode = barCode;
     }
 
     @Override
@@ -146,8 +134,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setPricePerUnit(Double pricePerUnit) {
-        if (pricePerUnit!= null && pricePerUnit > 0)
-            this.sellPrice = pricePerUnit;
+        this.sellPrice = pricePerUnit;
     }
 
     @Override
@@ -157,11 +144,7 @@ public class ProductTypeImpl implements ProductType {
 
     @Override
     public void setId(Integer id) {
-        if (id != null && !EZShopMaps.products.containsKey(id)){
-            this.id = id;
-            if (id > idGen)
-                idGen = id+1;
-        }
+        this.id = id;
     }
 
     public boolean getEliminated(){

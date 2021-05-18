@@ -25,12 +25,15 @@ public class CustomerImplTests {
         LoyaltyCard card = new LoyaltyCard("123");
         CustomerImpl customer = new CustomerImpl("name",123,card);
         assertEquals(customer.getCustomerCard(),"123");
+        customer.setCard(null);
+        assertEquals(customer.getCustomerCard(), "");
     }
     @Test
     public void testSetCustomerCard(){
-        // Dummy test
-        CustomerImpl customer = new CustomerImpl("name");
-        customer.setCustomerCard("123");
+    	LoyaltyCard card = new LoyaltyCard("123");
+        CustomerImpl customer = new CustomerImpl("name",123,card);
+        customer.setCustomerCard("158");
+        assertEquals(customer.getCard().getCardId(), "158");
     }
     @Test
     public void testGetId() {
@@ -55,6 +58,7 @@ public class CustomerImplTests {
         CustomerImpl customer = new CustomerImpl("name",123,card);
         customer.setPoints(100);
         assertEquals(java.util.Optional.of(customer.getPoints()),java.util.Optional.of(100));
+        customer.setPoints(null);
     }
     @Test
     public void testGetCard() {
