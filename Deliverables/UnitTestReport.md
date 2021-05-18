@@ -551,6 +551,61 @@ Version:
 |no|Invalid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry(null) <br /> -> Invalid Entry||
 | yes |Valid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry("AZ1234") <br /> -> AZ1234 ||
 
+### **Class *SaleTransactionImpl* - method  *addEntry***
+
+**Criteria for *addEntry*:**
+	
+ - validity of TicketEntry entry
+
+**Predicates for *addEntry*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of TicketEntry entry | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of TicketEntry entry |Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|no|Invalid |  SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" } <br /> obj.addEntry{product, true, 0.5} <br /> -> Invalid Entry||
+| yes |Valid |  SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" } <br /> obj.addEntry{product, 10, 0.5} <br /> -> true ||
+
+### **Class *SaleTransactionImpl* - method  *deleteEntry***
+
+**Criteria for *deleteEntry*:**
+	
+ - validity of string barcode
+
+**Predicates for *deleteEntry*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of string barcode | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of string barcode |Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|no|Invalid | SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" } <br /> obj.deleteEntry(null) <br /> -> Invalid Entry||
+| yes |Valid |  SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" }  <br /> obj.deleteEntry("AZ1234") <br /> -> AZ1234 ||
+
+
 
 
 
