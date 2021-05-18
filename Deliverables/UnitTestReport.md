@@ -546,7 +546,7 @@ Version:
 
 **Combination of predicates**:
 
-| validity of TicketEntryImp entry |Valid / Invalid | Description of the test case | JUnit test case |
+| validity of string barcode |Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
 |no|Invalid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry(null) <br /> -> Invalid Entry||
 | yes |Valid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry("AZ1234") <br /> -> AZ1234 ||
