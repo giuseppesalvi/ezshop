@@ -7,7 +7,6 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.model.BalanceOperationImpl;
 
 public class BalanceOperationImplTests {
@@ -105,9 +104,9 @@ public class BalanceOperationImplTests {
 	public void testSetBalanceIdWithAlreadyUsedId() {
 		BalanceOperationImpl obj = new BalanceOperationImpl((Integer)123, "2020-03-01", 10000.00, "ORDER");
 		BalanceOperationImpl obj2 = new BalanceOperationImpl((Integer)124, "2020-03-02", 300.00, "SALE");
-		EZShopMaps.loadMaps();
-		EZShopMaps.operations.put((Integer)123, obj);
-		EZShopMaps.operations.put((Integer)124, obj2);
+		//EZShopMaps.loadMaps();
+		//EZShopMaps.operations.put((Integer)123, obj);
+		//EZShopMaps.operations.put((Integer)124, obj2);
 		obj.setBalanceId(124);
 		assertEquals(obj.getBalanceId(), 123);
 	}
@@ -117,9 +116,9 @@ public class BalanceOperationImplTests {
 	public void testSetBalanceIdWithValidId() {
 		BalanceOperationImpl obj = new BalanceOperationImpl((Integer)123, "2020-03-01", 10000.00, "ORDER");
 		BalanceOperationImpl obj2 = new BalanceOperationImpl((Integer)124, "2020-03-02", 300.00, "SALE");
-		EZShopMaps.loadMaps();
-		EZShopMaps.operations.put((Integer)123, obj);
-		EZShopMaps.operations.put((Integer)124, obj2);
+		//EZShopMaps.loadMaps();
+		//EZShopMaps.operations.put((Integer)123, obj);
+		//EZShopMaps.operations.put((Integer)124, obj2);
 		obj.setBalanceId(125);
 		assertEquals(obj.getBalanceId(), 125);
 	}

@@ -1,7 +1,6 @@
 package it.polito.ezshop.test;
 
 import it.polito.ezshop.model.UserImpl;
-import it.polito.ezshop.data.EZShopMaps;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -26,7 +25,6 @@ public class UserImplTests {
     }
     @Test
     public void testSetIdWithValidId () {
-        EZShopMaps.loadMaps();
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setId(456);
         assertEquals(java.util.Optional.ofNullable(user.getId()),java.util.Optional.of(456));
@@ -39,7 +37,6 @@ public class UserImplTests {
     @Test
     public void testSetUsername() {
         // TODO test with invalid inputs
-        EZShopMaps.loadMaps();
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setUsername("username");
         assertEquals(user.getUsername(),"username");
@@ -52,7 +49,6 @@ public class UserImplTests {
     @Test
     public void testSetPassword() {
         // TODO test with invalid inputs
-        EZShopMaps.loadMaps();
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setPassword("pass");
         assertEquals(user.getPassword(),"pass");
@@ -65,7 +61,6 @@ public class UserImplTests {
     @Test
     public void testSetRole(){
         // TODO test with invalid inputs
-        EZShopMaps.loadMaps();
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setRole("Administrator");
         assertEquals(user.getRole(),"Administrator");

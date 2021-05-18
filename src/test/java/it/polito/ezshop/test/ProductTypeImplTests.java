@@ -1,6 +1,5 @@
 package it.polito.ezshop.test;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.model.Position;
 import it.polito.ezshop.model.ProductTypeImpl;
 import org.junit.Test;
@@ -35,6 +34,7 @@ public class ProductTypeImplTests {
                 null,
                 null,
                 "123-abc-123",
+                null,
                 null);
         assertEquals(productType.getLocation(),"123-abc-123");
     }
@@ -47,8 +47,8 @@ public class ProductTypeImplTests {
                 null,
                 null,
                 "123-abc-123",
+                null,
                 null);
-        EZShopMaps.loadMaps();
         productType.setLocation("456-abc-456");
         assertEquals(productType.getLocation(),"456-abc-456");
     }
@@ -104,7 +104,6 @@ public class ProductTypeImplTests {
                 null,
                 null,
                 null);
-        EZShopMaps.loadMaps();
         productType.setId(456);
         assertEquals(java.util.Optional.of(productType.getId()),java.util.Optional.of(456));
     }

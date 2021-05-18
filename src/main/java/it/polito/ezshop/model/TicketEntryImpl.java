@@ -2,7 +2,6 @@ package it.polito.ezshop.model;
 
 import java.util.Optional;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.data.TicketEntry;
 
 public class TicketEntryImpl implements TicketEntry {
@@ -30,17 +29,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setBarCode(String barCode) {
-		if (barCode != null) {
-			// Retrieve the correct product
-			Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
-					.filter(p -> p.getBarCode().contentEquals(barCode)).findFirst();
-
-			// Check if the product exists in the map
-			if (prod.isPresent()) {
-				this.product = prod.get();
-			}
-		}
-
+		//Not implemented since we have the reference, not a string
 	}
 
 	@Override
@@ -50,7 +39,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setProductDescription(String productDescription) {
-		if (productDescription != null) {
+		if (product != null){
 			this.product.setProductDescription(productDescription);
 		}
 	}
@@ -62,9 +51,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setAmount(int amount) {
-		if (amount >= 0) {
-			this.quantity = amount;
-		}
+		this.quantity = amount;
 	}
 
 	@Override
@@ -74,7 +61,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setPricePerUnit(double pricePerUnit) {
-		if (pricePerUnit > 0) {
+		if (this.product != null) {
 			this.product.setPricePerUnit(pricePerUnit);
 		}
 	}
@@ -86,9 +73,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setDiscountRate(double discountRate) {
-		if (discountRate >= 0 && discountRate < 1) {
-			this.discountRate = discountRate;
-		}
+		this.discountRate = discountRate;
 	}
 
 	public ProductTypeImpl getProduct() {
@@ -96,8 +81,6 @@ public class TicketEntryImpl implements TicketEntry {
 	}
 
 	public void setProduct(ProductTypeImpl product) {
-		if (product != null) {
-			this.product = product;
-		}
+		this.product = product;
 	}
 }

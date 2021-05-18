@@ -76,6 +76,7 @@ public class FileRead {
 						currProduct.get("notes").toString(), //May be null
 						Integer.parseInt(currProduct.get("quantity").toString()),
 						currProduct.get("position").toString(), //May be null
+						Boolean.parseBoolean(currProduct.get("eliminated").toString()),
 						Integer.parseInt(currProduct.get("id").toString()));
 				products.put(curr.getId(), curr);
 			}

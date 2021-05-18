@@ -3,8 +3,6 @@ package it.polito.ezshop.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polito.ezshop.data.EZShopMaps;
-import it.polito.ezshop.data.FileWrite;
 import it.polito.ezshop.data.TicketEntry;
 
 public class ReturnTransaction {
@@ -64,9 +62,7 @@ public class ReturnTransaction {
 	}
 
 	public void setState(String state) {
-		if (state != null && (state == "OPEN" || state == "CLOSED" || state == "PAYED")) {
-			this.state = state;
-		}
+		this.state = state;
 	}
 
 	public boolean isCommit() {

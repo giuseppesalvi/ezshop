@@ -9,18 +9,122 @@ import java.util.stream.Collectors;
 
 public class EZShop implements EZShopInterface {
 
+	private HashMap<Integer, UserImpl> users;
+	private HashMap<Integer, SaleTransactionImpl> sales;
+	private HashMap<Integer, ProductTypeImpl> products;
+	private HashMap<Integer, OrderImpl> orders;
+	private HashMap<Integer, BalanceOperationImpl> operations;
+	private HashMap<Integer, ReturnTransaction> returns;
+	private HashMap<Integer, CustomerImpl> customers;
+	private HashMap<String, LoyaltyCard> cards;
+	private User loggedInUser;
+
 	public EZShop() {
-		EZShopMaps.loadMaps();
+		this.users = FileRead.readUsers();
+		this.sales = FileRead.readSales();
+		this.products = FileRead.readProducts();
+		this.orders = FileRead.readOrders();
+		this.operations = FileRead.readOperations();
+		this.returns = FileRead.readReturns();
+		this.customers = FileRead.readCustomers();
+		this.cards = FileRead.readCards();
+		this.loggedInUser = null;
+
+		// Restore references between classes
+
+		// Customer -> this.cards
+		for (CustomerImpl cus : this.customers.values()) {
+			if (cus.getCard() != null) {
+				cus.setCard(this.cards.get(cus.getCard().getCardId()));
+			} else {
+				cus.setCard(null);
+			}
+
+		}
+
+		// Cards -> customer
+		for (LoyaltyCard loy : this.cards.values()) {
+			if (loy.getCustomer() != null) {
+				loy.setCustomer(this.customers.get(loy.getCustomer().getId()));
+			} else {
+				loy.setCustomer(null);
+			}
+		}
+
+		// this.orders -> productType
+		for (OrderImpl ord : this.orders.values()) {
+			ord.setProduct(this.products.get(ord.getProduct().getId()));
+		}
+
+		// this.sales -> productType
+		for (SaleTransactionImpl sal : this.sales.values()) {
+			List<TicketEntry> newEntries = new ArrayList<>();
+			for (TicketEntry ent : sal.getEntries()) {
+				// Retrieve the product from the map
+				Optional<ProductTypeImpl> pro = this.products.values().stream()
+						.filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
+
+				newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
+			}
+			sal.setEntries(newEntries);
+		}
+
+		// this.returns -> productType
+		for (ReturnTransaction ret : this.returns.values()) {
+			for (TicketEntryImpl ent : ret.getProducts()) {
+				// Retrieve the product from the map
+				Optional<ProductTypeImpl> pro = this.products.values().stream()
+						.filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
+				ent.setProduct(pro.get());
+			}
+		}
+
+		// this.returns -> this.sales
+		for (ReturnTransaction ret : this.returns.values()) {
+			ret.setTransaction(this.sales.get(ret.getTransaction().getTicketNumber()));
+		}
+	
 	}
 
 	@Override
 	public void reset() {
-		EZShopMaps.eraseMaps();
+		users.clear();
+		UserImpl.idGen = 1;
+		FileWrite.writeUsers(this.users);
+
+		sales.clear();
+		SaleTransactionImpl.idGen = 1;
+		FileWrite.writeSales(this.sales);
+
+		products.clear();
+		ProductTypeImpl.idGen = 1;
+		FileWrite.writeProducts(this.products);
+
+		orders.clear();
+		OrderImpl.idGen = 1;
+		FileWrite.writeOrders(this.orders);
+
+		operations.clear();
+		BalanceOperationImpl.idGen = 1;
+		FileWrite.writeOperations(this.operations);
+
+		returns.clear();
+		ReturnTransaction.idGen = 1;
+		FileWrite.writeReturns(this.returns);
+
+		customers.clear();
+		CustomerImpl.idGen = 1;
+		FileWrite.writeCustomers(this.customers);
+
+		cards.clear();
+		LoyaltyCard.idGen = 1;
+		FileWrite.writeCards(this.cards);
 	}
 
 	@Override
 	public Integer createUser(String username, String password, String role)
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+
 		// Check username correctness
 		if (username == null || username.isEmpty()) {
 			throw new InvalidUsernameException();
@@ -32,19 +136,23 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if username already exists
-		if (EZShopMaps.users.values().stream().anyMatch(u -> u.getUsername().contentEquals(username))) {
+		if (this.users.values().stream().anyMatch(u -> u.getUsername().contentEquals(username))) {
 			return -1;
 		}
 
 		// Check role correctness
-		if (role == null || role.isEmpty() || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
-				&& !role.contentEquals("ShopManager"))) {
+		if (role == null ||
+				role.isEmpty() ||
+				(!role.contentEquals("Administrator") &&
+						!role.contentEquals("Cashier") &&
+						!role.contentEquals("ShopManager"))) {
 			throw new InvalidRoleException();
 		}
 
+		// Create new user
 		UserImpl newOne = new UserImpl(username, password, role);
-		EZShopMaps.users.put(newOne.getId(), newOne);
-		if (FileWrite.writeUsers(EZShopMaps.users)) {
+		this.users.put(newOne.getId(), newOne);
+		if (FileWrite.writeUsers(this.users)) {
 			return newOne.getId();
 		}
 
@@ -55,7 +163,8 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || !EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")) {
+		if (this.loggedInUser == null ||
+				!this.loggedInUser.getRole().contentEquals("Administrator")) {
 			throw new UnauthorizedException();
 		}
 
@@ -65,10 +174,9 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Remove if present
-		if (EZShopMaps.users.containsKey(id)) {
-			// UserImpl eliminated = EZShopMaps.users.get(id);
-			EZShopMaps.users.remove(id);
-			return FileWrite.writeUsers(EZShopMaps.users);
+		if (this.users.containsKey(id)) {
+			this.users.remove(id);
+			return FileWrite.writeUsers(this.users);
 		}
 
 		return false;
@@ -78,18 +186,20 @@ public class EZShop implements EZShopInterface {
 	public List<User> getAllUsers() throws UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || !EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")) {
+		if (this.loggedInUser == null ||
+				!this.loggedInUser.getRole().contentEquals("Administrator")) {
 			throw new UnauthorizedException();
 		}
 
-		return new ArrayList<>(EZShopMaps.users.values());
+		return new ArrayList<>(this.users.values());
 	}
 
 	@Override
 	public User getUser(Integer id) throws InvalidUserIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || !EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")) {
+		if (this.loggedInUser == null ||
+				!this.loggedInUser.getRole().contentEquals("Administrator")) {
 			throw new UnauthorizedException();
 		}
 
@@ -99,8 +209,8 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Return it if present
-		if (EZShopMaps.users.containsKey(id)) {
-			return EZShopMaps.users.get(id);
+		if (this.users.containsKey(id)) {
+			return this.users.get(id);
 		}
 
 		return null;
@@ -111,7 +221,8 @@ public class EZShop implements EZShopInterface {
 			throws InvalidUserIdException, InvalidRoleException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || !EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")) {
+		if (this.loggedInUser == null ||
+				!this.loggedInUser.getRole().contentEquals("Administrator")) {
 			throw new UnauthorizedException();
 		}
 
@@ -121,17 +232,18 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check role correctness
-		if (role == null || role.isEmpty() || (!role.contentEquals("Administrator") && !role.contentEquals("Cashier")
-				&& !role.contentEquals("ShopManager"))) {
+		if (role == null ||
+				role.isEmpty() ||
+				(!role.contentEquals("Administrator") &&
+						!role.contentEquals("Cashier") &&
+						!role.contentEquals("ShopManager"))) {
 			throw new InvalidRoleException();
 		}
 
 		// Set if present
-		if (EZShopMaps.users.containsKey(id)) {
-
-			EZShopMaps.users.get(id).setRole(role);
-
-			return FileWrite.writeUsers(EZShopMaps.users);
+		if (this.users.containsKey(id)) {
+			this.users.get(id).setRole(role);
+			return FileWrite.writeUsers(this.users);
 		}
 
 		return false;
@@ -151,28 +263,28 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieving user with that username
-		Optional<UserImpl> optionalUser = EZShopMaps.users.values().stream()
+		Optional<UserImpl> optionalUser = this.users.values().stream()
 				.filter(u -> u.getUsername().contentEquals(username)).findFirst();
 
 		// Checking if username and password match
 		if (optionalUser.isPresent() && optionalUser.get().getPassword().contentEquals(password)) {
-			EZShopMaps.loggedInUser = optionalUser.get();
+			this.loggedInUser = optionalUser.get();
 		} else {
-			EZShopMaps.loggedInUser = null;
+			this.loggedInUser = null;
 		}
 
-		return EZShopMaps.loggedInUser;
+		return this.loggedInUser;
 	}
 
 	@Override
 	public boolean logout() {
 
 		// Check if there is a logged user
-		if (EZShopMaps.loggedInUser == null) {
+		if (this.loggedInUser == null) {
 			return false;
 		}
 
-		EZShopMaps.loggedInUser = null;
+		this.loggedInUser = null;
 		return true;
 	}
 
@@ -182,9 +294,9 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null ||
-				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -204,12 +316,12 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if barcode already exists
-		if (EZShopMaps.products.values().stream()
+		if (this.products.values().stream()
 				.anyMatch(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))) {
 			return -1;
 		}
 
-		Optional<ProductTypeImpl> prevElim = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> prevElim = this.products.values().stream()
 				.filter(p-> p.getBarCode().contentEquals(productCode)).findFirst();
 		ProductTypeImpl newOne;
 
@@ -221,10 +333,10 @@ public class EZShop implements EZShopInterface {
 			newOne.setPricePerUnit(pricePerUnit);
 		}else {
 			newOne = new ProductTypeImpl(productCode, description, pricePerUnit, note);
-			EZShopMaps.products.put(newOne.getId(), newOne);
+			this.products.put(newOne.getId(), newOne);
 		}
 
-		if (FileWrite.writeProducts(EZShopMaps.products)) {
+		if (FileWrite.writeProducts(this.products)) {
 			return newOne.getId();
 		}
 
@@ -238,8 +350,9 @@ public class EZShop implements EZShopInterface {
 			InvalidPricePerUnitException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -264,19 +377,19 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if product exists
-		if (EZShopMaps.products.containsKey(id) && !EZShopMaps.products.get(id).getEliminated()) {
-			ProductTypeImpl chosen = EZShopMaps.products.get(id);
+		if (this.products.containsKey(id) && !this.products.get(id).getEliminated()) {
+			ProductTypeImpl chosen = this.products.get(id);
 			if (!chosen.getBarCode().contentEquals(newCode)) {
 				// The new barcode differs from the original one thus we need to check if it is
 				// still unique.
-				if (EZShopMaps.products.values().stream().anyMatch(p -> p.getBarCode().contentEquals(newCode)))
+				if (this.products.values().stream().anyMatch(p -> p.getBarCode().contentEquals(newCode)))
 					return false;
 			}
 			chosen.setBarCode(newCode);
 			chosen.setNote(newNote);
 			chosen.setProductDescription(newDescription);
 			chosen.setPricePerUnit(newPrice);
-			return FileWrite.writeProducts(EZShopMaps.products);
+			return FileWrite.writeProducts(this.products);
 		}
 
 		return false;
@@ -286,9 +399,9 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteProductType(Integer id) throws InvalidProductIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null ||
-				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -297,11 +410,11 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductIdException();
 		}
 
-		if (EZShopMaps.products.containsKey(id) && !EZShopMaps.products.get(id).getEliminated()) {
-			EZShopMaps.products.get(id).invertEliminated();
-			EZShopMaps.products.get(id).setQuantity(0);
-			EZShopMaps.products.get(id).setLocation(" - - ");
-			return FileWrite.writeProducts(EZShopMaps.products);
+		if (this.products.containsKey(id) && !this.products.get(id).getEliminated()) {
+			this.products.get(id).invertEliminated();
+			this.products.get(id).setQuantity(0);
+			this.products.get(id).setLocation(" - - ");
+			return FileWrite.writeProducts(this.products);
 		}
 
 		return false;
@@ -311,11 +424,11 @@ public class EZShop implements EZShopInterface {
 	public List<ProductType> getAllProductTypes() throws UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null) {
+		if (this.loggedInUser == null) {
 			throw new UnauthorizedException();
 		}
 
-		return EZShopMaps.products.values().stream()
+		return this.products.values().stream()
 				.filter(p -> !p.getEliminated()).collect(Collectors.toList());
 
 	}
@@ -325,8 +438,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductCodeException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator") &&
+						!this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -336,7 +450,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct one
-		Optional<ProductTypeImpl> productOptional = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> productOptional = this.products.values().stream()
 				.filter(p -> (p.getBarCode().contentEquals(barCode) && !p.getEliminated()))
 				.findFirst();
 
@@ -348,8 +462,9 @@ public class EZShop implements EZShopInterface {
 	public List<ProductType> getProductTypesByDescription(String description) throws UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -358,7 +473,7 @@ public class EZShop implements EZShopInterface {
 			description = "";
 
 		String finalVal = description;
-		return EZShopMaps.products.values().stream()
+		return this.products.values().stream()
 				.filter(p -> (p.getProductDescription().contains(finalVal) && !p.getEliminated()))
 				.collect(Collectors.toList());
 	}
@@ -368,8 +483,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -378,13 +494,13 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidProductIdException();
 		}
 
-		if (EZShopMaps.products.containsKey(productId) && !EZShopMaps.products.get(productId).getEliminated()) {
-			ProductTypeImpl chosen = EZShopMaps.products.get(productId);
+		if (this.products.containsKey(productId) && !this.products.get(productId).getEliminated()) {
+			ProductTypeImpl chosen = this.products.get(productId);
 			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation() == null) {
 				return false;
 			}
 			chosen.setQuantity(chosen.getQuantity() + toBeAdded);
-			return FileWrite.writeProducts(EZShopMaps.products);
+			return FileWrite.writeProducts(this.products);
 		}
 
 		return false;
@@ -395,9 +511,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidProductIdException, InvalidLocationException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null ||
-				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator") &&
-						!EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator") &&
+						!this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -411,16 +527,16 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidLocationException();
 		}
 
-		if (EZShopMaps.products.containsKey(productId) && !EZShopMaps.products.get(productId).getEliminated()) {
-			ProductTypeImpl chosen = EZShopMaps.products.get(productId);
+		if (this.products.containsKey(productId) && !this.products.get(productId).getEliminated()) {
+			ProductTypeImpl chosen = this.products.get(productId);
 			if (!chosen.getLocation().contentEquals(newPos)) {
 				// The new location differs from the original one thus we need to check if it is
 				// still unique.
-				if (EZShopMaps.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(newPos)))
+				if (this.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(newPos)))
 					return false;
 			}
 			chosen.setLocation(newPos);
-			return FileWrite.writeProducts(EZShopMaps.products);
+			return FileWrite.writeProducts(this.products);
 		}
 
 		return false;
@@ -432,8 +548,9 @@ public class EZShop implements EZShopInterface {
 			InvalidQuantityException, InvalidPricePerUnitException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -453,14 +570,14 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct one
-		Optional<ProductTypeImpl> chosen = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> chosen = this.products.values().stream()
 				.filter(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))
 				.findFirst();
 
 		if (chosen.isPresent()) {
 			OrderImpl newOne = new OrderImpl(chosen.get(), quantity, pricePerUnit);
-			EZShopMaps.orders.put(newOne.getOrderId(), newOne);
-			if (FileWrite.writeOrders(EZShopMaps.orders)) {
+			this.orders.put(newOne.getOrderId(), newOne);
+			if (FileWrite.writeOrders(this.orders)) {
 				return newOne.getOrderId();
 			}
 		}
@@ -474,8 +591,9 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -495,7 +613,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct one
-		Optional<ProductTypeImpl> chosen = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> chosen = this.products.values().stream()
 				.filter(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))
 				.findFirst();
 
@@ -513,12 +631,12 @@ public class EZShop implements EZShopInterface {
 
 		// Create new balanceOperation
 		BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "ORDER");
-		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+		this.operations.put(newOp.getBalanceId(), newOp);
 
 		newOrd.setBalanceId(newOp.getBalanceId());
 		newOrd.setStatus("PAYED");
-		EZShopMaps.orders.put(newOrd.getOrderId(), newOrd);
-		if (FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeOperations(EZShopMaps.operations)) {
+		this.orders.put(newOrd.getOrderId(), newOrd);
+		if (FileWrite.writeOrders(this.orders) && FileWrite.writeOperations(this.operations)) {
 			return newOrd.getOrderId();
 		}
 		return -1;
@@ -528,8 +646,9 @@ public class EZShop implements EZShopInterface {
 	public boolean payOrder(Integer orderId) throws InvalidOrderIdException, UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -539,11 +658,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check presence of the specified order
-		if (!EZShopMaps.orders.containsKey(orderId)) {
+		if (!this.orders.containsKey(orderId)) {
 			return false;
 		}
 
-		OrderImpl chosen = EZShopMaps.orders.get(orderId);
+		OrderImpl chosen = this.orders.get(orderId);
 		if (chosen.getStatus().contentEquals("ISSUED")) {
 
 			double cost = chosen.getPricePerUnit() * chosen.getQuantity();
@@ -555,12 +674,12 @@ public class EZShop implements EZShopInterface {
 
 			// Create new balanceOperation
 			BalanceOperationImpl newOp = new BalanceOperationImpl(-1 * cost, "ORDER");
-			EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+			this.operations.put(newOp.getBalanceId(), newOp);
 
 			// Update order
 			chosen.setBalanceId(newOp.getBalanceId());
 			chosen.setStatus("PAYED");
-			return FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeOperations(EZShopMaps.operations);
+			return FileWrite.writeOrders(this.orders) && FileWrite.writeOperations(this.operations);
 		} else
 			return chosen.getStatus().contentEquals("PAYED");
 	}
@@ -570,8 +689,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidOrderIdException, UnauthorizedException, InvalidLocationException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -581,11 +701,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check presence of the specified order
-		if (!EZShopMaps.orders.containsKey(orderId)) {
+		if (!this.orders.containsKey(orderId)) {
 			return false;
 		}
 
-		OrderImpl chosen = EZShopMaps.orders.get(orderId);
+		OrderImpl chosen = this.orders.get(orderId);
 
 		if (chosen.getProduct().getEliminated()){
 			chosen.getProduct().invertEliminated();
@@ -601,7 +721,7 @@ public class EZShop implements EZShopInterface {
 			// Update quantity in inventory
 			chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
 			chosen.setStatus("COMPLETED");
-			return FileWrite.writeOrders(EZShopMaps.orders) && FileWrite.writeProducts(EZShopMaps.products);
+			return FileWrite.writeOrders(this.orders) && FileWrite.writeProducts(this.products);
 		} else
 			return chosen.getStatus().contentEquals("COMPLETED");
 	}
@@ -610,22 +730,22 @@ public class EZShop implements EZShopInterface {
 	public List<Order> getAllOrders() throws UnauthorizedException {
 
 		// Check access rights
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
-		return new ArrayList<>(EZShopMaps.orders.values());
+		return new ArrayList<>(this.orders.values());
 	}
 
 	@Override
 	public Integer defineCustomer(String customerName) throws InvalidCustomerNameException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null ||
-				(!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -635,13 +755,13 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if customer name already exists
-		if (EZShopMaps.customers.values().stream().anyMatch(u -> u.getCustomerName().contentEquals(customerName))) {
+		if (this.customers.values().stream().anyMatch(u -> u.getCustomerName().contentEquals(customerName))) {
 			return -1;
 		}
 
 		CustomerImpl newOne = new CustomerImpl(customerName);
-		EZShopMaps.customers.put(newOne.getId(), newOne);
-		if (FileWrite.writeCustomers(EZShopMaps.customers))
+		this.customers.put(newOne.getId(), newOne);
+		if (FileWrite.writeCustomers(this.customers))
 			return newOne.getId();
 		return -1;
 	}
@@ -652,9 +772,9 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -673,13 +793,13 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidCustomerCardException();
 		}
 
-		if (EZShopMaps.customers.containsKey(id)) {
-			CustomerImpl chosen = EZShopMaps.customers.get(id);
+		if (this.customers.containsKey(id)) {
+			CustomerImpl chosen = this.customers.get(id);
 
 			if (!chosen.getCustomerName().contentEquals(newCustomerName)) {
 				// The new customer name differs from the original one thus we need to check if
 				// it is still unique.
-				if (EZShopMaps.customers.values().stream()
+				if (this.customers.values().stream()
 						.anyMatch(p -> p.getCustomerName().contentEquals(newCustomerName)))
 					return false;
 			}
@@ -688,11 +808,11 @@ public class EZShop implements EZShopInterface {
 
 			if (newCustomerCard != null) {
 				if (newCustomerCard.matches("^[0-9]{10}$")) {
-					if (EZShopMaps.cards.containsKey(newCustomerCard)
-							&& EZShopMaps.cards.get(newCustomerCard).getCustomer() == null) {
+					if (this.cards.containsKey(newCustomerCard)
+							&& this.cards.get(newCustomerCard).getCustomer() == null) {
 						// Double reference
-						chosen.setCard(EZShopMaps.cards.get(newCustomerCard));
-						EZShopMaps.cards.get(newCustomerCard).setCustomer(chosen);
+						chosen.setCard(this.cards.get(newCustomerCard));
+						this.cards.get(newCustomerCard).setCustomer(chosen);
 					}
 				} else if (newCustomerCard.isEmpty()) {
 					// Double reference
@@ -700,7 +820,7 @@ public class EZShop implements EZShopInterface {
 					chosen.setCard(null);
 				} // null case does not modify anything
 
-				return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
+				return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 			}
 		}
 
@@ -711,9 +831,9 @@ public class EZShop implements EZShopInterface {
 	public boolean deleteCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -722,14 +842,14 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidCustomerIdException();
 		}
 
-		if (EZShopMaps.customers.containsKey(id)) {
+		if (this.customers.containsKey(id)) {
 			// Remove reference to loyalty card
-			if (EZShopMaps.customers.get(id).getCard() != null) {
-				EZShopMaps.customers.get(id).getCard().setCustomer(null);
-				EZShopMaps.customers.get(id).getCard().setPoints(0);
+			if (this.customers.get(id).getCard() != null) {
+				this.customers.get(id).getCard().setCustomer(null);
+				this.customers.get(id).getCard().setPoints(0);
 			}
-			EZShopMaps.customers.remove(id);
-			return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
+			this.customers.remove(id);
+			return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 		}
 
 		return false;
@@ -739,9 +859,9 @@ public class EZShop implements EZShopInterface {
 	public Customer getCustomer(Integer id) throws InvalidCustomerIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -750,8 +870,8 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidCustomerIdException();
 		}
 
-		if (EZShopMaps.customers.containsKey(id)) {
-			return EZShopMaps.customers.get(id);
+		if (this.customers.containsKey(id)) {
+			return this.customers.get(id);
 		}
 
 		return null;
@@ -761,28 +881,28 @@ public class EZShop implements EZShopInterface {
 	public List<Customer> getAllCustomers() throws UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
-		return new ArrayList<>(EZShopMaps.customers.values());
+		return new ArrayList<>(this.customers.values());
 	}
 
 	@Override
 	public String createCard() throws UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
 		LoyaltyCard newOne = new LoyaltyCard();
-		EZShopMaps.cards.put(newOne.getCardId(), newOne);
-		if (FileWrite.writeCards(EZShopMaps.cards))
+		this.cards.put(newOne.getCardId(), newOne);
+		if (FileWrite.writeCards(this.cards))
 			return newOne.getCardId();
 		return "";
 	}
@@ -792,9 +912,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerIdException, InvalidCustomerCardException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -808,11 +928,11 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidCustomerCardException();
 		}
 
-		if (EZShopMaps.customers.containsKey(customerId) && EZShopMaps.cards.containsKey(customerCard)
-				&& EZShopMaps.cards.get(customerCard).getCustomer() == null) {
+		if (this.customers.containsKey(customerId) && this.cards.containsKey(customerCard)
+				&& this.cards.get(customerCard).getCustomer() == null) {
 
-			EZShopMaps.customers.get(customerId).setCustomerCard(customerCard);
-			return FileWrite.writeCustomers(EZShopMaps.customers) && FileWrite.writeCards(EZShopMaps.cards);
+			this.customers.get(customerId).setCustomerCard(customerCard);
+			return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 		}
 		return false;
 	}
@@ -822,9 +942,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidCustomerCardException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -833,13 +953,13 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidCustomerCardException();
 		}
 
-		if (EZShopMaps.cards.containsKey(customerCard)) {
-			if ((EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded) < 0) {
+		if (this.cards.containsKey(customerCard)) {
+			if ((this.cards.get(customerCard).getPoints() + pointsToBeAdded) < 0) {
 				return false;
 			}
-			EZShopMaps.cards.get(customerCard)
-					.setPoints(EZShopMaps.cards.get(customerCard).getPoints() + pointsToBeAdded);
-			return FileWrite.writeCards(EZShopMaps.cards);
+			this.cards.get(customerCard)
+					.setPoints(this.cards.get(customerCard).getPoints() + pointsToBeAdded);
+			return FileWrite.writeCards(this.cards);
 		}
 		return false;
 	}
@@ -847,17 +967,17 @@ public class EZShop implements EZShopInterface {
 	@Override
 	public Integer startSaleTransaction() throws UnauthorizedException {
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
 		SaleTransactionImpl newSale = new SaleTransactionImpl();
-		EZShopMaps.sales.put(newSale.getTicketNumber(), newSale);
+		this.sales.put(newSale.getTicketNumber(), newSale);
 
 		// store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeSales(this.sales)) {
 			return -1;
 		} else {
 			return newSale.getTicketNumber();
@@ -870,9 +990,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException {
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -892,7 +1012,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct product
-		Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> prod = this.products.values().stream()
 				.filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
 		// Check if the product exists in the map and the quantity available is enough
@@ -901,10 +1021,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId identifies a started transaction
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId identifies an open transaction
 		if (!sale.getState().contentEquals("OPEN")) {
@@ -920,7 +1040,7 @@ public class EZShop implements EZShopInterface {
 		prod.get().setQuantity(prod.get().getQuantity() - amount);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales) || !FileWrite.writeProducts(EZShopMaps.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
 			return false;
 		} else {
 			return true;
@@ -933,9 +1053,9 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -955,7 +1075,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct product
-		Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> prod = this.products.values().stream()
 				.filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
 		// Check if the product exists in the map
@@ -964,10 +1084,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId identifies a started transaction
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId identifies an open transaction
 		if (!sale.getState().contentEquals("OPEN")) {
@@ -987,7 +1107,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales) || !FileWrite.writeProducts(EZShopMaps.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
 			return false;
 		} else {
 			return true;
@@ -1000,9 +1120,9 @@ public class EZShop implements EZShopInterface {
 			UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1022,7 +1142,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct product
-		Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> prod = this.products.values().stream()
 				.filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
 		// Check if the product exists in the map
@@ -1031,10 +1151,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId identifies a started transaction
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId identifies an open transaction
 		if (!sale.getState().contentEquals("OPEN")) {
@@ -1058,7 +1178,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeSales(this.sales)) {
 			return false;
 		} else {
 			return true;
@@ -1070,9 +1190,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1087,10 +1207,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId identifies a started transaction
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId identifies an open or closed but not payed
 		// transaction
@@ -1101,7 +1221,7 @@ public class EZShop implements EZShopInterface {
 		sale.setDiscountRate(discountRate);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeSales(this.sales)) {
 			return false;
 		} else {
 			return true;
@@ -1112,9 +1232,9 @@ public class EZShop implements EZShopInterface {
 	public int computePointsForSale(Integer transactionId) throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1124,14 +1244,14 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId exists
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return -1;
 		}
 
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeSales(this.sales)) {
 			return -1;
 		} else {
 			return (int) sale.getPrice() / 10;
@@ -1144,9 +1264,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1156,10 +1276,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId exists
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId identifies an already closed transaction
 		if (sale.getState().contentEquals("CLOSED")) {
@@ -1169,7 +1289,7 @@ public class EZShop implements EZShopInterface {
 		sale.setState("CLOSED");
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeSales(this.sales)) {
 			return false;
 		} else {
 			return true;
@@ -1181,9 +1301,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1193,11 +1313,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId exists
-		if (!EZShopMaps.sales.containsKey(saleNumber)) {
+		if (!this.sales.containsKey(saleNumber)) {
 			return false;
 		}
 
-		SaleTransactionImpl sale = EZShopMaps.sales.get(saleNumber);
+		SaleTransactionImpl sale = this.sales.get(saleNumber);
 		// Check if the transactionId identifies an already payed transaction
 		if (sale.getState().contentEquals("PAYED")) {
 			return false;
@@ -1205,7 +1325,7 @@ public class EZShop implements EZShopInterface {
 
 		// Restore quantities in the inventory for every product
 		for (TicketEntry entry : sale.getEntries()) {
-			for (ProductTypeImpl p : EZShopMaps.products.values()) {
+			for (ProductTypeImpl p : this.products.values()) {
 				if (entry.getBarCode().contentEquals(p.getBarCode())) {
 					p.setQuantity(p.getQuantity() + entry.getAmount());
 					if (p.getEliminated() ) {
@@ -1216,10 +1336,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Delete the sale from the map
-		EZShopMaps.sales.remove(saleNumber);
+		this.sales.remove(saleNumber);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(EZShopMaps.sales) || !FileWrite.writeProducts(EZShopMaps.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
 			return false;
 		} else {
 			return true;
@@ -1231,9 +1351,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1243,10 +1363,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transactionId exists
-		if (!EZShopMaps.sales.containsKey(transactionId)) {
+		if (!this.sales.containsKey(transactionId)) {
 			return null;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(transactionId);
+		SaleTransactionImpl sale = this.sales.get(transactionId);
 
 		// Check if the transactionId is still open
 		if (sale.getState().contentEquals("OPEN")) {
@@ -1261,9 +1381,9 @@ public class EZShop implements EZShopInterface {
 			throws /* InvalidTicketNumberException, */InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1273,10 +1393,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the transaction with saleNumber exists
-		if (!EZShopMaps.sales.containsKey(saleNumber)) {
+		if (!this.sales.containsKey(saleNumber)) {
 			return -1;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(saleNumber);
+		SaleTransactionImpl sale = this.sales.get(saleNumber);
 
 		// Check if the saleNumber identifies a payed transaction
 		if (!sale.getState().contentEquals("PAYED")) {
@@ -1284,10 +1404,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		ReturnTransaction newRet = new ReturnTransaction(sale);
-		EZShopMaps.returns.put(newRet.getReturnID(), newRet);
+		this.returns.put(newRet.getReturnID(), newRet);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeReturns(EZShopMaps.returns)) {
+		if (!FileWrite.writeReturns(this.returns)) {
 			return -1;
 		} else {
 			return newRet.getReturnID();
@@ -1299,9 +1419,9 @@ public class EZShop implements EZShopInterface {
 			InvalidProductCodeException, InvalidQuantityException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1321,7 +1441,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Retrieve the correct product
-		Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
+		Optional<ProductTypeImpl> prod = this.products.values().stream()
 				.filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
 
 		// Check if the product exists in the map
@@ -1330,10 +1450,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the return transaction exists
-		if (!EZShopMaps.returns.containsKey(returnId)) {
+		if (!this.returns.containsKey(returnId)) {
 			return false;
 		}
-		ReturnTransaction ret = EZShopMaps.returns.get(returnId);
+		ReturnTransaction ret = this.returns.get(returnId);
 
 		// Check if the product to be returned is in the Sale Transaction
 		TicketEntry entrySold = null;
@@ -1357,7 +1477,7 @@ public class EZShop implements EZShopInterface {
 
 		// Note: this method doesn't update the productType quantity
 		// Store changes in persistent memory
-		if (!FileWrite.writeReturns(EZShopMaps.returns)) {
+		if (!FileWrite.writeReturns(this.returns)) {
 			return false;
 		} else {
 			return true;
@@ -1369,9 +1489,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1381,10 +1501,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the return transaction exists
-		if (!EZShopMaps.returns.containsKey(returnId)) {
+		if (!this.returns.containsKey(returnId)) {
 			return false;
 		}
-		ReturnTransaction ret = EZShopMaps.returns.get(returnId);
+		ReturnTransaction ret = this.returns.get(returnId);
 
 		// Check if the return transaction is open
 		if (!ret.getState().contentEquals("OPEN")) {
@@ -1418,8 +1538,8 @@ public class EZShop implements EZShopInterface {
 		ret.setCommit(commit);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeReturns(EZShopMaps.returns) || !FileWrite.writeProducts(EZShopMaps.products)
-				|| !FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeReturns(this.returns) || !FileWrite.writeProducts(this.products)
+				|| !FileWrite.writeSales(this.sales)) {
 			return false;
 		} else {
 			return true;
@@ -1432,9 +1552,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1444,10 +1564,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the return transaction exists
-		if (!EZShopMaps.returns.containsKey(returnId)) {
+		if (!this.returns.containsKey(returnId)) {
 			return false;
 		}
-		ReturnTransaction ret = EZShopMaps.returns.get(returnId);
+		ReturnTransaction ret = this.returns.get(returnId);
 
 		// Check if the return transaction has been closed, if it's open or payed return
 		// false
@@ -1461,7 +1581,7 @@ public class EZShop implements EZShopInterface {
 			// Decrease the product quantity available in the shelves
 			for (TicketEntry e : ret.getProducts()) {
 				ProductTypeImpl prod = null;
-				for (ProductTypeImpl p : EZShopMaps.products.values()) {
+				for (ProductTypeImpl p : this.products.values()) {
 					if (p.getBarCode().equals(e.getBarCode())) {
 						prod = p;
 					}
@@ -1491,11 +1611,11 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Delete the return transaction from the map
-		EZShopMaps.returns.remove(returnId);
+		this.returns.remove(returnId);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeReturns(EZShopMaps.returns) || !FileWrite.writeProducts(EZShopMaps.products)
-				|| !FileWrite.writeSales(EZShopMaps.sales)) {
+		if (!FileWrite.writeReturns(this.returns) || !FileWrite.writeProducts(this.products)
+				|| !FileWrite.writeSales(this.sales)) {
 			return false;
 		} else {
 			return true;
@@ -1508,9 +1628,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1525,10 +1645,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the ticketNumber identifies a sale transaction that exists
-		if (!EZShopMaps.sales.containsKey(ticketNumber)) {
+		if (!this.sales.containsKey(ticketNumber)) {
 			return -1;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(ticketNumber);
+		SaleTransactionImpl sale = this.sales.get(ticketNumber);
 
 		// Check if the sale transaction is closed
 		if (!sale.getState().contentEquals("CLOSED")) {
@@ -1547,10 +1667,10 @@ public class EZShop implements EZShopInterface {
 
 			// Create new balance operation, to record this sale in the balance
 			BalanceOperationImpl newOp = new BalanceOperationImpl(price, "SALE");
-			EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+			this.operations.put(newOp.getBalanceId(), newOp);
 
 			// Store changes in persistent memory
-			if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeSales(EZShopMaps.sales)) {
+			if (!FileWrite.writeOperations(this.operations) || !FileWrite.writeSales(this.sales)) {
 				return -1;
 			} else {
 				return rest;
@@ -1563,9 +1683,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1579,7 +1699,7 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidTransactionIdException();
 		}
 
-		// Read the list of credit EZShopMaps.cards from the file
+		// Read the list of credit this.cards from the file
 		List<CreditCard> creditCardsList = FileRead.readCreditCards();
 
 		// Search the CreditCard in the list
@@ -1596,10 +1716,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the ticketNumber identifies a sale transaction that exists
-		if (!EZShopMaps.sales.containsKey(ticketNumber)) {
+		if (!this.sales.containsKey(ticketNumber)) {
 			return false;
 		}
-		SaleTransactionImpl sale = EZShopMaps.sales.get(ticketNumber);
+		SaleTransactionImpl sale = this.sales.get(ticketNumber);
 
 		// Check if the sale transaction is closed
 		if (!sale.getState().contentEquals("CLOSED")) {
@@ -1623,10 +1743,10 @@ public class EZShop implements EZShopInterface {
 
 		// Create new balance operation, to record this sale in the balance
 		BalanceOperationImpl newOp = new BalanceOperationImpl(price, "SALE");
-		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+		this.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeSales(EZShopMaps.sales)
+		if (!FileWrite.writeOperations(this.operations) || !FileWrite.writeSales(this.sales)
 				|| !FileWrite.writeCreditCards(creditCardsList)) {
 			return false;
 		} else {
@@ -1639,9 +1759,9 @@ public class EZShop implements EZShopInterface {
 	public double returnCashPayment(Integer returnId) throws InvalidTransactionIdException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1651,10 +1771,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the return transaction exists
-		if (!EZShopMaps.returns.containsKey(returnId)) {
+		if (!this.returns.containsKey(returnId)) {
 			return -1;
 		}
-		ReturnTransaction ret = EZShopMaps.returns.get(returnId);
+		ReturnTransaction ret = this.returns.get(returnId);
 
 		// Check if the return transaction is closed
 		if (!ret.getState().contentEquals("CLOSED")) {
@@ -1668,10 +1788,10 @@ public class EZShop implements EZShopInterface {
 
 		// Create new balance operation, to record this return in the balance
 		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "RETURN");
-		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+		this.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeReturns(EZShopMaps.returns)) {
+		if (!FileWrite.writeOperations(this.operations) || !FileWrite.writeReturns(this.returns)) {
 			return -1;
 		} else {
 			return amount;
@@ -1684,9 +1804,9 @@ public class EZShop implements EZShopInterface {
 			throws InvalidTransactionIdException, InvalidCreditCardException, UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1701,10 +1821,10 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check if the return transaction exists
-		if (!EZShopMaps.returns.containsKey(returnId)) {
+		if (!this.returns.containsKey(returnId)) {
 			return -1;
 		}
-		ReturnTransaction ret = EZShopMaps.returns.get(returnId);
+		ReturnTransaction ret = this.returns.get(returnId);
 
 		// Check if the return transaction is closed
 		if (!ret.getState().contentEquals("CLOSED")) {
@@ -1713,7 +1833,7 @@ public class EZShop implements EZShopInterface {
 
 		double amount = ret.getValue();
 
-		// Read the list of credit EZShopMaps.cards from the file
+		// Read the list of credit this.cards from the file
 		List<CreditCard> creditCardsList = FileRead.readCreditCards();
 
 		// Search the CreditCard in the list
@@ -1737,10 +1857,10 @@ public class EZShop implements EZShopInterface {
 
 		// Create new balance operation, to record this return in the balance
 		BalanceOperationImpl newOp = new BalanceOperationImpl(-amount, "RETURN");
-		EZShopMaps.operations.put(newOp.getBalanceId(), newOp);
+		this.operations.put(newOp.getBalanceId(), newOp);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeOperations(EZShopMaps.operations) || !FileWrite.writeReturns(EZShopMaps.returns)
+		if (!FileWrite.writeOperations(this.operations) || !FileWrite.writeReturns(this.returns)
 				|| !FileWrite.writeCreditCards(creditCardsList)) {
 			return -1;
 		} else {
@@ -1753,17 +1873,17 @@ public class EZShop implements EZShopInterface {
 	public boolean recordBalanceUpdate(double toBeAdded) throws UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
 		if ((this.computeBalance() + toBeAdded) >= 0) {
 			BalanceOperationImpl newOne = new BalanceOperationImpl(toBeAdded, (toBeAdded >= 0) ? "CREDIT" : "DEBIT");
-			EZShopMaps.operations.put(newOne.getBalanceId(), newOne);
+			this.operations.put(newOne.getBalanceId(), newOne);
 
 			// Store changes in persistent memory and return result of the operation
-			return FileWrite.writeOperations(EZShopMaps.operations);
+			return FileWrite.writeOperations(this.operations);
 		}
 		return false;
 	}
@@ -1772,8 +1892,8 @@ public class EZShop implements EZShopInterface {
 	public List<BalanceOperation> getCreditsAndDebits(LocalDate from, LocalDate to) throws UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
@@ -1793,7 +1913,7 @@ public class EZShop implements EZShopInterface {
 
 		LocalDate finalStart = start;
 		LocalDate finalEnd = end;
-		return EZShopMaps.operations.values().stream()
+		return this.operations.values().stream()
 				.filter(o -> (o.getDate().isAfter(finalStart) && o.getDate().isBefore(finalEnd)))
 				.collect(Collectors.toList());
 
@@ -1803,12 +1923,12 @@ public class EZShop implements EZShopInterface {
 	public double computeBalance() throws UnauthorizedException {
 
 		// Check user role
-		if (EZShopMaps.loggedInUser == null || (!EZShopMaps.loggedInUser.getRole().contentEquals("Administrator")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("Cashier")
-				&& !EZShopMaps.loggedInUser.getRole().contentEquals("ShopManager"))) {
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
 			throw new UnauthorizedException();
 		}
 
-		return EZShopMaps.operations.values().stream().mapToDouble(BalanceOperation::getMoney).sum();
+		return this.operations.values().stream().mapToDouble(BalanceOperation::getMoney).sum();
 	}
 }

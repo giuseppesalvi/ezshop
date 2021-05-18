@@ -1,9 +1,6 @@
 package it.polito.ezshop.model;
 
-import it.polito.ezshop.data.EZShopMaps;
 import it.polito.ezshop.data.Order;
-
-import java.util.Optional;
 
 public class OrderImpl implements Order {
 
@@ -43,10 +40,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setBalanceId(Integer balanceId) {
-        if (balanceId != null && !EZShopMaps.operations.containsKey(balanceId)){
-            EZShopMaps.operations.get(this.balanceId).setBalanceId(balanceId);
-            this.balanceId = balanceId;
-        }
+        this.balanceId = balanceId;
     }
 
     @Override
@@ -56,11 +50,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setProductCode(String productCode) {
-        if (productCode != null && !productCode.isEmpty()){
-            Optional<ProductTypeImpl> prod = EZShopMaps.products.values().stream()
-                    .filter(p -> p.getBarCode().contentEquals(productCode)).findFirst();
-            prod.ifPresent(productType -> this.product = productType);
-        }
+        //Not implemented since we have a reference, not a string
     }
 
     @Override
@@ -70,9 +60,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setPricePerUnit(double pricePerUnit) {
-        if (pricePerUnit > 0) {
-            this.pricePerUnit = pricePerUnit;
-        }
+        this.pricePerUnit = pricePerUnit;
     }
 
     @Override
@@ -82,9 +70,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setQuantity(int quantity) {
-        if (quantity > 0) {
-            this.quantity = quantity;
-        }
+        this.quantity = quantity;
     }
 
     @Override
@@ -94,12 +80,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setStatus(String status) {
-        if (status != null &&
-                (status.contentEquals("ISSUED") ||
-                    status.contentEquals("PAYED") ||
-                    status.contentEquals("COMPLETED"))){
-            this.status = status;
-        }
+        this.status = status;
     }
 
     @Override
@@ -109,11 +90,7 @@ public class OrderImpl implements Order {
 
     @Override
     public void setOrderId(Integer orderId) {
-        if (orderId != null && !EZShopMaps.orders.containsKey(orderId)){
-            this.id = orderId;
-            if (orderId > idGen)
-                idGen = orderId+1;
-        }
+        this.id = orderId;
     }
 
     public ProductTypeImpl getProduct(){
@@ -121,8 +98,6 @@ public class OrderImpl implements Order {
     }
 
     public void setProduct(ProductTypeImpl product) {
-        if (product != null) {
-            this.product = product;
-        }
+        this.product = product;
     }
 }

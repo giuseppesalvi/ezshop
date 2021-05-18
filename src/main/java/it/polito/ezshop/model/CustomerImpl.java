@@ -1,7 +1,6 @@
 package it.polito.ezshop.model;
 
 import it.polito.ezshop.data.Customer;
-import it.polito.ezshop.data.EZShopMaps;
 
 public class CustomerImpl implements Customer {
 
@@ -38,8 +37,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerName(String customerName) {
-        if (customerName != null && !customerName.isEmpty())
-            this.customerName = customerName;
+        this.customerName = customerName;
     }
 
     @Override
@@ -49,15 +47,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerCard(String customerCard) {
-        if (customerCard != null) {
-            if (customerCard.matches("^[0-9]{10}$")) {
-                if (EZShopMaps.cards.containsKey(customerCard)){
-                    this.setCard(EZShopMaps.cards.get(customerCard));
-                }
-            } else if (customerCard.isEmpty()){
-                this.setCard(null);
-            }
-        }
+        //Not implemented since we have the reference, not a string
     }
 
     @Override
@@ -67,11 +57,7 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setId(Integer id) {
-        if (id != null && !EZShopMaps.customers.containsKey(id)){
-            this.customerId = id;
-            if (id > idGen)
-                idGen = id+1;
-        }
+        this.customerId = id;
     }
 
     @Override
@@ -81,8 +67,8 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setPoints(Integer points) {
-        if (this.card != null && points!= null && points > 0)
-            this.card.setPoints(points);
+        if (this.card != null)
+            card.setPoints(points);
     }
 
     public LoyaltyCard getCard() {
