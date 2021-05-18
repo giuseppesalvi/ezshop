@@ -931,7 +931,7 @@ public class EZShop implements EZShopInterface {
 		if (this.customers.containsKey(customerId) && this.cards.containsKey(customerCard)
 				&& this.cards.get(customerCard).getCustomer() == null) {
 
-			this.customers.get(customerId).setCustomerCard(customerCard);
+			this.customers.get(customerId).setCard(this.cards.get(customerCard));
 			return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 		}
 		return false;

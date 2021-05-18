@@ -50,7 +50,8 @@ public class OrderImpl implements Order {
 
     @Override
     public void setProductCode(String productCode) {
-        //Not implemented since we have a reference, not a string
+        //DO NOT USE
+        this.product.setBarCode(productCode);
     }
 
     @Override

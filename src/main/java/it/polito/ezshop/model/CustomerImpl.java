@@ -47,7 +47,8 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setCustomerCard(String customerCard) {
-        //Not implemented since we have the reference, not a string
+        //DO NOT USE
+        this.card.setCardId(customerCard);
     }
 
     @Override

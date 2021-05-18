@@ -29,7 +29,8 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setBarCode(String barCode) {
-		//Not implemented since we have the reference, not a string
+		//DO NOT USE
+		this.product.setBarCode(barCode);
 	}
 
 	@Override
