@@ -31,13 +31,13 @@ Version:
 **Criteria for *setDate*:**
 	
 
- - validity of date format
+ - validity of LocalDate date 
 
 **Predicates for *setDate*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
-| validity of date format | yes |
+| validity of LocalDate date | yes |
 |                               | no |
 
 **Boundaries**:
@@ -49,10 +49,10 @@ Version:
 
 **Combination of predicates**:
 
-| validity of Date format | Valid / Invalid | Description of the test case | JUnit test case |
+| validity of LocalDate Date| Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
-| no | Invalid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(20-03-01) <br />  -> Invalid date||
-| yes | Valid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setDate(2020-04-09) <br />  obj.getDate()-> 2020-04-09||
+| no | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setDate(null) <br />  -> obj.getDate() -> 2020-03-01 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetDateWithInvalidLocalDate |
+| yes | Valid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setDate(LocalDate.parse("2020-04-09")) <br />  obj.getDate()-> 2020-04-09 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetDateWithValidLocalDate|
 
 ### **Class *BalanceOperationImpl* - *setMoney***
 
@@ -76,10 +76,10 @@ Version:
 
 **Combination of predicates**:
 
-| validity of Double amount | Valid / Invalid | Description of the test case | JUnit test case |
+| validity of Double money | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|
-| no | Invalid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setMoney(null) <br /> -> Invalid entry||
-| yes | Valid |  BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setMoney(5000) <br /> obj.getMoney() -> 5000||
+| no | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setMoney(null) <br /> -> obj.getMoney() -> 10000.00|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetMoneyWithInvalidMoney|
+| yes | Valid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setMoney(5000.00) <br /> obj.getMoney() -> 5000.00|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetMoneyWithValidMoney|
 
 ### **Class *BalanceOperationImpl* - *setType***
 
@@ -112,14 +112,45 @@ Version:
 
 | validity of string type | string match | Valid / Invalid | Description of the test case | JUnit test case |
 |-------|-------|-------|-------|------|
-|no		|* 			|Invalid	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType(null) <br />  -> Invalid||
-|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />obj.setType("SALE")<br /> obj.getType()-> "SALE"| |
-|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("ORDER")<br /> obj.getType()-> "ORDER"||
-|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("RETURN")<br /> obj.getType()-> "RETURN"||
-|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br />  obj.setType("CREDIT")<br /> obj.getType()-> "CREDIT"||
-|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("DEBIT")<br /> obj.getType()-> "DEBIT"||
-|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, 2020-03-01, 10000, "ORDER"} <br /> obj.setType("test")<br /> obj.getType()-> ""||
+|no		|* 			|Invalid	|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType(null) <br />  obj.getType -> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithNull|
+|yes 	|SALE		|Valid		|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />obj.setType("SALE")<br /> obj.getType()-> "SALE"| src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithSale|
+|yes 	|ORDER		|Valid 	|	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "SALE"} <br /> obj.setType("ORDER")<br /> obj.getType()-> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithOrder|
+|yes 	|RETURN	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />  obj.setType("RETURN")<br /> obj.getType()-> "RETURN"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithReturn|
+|yes 	|CREDIT	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br />  obj.setType("CREDIT")<br /> obj.getType()-> "CREDIT"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithCredit|
+|yes 	|DEBIT 	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType("DEBIT")<br /> obj.getType()-> "DEBIT"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithDebit|
+|yes 	|other 	|Valid 	| 	BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setType("test")<br /> obj.getType()-> "ORDER"|src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetTypeWithNoMatch|
 
+### **Class *BalanceOperationImpl* - *setBalanceId***
+
+**Criteria for *setBalanceId*:**
+	
+ - sign of balanceId
+ - id already used 
+
+**Predicates for *setBalanceId*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| sign of balanceId | (minInt, 0] |
+|                   | (0, maxInt) |
+| id already used | yes |
+|                 | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+| sign of balanceId | 0, 1 |
+|          |                 |
+
+**Combination of predicates**:
+
+| sign of balanceId | id already used | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|-------|
+| (minInt, 0] | | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> obj.setBalanceId(-20) <br /> -> obj.getBalanceId() -> 123 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithNegativeNumber |
+| (0, maxInt) | yes | Invalid |  BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> BalanceOperationImpl obj2 {124, "2020-03-02", 300.00, "SALE"} <br />  obj.setBalanceId(123) <br /> obj.getBalanceId() -> 123 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithAlreadyUsedId |
+| " | no | Valid |   BalanceOperationImpl obj = {123, "2020-03-01", 10000.00, "ORDER"} <br /> BalanceOperationImpl obj2 {124, "2020-03-02", 300.00, "SALE"} <br />  obj.setBalanceId(125) <br /> obj.getBalanceId() -> 125 |src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testSetBalanceIdWithValidId|
+  
 
 
  ### **Class *CreditCard* - method *checkValidity***
@@ -480,9 +511,11 @@ Version:
 
 | Unit name | JUnit test case |
 |--|--|
-| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
-| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoop0Iterations|
-| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.CreditCardTests.testCheckValidityForLoopMultipleIterations|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
+| BalanceOperationImpl | src/test/java/it/polito/ezshop/test/BalanceOperationImpl.testConstructors|
+
 ### Code coverage report
 
     <Add here the screenshot report of the statement and branch coverage obtained using

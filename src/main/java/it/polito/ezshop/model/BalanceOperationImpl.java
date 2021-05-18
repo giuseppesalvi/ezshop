@@ -34,7 +34,7 @@ public class BalanceOperationImpl implements BalanceOperation {
 
 	@Override
 	public void setBalanceId(int balanceId) {
-		if (balanceId > 0 && !EZShopMaps.operations.containsKey(id)) {
+		if (balanceId > 0 && !EZShopMaps.operations.containsKey(balanceId)) {
 			if (balanceId > idGen)
 				idGen = balanceId + 1;
 			this.id = balanceId;
