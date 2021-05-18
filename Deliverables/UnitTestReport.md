@@ -497,6 +497,61 @@ Version:
 |no|invalid |T0("456def456") <br /> T0("")| src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithInvalidString | 
 |yes|valid| T1("456-def-456", true) | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString | 
 
+### **Class *ReturnTransaction* - method  *addEntry***
+
+**Criteria for *addEntry*:**
+	
+ - validity of TicketEntryImp entry
+
+**Predicates for *addEntry*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of TicketEntryImp entry | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of TicketEntryImp entry |Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|no|Invalid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.addEntry{product, true, 0.5} <br /> -> Invalid Entry||
+| yes |Valid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.addEntry{product, 10, 0.5} <br /> -> true ||
+
+### **Class *ReturnTransaction* - method  *deleteEntry***
+
+**Criteria for *deleteEntry*:**
+	
+ - validity of string barcode
+
+**Predicates for *deleteEntry*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of string barcode | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of TicketEntryImp entry |Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|no|Invalid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry(null) <br /> -> Invalid Entry||
+| yes |Valid |  ReturnTransaction obj = {129, new_transaction, List_products, "OPEN", true, 199823} <br /> obj.deleteEntry("AZ1234") <br /> -> AZ1234 ||
+
+
 
 
 
