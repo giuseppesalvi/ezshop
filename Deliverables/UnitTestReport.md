@@ -342,13 +342,82 @@ Version:
 | * |no| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setQuantity(null) <br /> -> Invalid entry||
 | yes |yes| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setQuantity(2) <br /> obj.getQuantity()-> 2||
 
+
+### **Class *OrderImpl* - *setStatus***
+
+**Criteria for *setStatus*:**
+	
+ - validity of string status
+ - match of status
+
+**Predicates for *setStatus*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of string status | yes |
+|                               | no |
+| status match | "ISSUED" |
+| 				| "PAYED" |
+|				| "COMPLETED" |
+|				| other |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of string status | status match | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|------|
+|no		|* 			|Invalid	|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus(null) <br /> -> Invalid Entry||
+|yes 	|ISSUED		|Valid		|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("ISSUED") <br /> obj.getStatus()-> ISSUED||
+|yes 	|PAYED		|Valid 	|	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("PAYED") <br /> obj.getStatus()-> PAYED||
+|yes 	|COMPLETED	|Valid 	| 	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("COMPLETED") <br /> obj.getStatus()-> COMPLETED||
+|yes 	|other 	|Valid 	| 	OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setStatus("TEST") <br /> obj.getStatus()-> ||
+
+
+### **Class *OrderImpl* -  *setOrderId***
+
+**Criteria for *setOrderId*:**
+	
+ - validity of integer order id
+ - order id is not already present
+
+**Predicates for *setOrderId*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of integer order id | yes |
+|                               | no |
+| order id is already present | yes |
+|                  				| no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|          |                 |
+|          |                 |
+
+**Combination of predicates**:
+
+| validity of integer order id| order id already present |Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|-------|
+| no |*| Invalid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(null) <br /> -> Invalid entry||
+| yes | yes |Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(34) <br /> -> Invalid Entry id already present||
+| yes |no| Valid |  OrderImpl obj = {newproduct, 4, 12, "ISSUED", 1245, 34} <br /> obj.setOrderId(48) <br /> obj.getOrderId()-> 48||
+
+
 ### **Class *OrderImpl* -  *setProduct***
 
 **Criteria for *setProduct*:**
 	
  - validity of product
 
-**Predicates for *setPricePerUnit*:**
+**Predicates for *setProduct*:**
 
 | Criteria | Predicate |
 | -------- | --------- |
