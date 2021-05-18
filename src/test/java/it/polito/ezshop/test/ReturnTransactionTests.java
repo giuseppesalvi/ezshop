@@ -1,0 +1,49 @@
+package it.polito.ezshop.test;
+
+import static org.junit.Assert.assertEquals;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
+import it.polito.ezshop.model.ProductTypeImpl;
+import it.polito.ezshop.model.ReturnTransaction;
+import it.polito.ezshop.model.SaleTransactionImpl;
+import it.polito.ezshop.model.TicketEntryImpl;
+
+public class ReturnTransactionTests {
+
+	@Test
+	public void testGettersSettersConstructors() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		SaleTransactionImpl sale2 = new SaleTransactionImpl();
+		List<TicketEntryImpl> products = new ArrayList<TicketEntryImpl>();
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+		ProductTypeImpl p2 = new ProductTypeImpl("012345678990", "orange", 1.10, "");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10);
+		TicketEntryImpl t2 = new TicketEntryImpl(p2, 25, 0.5);		
+		products.add(t1);
+		products.add(t2);
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		ReturnTransaction ret2 = new ReturnTransaction(10, sale1, products, "OPEN", false, 0.0);
+		assertEquals((Integer)ret2.getReturnID(), (Integer)10);
+		assertEquals(ret1.getTransaction(), sale1);
+		ret1.setTransaction(sale2);
+		assertEquals(ret1.getTransaction(), sale2);	
+		assertEquals(ret2.getProducts(), products);
+		ret1.setProducts(products);
+		assertEquals(ret1.getProducts(), products);
+		ret2.setProducts(null);
+		assertEquals(ret2.getProducts().size(),0);
+		assertEquals(ret2.getState(), "OPEN");
+		ret2.setState("CLOSED");
+		assertEquals(ret2.getState(), "CLOSED");
+		assertEquals(ret2.isCommit(), false);
+		ret2.setCommit(true);
+		assertEquals(ret2.isCommit(), true);
+		// ret2 products list is empty, add t1, p1 with quantity 10, total cost 15.00
+		ret2.getProducts().add(t1);
+		assertEquals(ret2.getValue(), (Double)15.00);
+	}
+}

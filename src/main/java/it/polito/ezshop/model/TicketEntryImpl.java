@@ -40,9 +40,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setProductDescription(String productDescription) {
-		if (product != null){
 			this.product.setProductDescription(productDescription);
-		}
 	}
 
 	@Override
@@ -62,9 +60,7 @@ public class TicketEntryImpl implements TicketEntry {
 
 	@Override
 	public void setPricePerUnit(double pricePerUnit) {
-		if (this.product != null) {
 			this.product.setPricePerUnit(pricePerUnit);
-		}
 	}
 
 	@Override

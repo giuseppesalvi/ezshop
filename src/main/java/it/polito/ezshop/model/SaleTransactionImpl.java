@@ -53,7 +53,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 		}
 		this.cost = cost;
 		this.paymentType = paymentType;
-		this.creditCard = new CreditCard(creditCard, null);
+		if (creditCard == null)
+			this.creditCard = null;
+		else
+			this.creditCard = new CreditCard(creditCard, null);
 	}
 
 

@@ -9,88 +9,72 @@ import static org.junit.Assert.*;
 
 public class ProductTypeImplTests {
     @Test
-    public void testCheckBarCode() {
-        // TODO check separate functions
-        assertFalse(ProductTypeImpl.checkBarCode("123"));
-        assertFalse(ProductTypeImpl.checkBarCode(""));
-        assertTrue(ProductTypeImpl.checkBarCode("978020137962"));
-    }
-    @Test
     public void testGetQuantity() {
-        ProductTypeImpl productType = new ProductTypeImpl(123);
-        productType.setQuantity(100);
-        assertEquals(java.util.Optional.of(productType.getQuantity()),java.util.Optional.of(100));
+        ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        assertEquals(java.util.Optional.of(p.getQuantity()),java.util.Optional.of(100));
     }
     @Test
     public void testSetQuantity() {
-        // TODO add invalid inputs
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+    	p.setQuantity(20);
+    	assertEquals((Integer)p.getQuantity(), (Integer)20);
     }
     @Test
     public void testGetLocation() {
-        ProductTypeImpl productType = new ProductTypeImpl(
-                null,
-                null,
-                null,
-                null,
-                null,
-                "123-abc-123",
-                null,
-                null);
-        assertEquals(productType.getLocation(),"123-abc-123");
+        ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        assertEquals(p.getLocation(),"123-abc-123");
     }
     @Test
     public void testSetLocation() {
-        ProductTypeImpl productType = new ProductTypeImpl(
-                null,
-                null,
-                null,
-                null,
-                null,
-                "123-abc-123",
-                null,
-                null);
-        productType.setLocation("456-abc-456");
-        assertEquals(productType.getLocation(),"456-abc-456");
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        p.setLocation("456-abc-456");
+        assertEquals(p.getLocation(),"456-abc-456");
     }
     @Test
     public void testGetNote() {
-        ProductTypeImpl productType = new ProductTypeImpl(123);
-        productType.setNote("note");
-        assertEquals(productType.getNote(),"note");
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        assertEquals(p.getNote(),"apple notes...");
     }
     @Test
     public void testSetNote() {
-        // TODO add invalid inputs
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+    	p.setNote("Note b aaa");
+    	assertEquals(p.getNote(), "Note b aaa");
     }
     @Test
     public void testGetProductDescription() {
-        ProductTypeImpl productType = new ProductTypeImpl(123);
-        productType.setProductDescription("desc");
-        assertEquals(productType.getProductDescription(),"desc");
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        assertEquals(p.getProductDescription(),"apple");
     }
     @Test
     public void testSetProductDescription() {
-        // TODO add invalid inputs
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+    	p.setProductDescription("banana");
+    	assertEquals(p.getProductDescription(), "banana");
     }
     @Test
     public void testGetBarCode() {
-        ProductTypeImpl productType = new ProductTypeImpl("978020137964");
-        productType.setBarCode("108020137963");
-        assertEquals(productType.getBarCode(),"108020137963");
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+        assertEquals(p.getBarCode(),"012345678912");
     }
     @Test
     public void testSetBarCode() {
-        // TODO add invalid inputs
+    	ProductTypeImpl p= new ProductTypeImpl("978020137964");
+        p.setBarCode("108020137963");
+        assertEquals(p.getBarCode(),"108020137963");
+
     }
     @Test
     public void testGetPricePerUnit() {
-        ProductTypeImpl productType = new ProductTypeImpl(123);
-        productType.setPricePerUnit(10.50);
-        assertEquals(java.util.Optional.of(productType.getPricePerUnit()),java.util.Optional.of(10.50));
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+    	assertEquals((Double) p.getPricePerUnit(), (Double) 1.50);
     }
     @Test
     public void testSetPricePerUnit() {
-        // TODO add invalid inputs
+    	ProductTypeImpl p = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...", 100, "123-abc-123", false, 1);
+    	p.setPricePerUnit(1.80);
+    	assertEquals((Double) p.getPricePerUnit(), (Double) 1.80);
+
     }
     @Test
     public void testGetId() {
@@ -98,7 +82,6 @@ public class ProductTypeImplTests {
     }
     @Test
     public void testSetId() {
-        // TODO new class
         ProductTypeImpl productType = new ProductTypeImpl(
                 null,
                 null,
@@ -116,5 +99,7 @@ public class ProductTypeImplTests {
         ProductTypeImpl productType = new ProductTypeImpl(123);
         productType.invertEliminated();
         assertEquals(productType.getEliminated(),true);
+        productType.invertEliminated();
+        assertEquals(productType.getEliminated(),false);
     }
 }

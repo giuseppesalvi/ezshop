@@ -14,11 +14,6 @@ public class UserImplTests {
         assertNotNull(user1);
     }
     @Test
-    public void testUserImplWithNullID() {
-        UserImpl user = new UserImpl("user","password","Admin");
-        assertNotNull(user.getId());
-    }
-    @Test
     public void testGetId() {
         UserImpl user = new UserImpl("user","password","Admin", 123);
         assertEquals(java.util.Optional.ofNullable(user.getId()),java.util.Optional.ofNullable(123));
@@ -36,7 +31,6 @@ public class UserImplTests {
     }
     @Test
     public void testSetUsername() {
-        // TODO test with invalid inputs
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setUsername("username");
         assertEquals(user.getUsername(),"username");
@@ -48,7 +42,6 @@ public class UserImplTests {
     }
     @Test
     public void testSetPassword() {
-        // TODO test with invalid inputs
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setPassword("pass");
         assertEquals(user.getPassword(),"pass");
@@ -60,7 +53,6 @@ public class UserImplTests {
     }
     @Test
     public void testSetRole(){
-        // TODO test with invalid inputs
         UserImpl user = new UserImpl("user","password","Admin", 123);
         user.setRole("Administrator");
         assertEquals(user.getRole(),"Administrator");

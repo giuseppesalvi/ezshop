@@ -1,5 +1,7 @@
 package it.polito.ezshop.model;
 
+import java.security.InvalidParameterException;
+
 import it.polito.ezshop.exceptions.InvalidCreditCardException;
 
 public class CreditCard {
@@ -29,9 +31,11 @@ public class CreditCard {
 		return balance;
 	}
 
-	public void setBalance(Double balance) {
+	public void setBalance(Double balance) throws InvalidParameterException{
 		if (balance != null)
 			this.balance = balance;
+		else
+			throw new InvalidParameterException();
 	}
 
 	/* This method applies Luhn algorithm to verify if a number is valid */

@@ -48,7 +48,7 @@ public class CustomerImpl implements Customer {
     @Override
     public void setCustomerCard(String customerCard) {
         //DO NOT USE
-        this.card.setCardId(customerCard);
+        this.card.setCardId(customerCard);;
     }
 
     @Override
@@ -68,7 +68,6 @@ public class CustomerImpl implements Customer {
 
     @Override
     public void setPoints(Integer points) {
-        if (this.card != null)
             card.setPoints(points);
     }
 
