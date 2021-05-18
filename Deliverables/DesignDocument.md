@@ -5,7 +5,7 @@ Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
 Date: 17/05/2021
 
-Version: 1.1.0
+Version: 1.1.1
 
 
 # Contents
@@ -139,7 +139,7 @@ package model {
     class CreditCard{
         -number : String
         -balance : Double
-        +checkValidity() : boolean
+        +{static} checkValidity() : boolean
     }
 
     class Position{
@@ -207,41 +207,41 @@ package data {
     }
 
     Class EZShopMaps {
-        + {static} users : Map<Integer,User>
-        + {static} products : Map<Integer,ProductType>
-        + {static} orders : Map<Integer,Order>
-        + {static} customers : Map<Integer,Customer>
-        + {static} cards : Map<String,LoyaltyCard>
-        + {static} sales : Map<Integer,SaleTransaction>
-        + {static} returns : Map<Integer,ReturnTransaction>
-        + {static} operations : Map<Integer,BalanceOperation>
-        + {static} loggedInUser : User
+        - {static} users : Map<Integer,UserImpl>
+        - {static} products : Map<Integer,ProductTypeImpl>
+        - {static} orders : Map<Integer,OrderImpl>
+        - {static} customers : Map<Integer,CustomerImpl>
+        - {static} cards : Map<String,LoyaltyCard>
+        - {static} sales : Map<Integer,SaleTransactionImpl>
+        - {static} returns : Map<Integer,ReturnTransaction>
+        - {static} operations : Map<Integer,BalanceOperationImpl>
+        - {static} loggedInUser : User
         + {static} eraseMaps : void
         + {static} loadMaps : void
     }
 
     Class FileRead{
-        +readUsers(String fileName) : Map<Integer,User>
-        +readProducts(String fileName) : Map<Integer,ProductType>
-        +readOrders(String fileName) : Map<Integer,Order>
-        +readCustomers(String fileName) : Map<Integer,Customer>
+        +readUsers(String fileName) : Map<Integer,UserImpl>
+        +readProducts(String fileName) : Map<Integer,ProductTypeImpl>
+        +readOrders(String fileName) : Map<Integer,OrderImpl>
+        +readCustomers(String fileName) : Map<Integer,CustomerImpl>
         +readCards(String fileName) : Map<String,LoyaltyCard>
-        +readSales(String fileName) : Map<Integer,SaleTransaction>
+        +readSales(String fileName) : Map<Integer,SaleTransactionImpl>
         +readReturns(String fileName) : Map<Integer,ReturnTransaction>
-        +readOperations(String fileName) : Map<Integer,BalanceOperation>
+        +readOperations(String fileName) : Map<Integer,BalanceOperationImpl>
         +readCreditCards(String fileName) : List<CreditCard>
         
     }
 
     Class FileWrite{
-        +writeUsers(String fileName, Map<Integer,User>) : boolean
-        +writeProducts(String fileName, Map<Integer,ProductType>) : boolean
-        +writeOrders(String fileName, Map<Integer,Order>) : boolean
-        +writeCustomers(String fileName, Map<Integer,Customer>) : boolean
+        +writeUsers(String fileName, Map<Integer,UserImpl>) : boolean
+        +writeProducts(String fileName, Map<Integer,ProductTypeImpl>) : boolean
+        +writeOrders(String fileName, Map<Integer,OrderImpl>) : boolean
+        +writeCustomers(String fileName, Map<Integer,CustomerImpl>) : boolean
         +writeCards(String fileName, Map<String,LoyaltyCard>) : boolean
-        +writeSales(String fileName, Map<Integer,SaleTransaction>) : boolean
+        +writeSales(String fileName, Map<Integer,SaleTransactionImpl>) : boolean
         +writeReturns(String fileName, Map<Integer,ReturnTransaction>) : boolean
-        +writeOperations(String fileName, Map<Integer,BalanceOperation>) : boolean
+        +writeOperations(String fileName, Map<Integer,BalanceOperationImpl>) : boolean
         +writeCreditCards(String fileName, List<CreditCard>) : boolean
     }
 
