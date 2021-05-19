@@ -1,10 +1,10 @@
 # Unit Testing Documentation
 
-Authors:
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
-Date:
+Date: 17/05/2021
 
-Version:
+Version: 1.0.0
 
 # Contents
 
@@ -233,33 +233,6 @@ Version:
 | no |Invalid |  SaleTransactionImpl sale1 = {} <br /> obj.addEntry(null) <br /> -> false|src/test/java/it/polito/ezshop/test/SaleTransactionImplTests.testAddEntryWithNull|
 | yes |Valid |  SaleTransactionImpl sale1 = {} <br /> obj.addEntry{product, 10, 0.5} <br /> -> true |false|src/test/java/it/polito/ezshop/test/SaleTransactionImplTests.testAddEntryWithValidInput|
 
-
-### **Class *SaleTransactionImpl* - method  *deleteEntry***
-
-**Criteria for *deleteEntry*:**
-	
- - validity of string barcode
-
-**Predicates for *deleteEntry*:**
-
-| Criteria | Predicate |
-| -------- | --------- |
-| validity of string barcode | yes |
-|                               | no |
-
-**Boundaries**:
-
-| Criteria | Boundary values |
-| -------- | --------------- |
-|          |                 |
-|          |                 |
-
-**Combination of predicates**:
-
-| validity of string barcode |Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-|no|Invalid | SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" } <br /> obj.deleteEntry(null) <br /> -> Invalid Entry||
-| yes |Valid |  SaleTransactionImpl obj = {129, List_products,199823, "OPEN", "2020-01-12", "timeString", 212934, "cash", "creditcardString" }  <br /> obj.deleteEntry("AZ1234") <br /> -> AZ1234 ||
 
 ### **Class *SaleTransactionImpl* - method  *deleteEntry***
 
