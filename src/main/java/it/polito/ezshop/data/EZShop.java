@@ -1729,7 +1729,7 @@ public class EZShop implements EZShopInterface {
 		double price = sale.getPrice();
 
 		// Check if the credit card has enough money
-		if (cCard.getBalance() < price) {
+		if (cCard.getBalance() == null || cCard.getBalance() < price) {
 			return false;
 		}
 
