@@ -9,38 +9,38 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 public class ProductTypeImplTests {
-	/*
+
     // BB testing
+	@Test
+	public void testCheckBarCodeNull() {
+        assertFalse(ProductTypeImpl.checkBarCode(null));
+	}
     @Test
-    public void testCheckBarCodeValidString() {
-        // 12 digit
-        assertTrue(ProductTypeImpl.checkBarCode("012345678912"));
-        // 13 digit
-        assertTrue(ProductTypeImpl.checkBarCode("0123456789128"));
-        // 14 digit
-        assertTrue(ProductTypeImpl.checkBarCode("01234567891286"));
-    }
-    @Test
-    public void testCheckBarCodeInvalidString(){
+    public void testCheckBarCodeWithShortString(){
         // less than 12
         assertFalse(ProductTypeImpl.checkBarCode("123"));
-        // more than 14
-        assertFalse(ProductTypeImpl.checkBarCode("012345678912356"));
-        // null
-        assertFalse(ProductTypeImpl.checkBarCode(null));
+        // boundary case 11 
+        assertFalse(ProductTypeImpl.checkBarCode("12345678911"));
     }
 
-    // WB testing
+    @Test
+    public void testCheckBarCodeWithLongString(){
+        // more than 14 
+        assertFalse(ProductTypeImpl.checkBarCode("123456789123456789123456789"));
+        // boundary case 15 
+        assertFalse(ProductTypeImpl.checkBarCode("123456789123456"));
+    }
+
     @Test
     public void testCheckBarCodeInvalidCheckSum(){
-        // 12 digit
         assertFalse(ProductTypeImpl.checkBarCode("012345678911"));
-        // 13 digit
-        assertFalse(ProductTypeImpl.checkBarCode("0123456789127"));
-        // 14 digit
-        assertFalse(ProductTypeImpl.checkBarCode("01234567891285"));
     }
-	*/
+
+    @Test
+    public void testCheckBarCodeValidString() {
+        assertTrue(ProductTypeImpl.checkBarCode("012345678912"));
+    }
+
 
     @Test
     public void testGettersSettersConstructors() {

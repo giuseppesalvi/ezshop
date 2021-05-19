@@ -285,6 +285,10 @@ public class FileWrite {
 
 	public static boolean writeCreditCards(List<CreditCard> creditCards) {
 		try (FileWriter file = new FileWriter("creditcards.txt")) {
+			file.write("#Do not delete the lines preceded by an \"#\" and do not modify the first three credit cards\n");
+			file.write("#since they will be used in the acceptance tests.\n");
+			file.write("#The lines preceded by an \"#\" must be ignored.\n");
+			file.write("#Here you can add all the credit card numbers you need with their balance. The format MUST be :\n");
 			file.write("#<creditCardNumber>;<balance>\n");
 			for(CreditCard c : creditCards) {
 				file.write(c.getNumber().concat(";").concat(c.getBalance().toString()).concat("\n"));
