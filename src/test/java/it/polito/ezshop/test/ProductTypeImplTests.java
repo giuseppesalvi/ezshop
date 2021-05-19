@@ -20,6 +20,7 @@ public class ProductTypeImplTests {
         // 14 digit
         assertTrue(ProductTypeImpl.checkBarCode("01234567891286"));
     }
+    @Test
     public void testCheckBarCodeInvalidString(){
         // less than 12
         assertFalse(ProductTypeImpl.checkBarCode("123"));
