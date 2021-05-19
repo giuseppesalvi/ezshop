@@ -2,11 +2,8 @@ package it.polito.ezshop.data;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-
 import it.polito.ezshop.model.BalanceOperationImpl;
 import it.polito.ezshop.model.CreditCard;
 import it.polito.ezshop.model.CustomerImpl;

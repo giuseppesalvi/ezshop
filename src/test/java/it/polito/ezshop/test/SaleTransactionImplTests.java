@@ -15,7 +15,6 @@ import org.junit.Test;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.model.CreditCard;
 import it.polito.ezshop.model.ProductTypeImpl;
-import it.polito.ezshop.model.ReturnTransaction;
 import it.polito.ezshop.model.SaleTransactionImpl;
 import it.polito.ezshop.model.TicketEntryImpl;
 
@@ -99,5 +98,35 @@ public class SaleTransactionImplTests {
 		sale1.addEntry(t1);
 		assertEquals(sale1.deleteEntry("012345678912"), t1);
 	}
+
+	@Test
+	public void testDeleteEntryForLoop0Iterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		assertNull(sale1.deleteEntry("012345678912"));
+	}
+
+
+	@Test
+	public void testDeleteEntryForLoop1Iterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		sale1.addEntry(t1);
+		assertEquals(sale1.deleteEntry("012345678912"), t1);
+	}
+
+
+	@Test
+	public void testDeleteEntryForLooopMultipleIterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		ProductTypeImpl p2 = new ProductTypeImpl("0123456789128", "banana", 1.10, "banana notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		TicketEntryImpl t2 = new TicketEntryImpl(p2, 20, 0.1);
+		sale1.addEntry(t1);
+		sale1.addEntry(t2);
+		assertEquals(sale1.deleteEntry("0123456789128"), t2);
+	}
+
 
 }

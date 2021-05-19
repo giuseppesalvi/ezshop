@@ -1,6 +1,5 @@
 package it.polito.ezshop.test;
 
-import it.polito.ezshop.model.Position;
 import it.polito.ezshop.model.ProductTypeImpl;
 import org.junit.Test;
 

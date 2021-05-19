@@ -94,6 +94,36 @@ public class ReturnTransactionTests {
 		assertEquals(ret1.deleteEntry("012345678912"), t1);
 	}
 
+	@Test
+	public void testDeleteEntryForLoop0Iterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		assertNull(ret1.deleteEntry("012345678912"));
+	}
+
+	@Test
+	public void testDeleteEntryForLoop1Iterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		ret1.addEntry(t1);
+		assertEquals(ret1.deleteEntry("012345678912"), t1);
+	}
+
+	@Test
+	public void testDeleteEntryForLoopMultipleIterations() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		ProductTypeImpl p2 = new ProductTypeImpl("0123456789128", "banana", 1.80, "banana notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		TicketEntryImpl t2 = new TicketEntryImpl(p2, 20, 0.0);
+		ret1.addEntry(t1);
+		ret1.addEntry(t2);
+		assertEquals(ret1.deleteEntry("0123456789128"), t2);
+	}
+
 
 
 }

@@ -1845,7 +1845,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Credit card not registered in the credit card circuit
-		if (cCard == null) {
+		if (cCard == null || cCard.getBalance() == null) {
 			return -1;
 		}
 

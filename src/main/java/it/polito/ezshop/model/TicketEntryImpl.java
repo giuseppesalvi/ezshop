@@ -1,6 +1,5 @@
 package it.polito.ezshop.model;
 
-import java.util.Optional;
 
 import it.polito.ezshop.data.TicketEntry;
 

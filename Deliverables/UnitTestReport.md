@@ -281,6 +281,7 @@ Version: 1.0.0
 | Unit name | JUnit test case |
 |--|--|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
+| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop1Iterations|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
 | BalanceOperationImpl | src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testGettersSettersConstructors|
 | OrderImpl | src/test/java/it/polito/ezshop/test/OrderImplTests.testGettersSettersConstructors |
@@ -295,42 +296,12 @@ Version: 1.0.0
 | UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGettersSettersConstructors |
 | Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString |
 | Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithInvalidString |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop0Iterations |
+| ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop1Iterations |
+| ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoopMultipleIterations |
+| SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop0Iterations |
+| SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop1Iterations |
+| SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoopMultipleIterations |
 
 ### Code coverage report
 
@@ -348,6 +319,13 @@ Version: 1.0.0
 | CreditCard | 40 - 50 | 0 | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations |
 | CreditCard | 40 - 50 | 1 |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop1Iterations|
 | CreditCard | 40 - 50 | multiple |src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
+| ReturnTransaction | 112 - 115 | 0 | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop0Iterations |
+| ReturnTransaction | 112 - 115 | 1 | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop1Iterations |
+| ReturnTransaction | 112 - 115 | multiple | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoopMultipelIterations |
+| SaleTransactionImpl | 165 - 169 | 0 | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop0Iterations |
+| SaleTransactionImpl | 165 - 169 | 1 | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop1Iterations |
+| SaleTransactionImpl | 165 - 169 | multiple | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoopMultipelIterations |
+
 
 
 
