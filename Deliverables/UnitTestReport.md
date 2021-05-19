@@ -2,7 +2,7 @@
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
-Date: 17/05/2021
+Date: 19/05/2021
 
 Version: 1.0.0
 
@@ -291,17 +291,16 @@ Version: 1.0.0
 | CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGettersSettersConstructors|
 | LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGettersSettersConstructors |
 | ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGettersSettersConstructors |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeValidString |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidCheckSum |
 | UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGettersSettersConstructors |
-| Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString |
-| Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithInvalidString |
 | ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop0Iterations |
 | ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoop1Iterations |
 | ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransaction.testDeleteEntryForLoopMultipleIterations |
 | SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop0Iterations |
 | SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop1Iterations |
 | SaleTransactionImpl| src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoopMultipleIterations |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString12 | 
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString13 | 
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString14 | 
 
 ### Code coverage report
 
@@ -325,6 +324,9 @@ Version: 1.0.0
 | SaleTransactionImpl | 165 - 169 | 0 | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop0Iterations |
 | SaleTransactionImpl | 165 - 169 | 1 | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoop1Iterations |
 | SaleTransactionImpl | 165 - 169 | multiple | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testDeleteEntryForLoopMultipelIterations |
+| ProductTypeImpl | 70 - 72 | 11 | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString12 |
+| ProductTypeImpl | 70 - 72 | 12 | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString13 |
+| ProductTypeImpl | 70 - 72 | 13 | src/test/java/it/polito/ezshop/test/ProductTypeImpl.testCheckBarCodeForLoopString14 |
 
 
 

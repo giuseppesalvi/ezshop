@@ -27,5 +27,12 @@ public class CustomerImplTests {
         // setGetPoints
         customer.setPoints(100);
         assertEquals(java.util.Optional.of(customer.getPoints()),java.util.Optional.of(100));
+        
+        CustomerImpl customer2 = new CustomerImpl(124);
+        CustomerImpl customer3 = new CustomerImpl("John", 130, null);
+        assertNotNull(customer2);
+        assertNotNull(customer3);
+        assertEquals(customer2.getCustomerCard(), "");
+        assertEquals(customer2.getPoints(), (Integer)0);
     }
 }

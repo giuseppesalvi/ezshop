@@ -20,5 +20,10 @@ public class LoyaltyCardTests {
         // setGetCardId
         card.setCardId("456");
         assertEquals(card.getCardId(),"456");
+        
+        LoyaltyCard card2 = new LoyaltyCard("0000000006", customer, 10);
+        LoyaltyCard card3 = new LoyaltyCard("0000000008");
+        assertNotNull(card2);
+        assertNotNull(card3);
     }
 }

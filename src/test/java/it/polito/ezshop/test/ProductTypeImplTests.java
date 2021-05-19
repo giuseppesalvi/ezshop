@@ -9,6 +9,7 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 public class ProductTypeImplTests {
+	/*
     // BB testing
     @Test
     public void testCheckBarCodeValidString() {
@@ -38,6 +39,7 @@ public class ProductTypeImplTests {
         // 14 digit
         assertFalse(ProductTypeImpl.checkBarCode("01234567891285"));
     }
+	*/
 
     @Test
     public void testGettersSettersConstructors() {
@@ -50,6 +52,19 @@ public class ProductTypeImplTests {
                 "123-abc-123",
                 false,
                 1);
+
+        ProductTypeImpl p2 = new ProductTypeImpl("0123456789126",
+                "apple",
+                1.50,
+                "apple notes..."
+        		);
+        ProductTypeImpl p3 = new ProductTypeImpl("01234567891268");
+        ProductTypeImpl p4 = new ProductTypeImpl(124);
+
+        assertNotNull(p);
+        assertNotNull(p2);
+        assertNotNull(p3);
+        assertNotNull(p4);
 
         // setGetQuantity
         p.setQuantity(20);
@@ -78,4 +93,24 @@ public class ProductTypeImplTests {
         p.invertEliminated();
         assertEquals(p.getEliminated(),false);
     }
+    
+    @Test
+    public void testCheckBarCodeForLoopString12() {
+    	assertTrue(ProductTypeImpl.checkBarCode("012345678912"));
+    	assertFalse(ProductTypeImpl.checkBarCode("012345678911"));
+    }
+ 
+    @Test
+    public void testCheckBarCodeForLoopString13() {
+    	assertTrue(ProductTypeImpl.checkBarCode("0123456789128"));
+    	assertFalse(ProductTypeImpl.checkBarCode("0123456789127"));
+    }
+
+ 
+    @Test
+    public void testCheckBarCodeForLoopString14() {
+    	assertTrue(ProductTypeImpl.checkBarCode("01234567891286"));
+    	assertFalse(ProductTypeImpl.checkBarCode("01234567891285"));
+    }
+
 }
