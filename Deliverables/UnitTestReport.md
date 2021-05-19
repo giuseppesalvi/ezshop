@@ -344,6 +344,9 @@ Version: 1.0.0
     <Add here the screenshot report of the statement and branch coverage obtained using
     the Eclemma tool. >
 
+![Unit test coverage](./coverage.png)
+
+
 
 ### Loop coverage analysis
 
