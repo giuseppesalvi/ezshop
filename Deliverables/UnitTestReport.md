@@ -271,7 +271,9 @@ Version: 1.0.0
 
 **Criteria for *checkBarCode*:**
 
-- validity of string barcode
+- validity of string barcode (not null)
+- length of barcode
+- barcode satisfies algorithm 
 
 
 **Predicates for *checkBarCode*:**
@@ -280,23 +282,27 @@ Version: 1.0.0
 | -------- | --------- |
 | validity of string barcode | yes |
 |                               | no |
+| length of barcode             | (mininf, 11] |
+|                               | [12, 14] |
+|                               | [15, maxinf) |
+| barcode satisfies algorithm | yes |
+|                             | no |
 
 **Boundaries**:
 
 | Criteria | Boundary values |
 | -------- | --------------- |
-|    validity of string barcode       |      12,14          |
+| length of barcode | 11,12,14,15 |
 
 **Combination of predicates**:
 
-| validity of string barcode | Valid / Invalid | Description of the test case | JUnit test case |
-|-------|-------|-------|-------|
-|(minint, 12) | Invalid | T0("123") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
-| [12,14] | valid | T1("012345678912") -> true <br> T2("0123456789128") -> true <br> T3("01234567891286") -> true  | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeValidString | 
-| (14, maxint) | Invalid | T0("012345678912356") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
-|null| Invalid | T0(null) -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
-
-
+| validity of string barcode | length of barcode | barcode satisfies algorithm | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|-------|-------|
+| no | * | * | Invalid | T0(null) -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeNull |
+| yes | (mininf, 11]  | * | Invalid | T1("123") -> false  <br/> T1b("12345678911") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeWithShortString |
+| " | [15, maxinf)  | * | Invalid | T2("123456789123456789123456789") -> false  <br/> T2b("123456789123456") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeWithLongString|
+| " | [12, 14] | no | Valid | T3("012345678911") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeWithInvalidChecksum |
+| " | " | yes | Valid | T4("012345678912") -> true | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeWithValidString|
 
 
 # White Box Unit Tests
