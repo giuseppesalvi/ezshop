@@ -8,52 +8,37 @@ public class UserImplTests {
 
     @Test
     public void testUserImpl() {
-        UserImpl user0 = new UserImpl("user","password","Admin", 123);
-        UserImpl user1 = new UserImpl("user","password","Admin");
+        // Test constructor with Id
+        UserImpl user0 = new UserImpl(
+                "user",
+                "password",
+                "Administrator",
+                123);
         assertNotNull(user0);
+        // Test constructor without Id
+        UserImpl user1 = new UserImpl(
+                "user",
+                "password",
+                "Administrator");
         assertNotNull(user1);
     }
     @Test
-    public void testGetId() {
-        UserImpl user = new UserImpl("user","password","Admin", 123);
-        assertEquals(java.util.Optional.ofNullable(user.getId()),java.util.Optional.ofNullable(123));
-    }
-    @Test
-    public void testSetIdWithValidId () {
-        UserImpl user = new UserImpl("user","password","Admin", 123);
+    public void testSettersGetters() {
+        UserImpl user = new UserImpl(
+                "user",
+                "password",
+                "Administrator",
+                123);
+        // setGetId
         user.setId(456);
         assertEquals(java.util.Optional.ofNullable(user.getId()),java.util.Optional.of(456));
-    }
-    @Test
-    public void testGetUsername() {
-        UserImpl user = new UserImpl("user","password","Admin");
-        assertEquals(user.getUsername(),"user");
-    }
-    @Test
-    public void testSetUsername() {
-        UserImpl user = new UserImpl("user","password","Admin", 123);
+        // setGetUsername
         user.setUsername("username");
         assertEquals(user.getUsername(),"username");
-    }
-    @Test
-    public void testGetPassword() {
-        UserImpl user = new UserImpl("user","password","Admin");
-        assertEquals(user.getPassword(),"password");
-    }
-    @Test
-    public void testSetPassword() {
-        UserImpl user = new UserImpl("user","password","Admin", 123);
+        // setGetPassword
         user.setPassword("pass");
         assertEquals(user.getPassword(),"pass");
-    }
-    @Test
-    public void testGetRole() {
-        UserImpl user = new UserImpl("user","password","Admin");
-        assertEquals(user.getRole(),"Admin");
-    }
-    @Test
-    public void testSetRole(){
-        UserImpl user = new UserImpl("user","password","Admin", 123);
+        // setGetRole
         user.setRole("Administrator");
         assertEquals(user.getRole(),"Administrator");
         user.setRole("Cashier");
