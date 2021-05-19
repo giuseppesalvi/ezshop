@@ -267,6 +267,36 @@ Version: 1.0.0
 | " | yes | Valid | SaleTransactionImpl sale1 = {} <br/> ProductTypeImpl = {"012345678912", "apple", 1.50, "apple notes... "} <br /> TicketEntryImpl t1 = {p1, 10, 0.5} <br/> sale1.addEntry(t1) <br/> sale1.deleteEntry("012345678912") <br/> -> t1 |src/test/java/it/polito/ezshop/test/SaleTransactionImplTests.testDeleteEntryWithProductPresent|
 
 
+### **Class *ProductTypeImpl* - method  *checkBarCode***
+
+**Criteria for *checkBarCode*:**
+
+- validity of string barcode
+
+
+**Predicates for *checkBarCode*:**
+
+| Criteria | Predicate |
+| -------- | --------- |
+| validity of string barcode | yes |
+|                               | no |
+
+**Boundaries**:
+
+| Criteria | Boundary values |
+| -------- | --------------- |
+|    validity of string barcode       |      12,14          |
+
+**Combination of predicates**:
+
+| validity of string barcode | Valid / Invalid | Description of the test case | JUnit test case |
+|-------|-------|-------|-------|
+|(minint, 12) | Invalid | T0("123") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
+| [12,14] | valid | T1("012345678912") -> true <br> T2("0123456789128") -> true <br> T3("01234567891286") -> true  | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeValidString | 
+| (14, maxint) | Invalid | T0("012345678912356") -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
+|null| Invalid | T0(null) -> false | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
+
+
 
 
 # White Box Unit Tests
@@ -292,6 +322,7 @@ Version: 1.0.0
 | LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGettersSettersConstructors |
 | ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGettersSettersConstructors |
 | ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeValidString |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidString |
 | ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidCheckSum |
 | UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGettersSettersConstructors |
 | Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString |
