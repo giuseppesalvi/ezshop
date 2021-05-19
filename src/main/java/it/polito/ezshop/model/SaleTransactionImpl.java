@@ -148,11 +148,20 @@ public class SaleTransactionImpl implements SaleTransaction {
 	}
 
 	public boolean addEntry(TicketEntry entry) {
-		return this.products.add(entry);
+		if (entry == null) {
+			return false;
+		}
+		else {
+			this.products.add(entry);
+			return true;
+		}
 	}
 	
 	public TicketEntry deleteEntry(String barcode) {
 		int targetIdx = -1;
+		if (barcode == null) {
+			return null;
+		}
 		for (TicketEntry p : products) {
 			if (p.getBarCode().contentEquals(barcode)) {
 				targetIdx = products.indexOf(p);

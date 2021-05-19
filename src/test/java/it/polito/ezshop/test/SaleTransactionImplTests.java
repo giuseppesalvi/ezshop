@@ -1,6 +1,9 @@
 package it.polito.ezshop.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,6 +15,7 @@ import org.junit.Test;
 import it.polito.ezshop.data.TicketEntry;
 import it.polito.ezshop.model.CreditCard;
 import it.polito.ezshop.model.ProductTypeImpl;
+import it.polito.ezshop.model.ReturnTransaction;
 import it.polito.ezshop.model.SaleTransactionImpl;
 import it.polito.ezshop.model.TicketEntryImpl;
 
@@ -55,6 +59,45 @@ public class SaleTransactionImplTests {
 		assertEquals(sale2.getEntries().size(), 0);
 
 		
+	}
+
+	@Test
+	public void testAddEntryWithNull() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		assertFalse(sale1.addEntry(null));
+	}
+
+
+	@Test
+	public void testAddEntryWithValidInput() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		assertTrue(sale1.addEntry(t1));
+		assertEquals((Integer)sale1.getEntries().size(), (Integer)1);
+	}
+	
+	@Test
+	public void testDeleteEntryWithNull() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		assertNull(sale1.deleteEntry(null));
+
+	}
+
+	@Test
+	public void testDeleteEntryWithProductNotPresent() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		assertNull(sale1.deleteEntry("012345678912"));
+
+	}
+
+	@Test
+	public void testDeleteEntryWithProductPresent() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		sale1.addEntry(t1);
+		assertEquals(sale1.deleteEntry("012345678912"), t1);
 	}
 
 }

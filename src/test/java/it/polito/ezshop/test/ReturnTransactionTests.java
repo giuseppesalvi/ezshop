@@ -1,6 +1,9 @@
 package it.polito.ezshop.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,4 +49,51 @@ public class ReturnTransactionTests {
 		ret2.getProducts().add(t1);
 		assertEquals(ret2.getValue(), (Double)15.00);
 	}
+	
+	@Test
+	public void testAddEntryWithNull() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		assertFalse(ret1.addEntry(null));
+	}
+
+
+	@Test
+	public void testAddEntryWithValidInput() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		assertTrue(ret1.addEntry(t1));
+		assertEquals((Integer)ret1.getProducts().size(), (Integer)1);
+	}
+	
+	@Test
+	public void testDeleteEntryWithNull() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		assertNull(ret1.deleteEntry(null));
+
+	}
+
+	@Test
+	public void testDeleteEntryWithProductNotPresent() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		assertNull(ret1.deleteEntry("012345678912"));
+
+	}
+
+	@Test
+	public void testDeleteEntryWithProductPresent() {
+		SaleTransactionImpl sale1= new SaleTransactionImpl();
+		ReturnTransaction ret1 = new ReturnTransaction(sale1);
+		ProductTypeImpl p1 = new ProductTypeImpl("012345678912", "apple", 1.50, "apple notes...");
+		TicketEntryImpl t1 = new TicketEntryImpl(p1, 10, 0.5);
+		ret1.addEntry(t1);
+		assertEquals(ret1.deleteEntry("012345678912"), t1);
+	}
+
+
+
 }
