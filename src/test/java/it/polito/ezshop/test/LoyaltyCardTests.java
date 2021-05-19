@@ -8,7 +8,7 @@ import static org.junit.Assert.*;
 public class LoyaltyCardTests {
 
     @Test
-    public void testSettersGetters() {
+    public void testGettersSettersConstructors() {
         LoyaltyCard card = new LoyaltyCard();
         // setGetPoints
         card.setPoints(20);

@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class UserImplTests {
 
     @Test
-    public void testUserImpl() {
+    public void testGettersSettersConstructors() {
         // Test constructor with Id
         UserImpl user0 = new UserImpl(
                 "user",
@@ -21,9 +21,7 @@ public class UserImplTests {
                 "password",
                 "Administrator");
         assertNotNull(user1);
-    }
-    @Test
-    public void testSettersGetters() {
+        // Test setters and getters
         UserImpl user = new UserImpl(
                 "user",
                 "password",

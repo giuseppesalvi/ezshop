@@ -281,54 +281,56 @@ Version: 1.0.0
 | Unit name | JUnit test case |
 |--|--|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
-| CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoop0Iterations|
 | CreditCard | src/test/java/it/polito/ezshop/test/CreditCardTests.testCheckValidityForLoopMultipleIterations|
 | BalanceOperationImpl | src/test/java/it/polito/ezshop/test/BalanceOperationImplTests.testGettersSettersConstructors|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCustomerName|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCustomerName|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCustomerCard|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCustomerCard|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetId|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetId|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetPoints|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetPoints|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGetCard|
-| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testSetCard|
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetPoints |
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetPoints |
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetCustomer |
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetCustomer |
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGetCardId |
-| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testSetCardId |
 | OrderImpl | src/test/java/it/polito/ezshop/test/OrderImplTests.testGettersSettersConstructors |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetQuantity |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetQuantity |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetLocation |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetLocation |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetNote |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetNote |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetProductDescription |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetProductDescription |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetBarCode |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetBarCode |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetPricePerUnit |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetPricePerUnit |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetId |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testSetId |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGetEliminated |
-| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testInvertEliminated |
 | ReturnTransaction | src/test/java/it/polito/ezshop/test/ReturnTransactionTests.testGettersSettersConstructors |
 | SaleTransactionImpl | src/test/java/it/polito/ezshop/test/SaleTransactionImpl.testGettersSettersConstructors |
 | TicketEntryImpl | src/test/java/it/polito/ezshop/test/TicketEntryImplTests.testGettersSettersConstructors |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testUserImpl |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetId |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetIdWithValidId |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetUsername |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetUsername |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetPassword |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetPassword |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGetRole |
-| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testSetRole |
+| CustomerImpl | src/test/java/it/polito/ezshop/test/CustomerImplTests.testGettersSettersConstructors|
+| LoyaltyCard | src/test/java/it/polito/ezshop/test/LoyaltyCardTests.testGettersSettersConstructors |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testGettersSettersConstructors |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeValidString |
+| ProductTypeImpl | src/test/java/it/polito/ezshop/test/ProductTypeImplTests.testCheckBarCodeInvalidCheckSum |
+| UserImpl | src/test/java/it/polito/ezshop/test/UserImplTests.testGettersSettersConstructors |
+| Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithValidString |
+| Position | src/test/java/it/polito/ezshop/test/PositionTests.testSetPositionWithInvalidString |
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ### Code coverage report
 

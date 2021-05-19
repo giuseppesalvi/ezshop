@@ -10,8 +10,38 @@ import java.util.Optional;
 import static org.junit.Assert.*;
 
 public class ProductTypeImplTests {
+    // BB testing
     @Test
-    public void testSettersGetters() {
+    public void testCheckBarCodeValidString() {
+        // 12 digit
+        assertTrue(ProductTypeImpl.checkBarCode("012345678912"));
+        // 13 digit
+        assertTrue(ProductTypeImpl.checkBarCode("0123456789128"));
+        // 14 digit
+        assertTrue(ProductTypeImpl.checkBarCode("01234567891286"));
+    }
+    public void testCheckBarCodeInvalidString(){
+        // less than 12
+        assertFalse(ProductTypeImpl.checkBarCode("123"));
+        // more than 14
+        assertFalse(ProductTypeImpl.checkBarCode("012345678912356"));
+        // null
+        assertFalse(ProductTypeImpl.checkBarCode(null));
+    }
+
+    // WB testing
+    @Test
+    public void testCheckBarCodeInvalidCheckSum(){
+        // 12 digit
+        assertFalse(ProductTypeImpl.checkBarCode("012345678911"));
+        // 13 digit
+        assertFalse(ProductTypeImpl.checkBarCode("0123456789127"));
+        // 14 digit
+        assertFalse(ProductTypeImpl.checkBarCode("01234567891285"));
+    }
+
+    @Test
+    public void testGettersSettersConstructors() {
         ProductTypeImpl p = new ProductTypeImpl(
                 "012345678912",
                 "apple",

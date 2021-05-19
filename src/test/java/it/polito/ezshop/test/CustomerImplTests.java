@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public class CustomerImplTests {
 
     @Test
-    public void testSettersGetters() {
+    public void testGettersSettersConstructors() {
         CustomerImpl customer = new CustomerImpl("name");
         // setGetCustomerName
         customer.setCustomerName("newName");
