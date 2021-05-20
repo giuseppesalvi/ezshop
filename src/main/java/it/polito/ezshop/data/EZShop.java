@@ -119,6 +119,8 @@ public class EZShop implements EZShopInterface {
 		cards.clear();
 		LoyaltyCard.idGen = 1;
 		FileWrite.writeCards(this.cards);
+
+		loggedInUser = null;
 	}
 
 	@Override
