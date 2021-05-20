@@ -88,6 +88,8 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
+		loggedInUser = null; 
+		
 		users.clear();
 		UserImpl.idGen = 1;
 		FileWrite.writeUsers(this.users);
@@ -1033,9 +1035,17 @@ public class EZShop implements EZShopInterface {
 
 		// Add the product to the sale transaction and decrease the amount of product
 		// available on the shelves
-		// If this operation goes wrong, return false
-		if (!sale.addEntry(new TicketEntryImpl(prod.get(), amount))) {
-			return false;
+		// If the product is already present in the transaction update its quantity instead 
+		boolean found = false;
+		for (TicketEntry entry : sale.getEntries()) {
+			if (entry.getBarCode().contentEquals(productCode)) {
+				entry.setAmount(entry.getAmount() + amount);
+				found = true;
+			}
+
+		}
+		if (!found) {
+			sale.addEntry(new TicketEntryImpl(prod.get(), amount));
 		}
 		prod.get().setQuantity(prod.get().getQuantity() - amount);
 
@@ -1093,14 +1103,32 @@ public class EZShop implements EZShopInterface {
 		if (!sale.getState().contentEquals("OPEN")) {
 			return false;
 		}
-
-		// Delete the product from the sale transaction and increase the amount of
-		// product available on the shelves
-		// If this operation goes wrong, return false
-		TicketEntry eliminated = sale.deleteEntry(productCode);
-		if (eliminated == null) {
-			return false;
+		
+		// Check if the quantity of product can satisfy the request
+		boolean toDelete = false;
+		for(TicketEntry entry : sale.getEntries()) {
+			if (entry.getBarCode().contentEquals(productCode)) {
+				if(entry.getAmount() >= amount) {
+					entry.setAmount(entry.getAmount() - amount);
+					if(entry.getAmount() == 0) {
+						toDelete = true;
+					}
+				}
+				else {
+					return false;
+				}
+			}
 		}
+		// Delete the product from the sale transaction if the remaining amount = 0
+		// If this operation goes wrong, return false
+		if (toDelete) {
+			TicketEntry eliminated = sale.deleteEntry(productCode);
+			if (eliminated == null) {
+				return false;
+		}
+
+		}
+		// Increase the amount of product available on the shelves
 		prod.get().setQuantity(prod.get().getQuantity() + amount);
 		if (prod.get().getEliminated() ) {
 			prod.get().invertEliminated();
