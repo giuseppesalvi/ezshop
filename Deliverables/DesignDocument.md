@@ -3,9 +3,9 @@
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
-Date: 30/04/2021
+Date: 17/05/2021
 
-Version: 1.0.0
+Version: 1.1.2
 
 
 # Contents
@@ -49,224 +49,254 @@ model -- exceptions
 
 ```plantuml
 @startuml
-top to bottom direction
+scale 0.9
+package model {
+
+    Class UserImpl{
+        -{static} idGen: Integer
+        -username : String
+        -password : String
+        -role : String
+        -ID : Integer
+    }
+
+
+    class ProductTypeImpl{
+        -{static} idGen: Integer
+        -productCode : String
+        -description : String
+        -sellPrice : Double
+        -notes : String
+        -ID : Integer
+        -quantity : Integer
+        -position : Position
+        -eliminated : boolean
+    }
+
+    class OrderImpl{
+        -{static} idGen: Integer
+        -orderID : Integer
+        -pricePerUnit : Double
+        -quantity : Integer
+        -product : ProductType
+        -status : String
+        -balanceId : Integer
+    }
+
+    class CustomerImpl{
+        -{static} idGen: Integer
+        -customerName : String
+        -customerID : Integer
+        -card : LoyaltyCard
+    }
+
+    class LoyaltyCard{
+        -{static} idGen: Integer
+        -cardID : String
+        -points : Integer
+        -customer : Customer
+    }
+
+    class SaleTransactionImpl {
+        -{static} idGen: Integer
+        -transactionID : Integer
+        -products : List<TransactionProduct>
+        -globalDiscountRate : Double
+        -state : String
+        -date : LocalDate
+        -time : String
+        -cost : Double
+        -paymentType : String
+        -creditCard : CreditCard
+        +computeCost() : Double
+    }
+
+    class TicketEntryImpl{
+        -productCode : ProductType
+        -quantity : Integer
+        -discountRate : Double
+    }
+
+    class ReturnTransaction{
+        -{static} idGen: Integer
+        -returnID : Integer
+        -transaction : SaleTransaction
+        -products : List<TransactionProduct>
+        -state : String
+        -commit : boolean
+        -value : Double
+        +computeValue() : Double
+    }
+
+    class BalanceOperationImpl{
+        -{static} idGen: Integer
+        -balanceId : Integer
+        -type : String
+        -amount : Double
+        -date : LocalDate
+    }
+
+    class CreditCard{
+        -number : String
+        -balance : Double
+        +{static} checkValidity() : boolean
+    }
+
+    class Position{
+        -aisleID : String
+        -rackID : String
+        -levelID : String
+    }
+
+
+}
 
 package data {
-    Class EZShopInterface{}
+
+    Class EZShop{
+        -users : Map<Integer,UserImpl>
+        -products : Map<Integer,ProductTypeImpl>
+        -orders : Map<Integer,OrderImpl>
+        -customers : Map<Integer,CustomerImpl>
+        -cards : Map<String,LoyaltyCard>
+        -sales : Map<Integer,SaleTransactionImpl>
+        -returns : Map<Integer,ReturnTransaction>
+        -operations : Map<Integer,BalanceOperationImpl>
+        -loggedInUser : User
+        +reset() : void
+        +createUser(String username, String password, String role) : Integer
+        +deleteUser(Integer id) : boolean
+        +getAllUser() : List<User>
+        +getUser(Integer id) : User
+        +updateUserRights(Integer id, String role) : boolean
+        +login(String username, String password) : User
+        +logout() : boolean
+        +createProductType(String description, String productCode, double pricePerUnit, String note) : Integer
+        +updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) : boolean
+        +deleteProductType(Integer id) : boolean
+        +getAllProductTypes() : List<ProductType>
+        +getProductTypeByBarCode(String barcode) : ProductType
+        +getProductTypesByDescription(String description) : List<ProductType> 
+        +updateQuantity(Integer productId, int toBeAdded) : boolean
+        +updatePosition(Integer productId, String newPos) : boolean
+        +issueOrder(String productCode, int quantity, double pricePerUnit) : Integer
+        +payOrderFor(String productCode, int quantity, double pricePerUnit) : Integer
+        +payOrder(Integer orderId) : boolean
+        +recordOrderArrival(Integer orderId) : boolean
+        +getAllOrders() : List<Order>
+        +defineCustomer(String customerName) : Integer
+        +modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) : boolean
+        +deleteCustomer(Integer id) : boolean
+        +getCustomer(Integer id) : Customer
+        +getAllCustomers() : List<Customer>
+        +createCard() : String
+        +attachCardToCustomer(String customerCard, Integer customerId) : boolean
+        +modifyPointsOnCard(String customerCard, int pointsToBeAdded) : boolean
+        +startSaleTransaction() : Integer
+        +addProductToSale(Integer transactionId, String productCode, int amount) : boolean
+        +deleteProductFromSale(Integer transactionId, String productCode, int amount) : boolean
+        +applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) : boolean
+        +applyDiscountRateToSale(Integer transactionId, double discountRate) : boolean
+        +computePointsForSale(Integer transactionId) : int
+        +endSaleTransaction(Integer transactionId) : boolean
+        +deleteSaleTransaction(Integer transactionId) : boolean
+        +getSaleTransaction(Integer transactionId) : SaleTransaction
+        +startReturnTransaction(Integer transactionId) : Integer
+        +returnProduct(Integer returnId, String productCode, int amount) : boolean
+        +endReturnTransaction(Integer returnId, boolean commit) : boolean
+        +deleteReturnTransaction(Integer returnId) : boolean
+        +receiveCashPayment(Integer transactionId, double cash) : double
+        +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
+        +returnCashPayment(Integer returnId) : double
+        +returnCreditCardPayment(Integer returnId, String creditCard) : double
+        +recordBalanceUpdate(double toBeAdded) : boolean
+        +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
+        +computeBalance() : double
+    }
+
     Class FileRead{
-        +readUsers(String fileName) : Map<Integer,User>
-        +readProducts(String fileName) : Map<Integer,ProductType>
-        +readOrders(String fileName) : Map<Integer,Order>
-        +readCustomers(String fileName) : Map<Integer,Customer>
+        +readUsers(String fileName) : Map<Integer,UserImpl>
+        +readProducts(String fileName) : Map<Integer,ProductTypeImpl>
+        +readOrders(String fileName) : Map<Integer,OrderImpl>
+        +readCustomers(String fileName) : Map<Integer,CustomerImpl>
         +readCards(String fileName) : Map<String,LoyaltyCard>
-        +readSales(String fileName) : Map<Integer,SaleTransaction>
+        +readSales(String fileName) : Map<Integer,SaleTransactionImpl>
         +readReturns(String fileName) : Map<Integer,ReturnTransaction>
-        +readOperations(String fileName) : Map<Integer,BalanceOperation>
+        +readOperations(String fileName) : Map<Integer,BalanceOperationImpl>
         +readCreditCards(String fileName) : List<CreditCard>
         
     }
+
     Class FileWrite{
-        +writeUsers(String fileName, Map<Integer,User>) : boolean
-        +writeProducts(String fileName, Map<Integer,ProductType>) : boolean
-        +writeOrders(String fileName, Map<Integer,Order>) : boolean
-        +writeCustomers(String fileName, Map<Integer,Customer>) : boolean
+        +writeUsers(String fileName, Map<Integer,UserImpl>) : boolean
+        +writeProducts(String fileName, Map<Integer,ProductTypeImpl>) : boolean
+        +writeOrders(String fileName, Map<Integer,OrderImpl>) : boolean
+        +writeCustomers(String fileName, Map<Integer,CustomerImpl>) : boolean
         +writeCards(String fileName, Map<String,LoyaltyCard>) : boolean
-        +writeSales(String fileName, Map<Integer,SaleTransaction>) : boolean
+        +writeSales(String fileName, Map<Integer,SaleTransactionImpl>) : boolean
         +writeReturns(String fileName, Map<Integer,ReturnTransaction>) : boolean
-        +writeOperations(String fileName, Map<Integer,BalanceOperation>) : boolean
+        +writeOperations(String fileName, Map<Integer,BalanceOperationImpl>) : boolean
         +writeCreditCards(String fileName, List<CreditCard>) : boolean
     }
-}
-package model {
-Class EZShop{
-    +users : Map<Integer,User>
-    +products : Map<Integer,ProductType>
-    +orders : Map<Integer,Order>
-    +customers : Map<Integer,Customer>
-    +cards : Map<String,LoyaltyCard>
-    +sales : Map<Integer,SaleTransaction>
-    +returns : Map<Integer,ReturnTransaction>
-    +operations : Map<Integer,BalanceOperation>
-    +loggedInUser : User
-    
-    +reset() : void
-    +createUser(String username, String password, String role) : Integer
-    +deleteUser(Integer id) : boolean
-    +getAllUser() : List<User>
-    +getUser(Integer id) : User
-    +updateUserRights(Integer id, String role) : boolean
-    +login(String username, String password) : User
-    +logout() : boolean
-    +createProductType(String description, String productCode, double pricePerUnit, String note) : Integer
-    +updateProduct(Integer id, String newDescription, String newCode, double newPrice, String newNote) : boolean
-    +deleteProductType(Integer id) : boolean
-    +getAllProductTypes() : List<ProductType>
-    +getProductTypeByBarCode(String barcode) : ProductType
-    +getProductTypesByDescription(String description) : List<ProductType> 
-    +updateQuantity(Integer productId, int toBeAdded) : boolean
-    +updatePosition(Integer productId, String newPos) : boolean
-    +issueOrder(String productCode, int quantity, double pricePerUnit) : Integer
-    +payOrderFor(String productCode, int quantity, double pricePerUnit) : Integer
-    +payOrder(Integer orderId) : boolean
-    +recordOrderArrival(Integer orderId) : boolean
-    +getAllOrders() : List<Order>
-    +defineCustomer(String customerName) : Integer
-    +modifyCustomer(Integer id, String newCustomerName, String newCustomerCard) : boolean
-    +deleteCustomer(Integer id) : boolean
-    +getCustomer(Integer id) : Customer
-    +getAllCustomers() : List<Customer>
-    +createCard() : String
-    +attachCardToCustomer(String customerCard, Integer customerId) : boolean
-    +modifyPointsOnCard(String customerCard, int pointsToBeAdded) : boolean
-    +startSaleTransaction() : Integer
-    +addProductToSale(Integer transactionId, String productCode, int amount) : boolean
-    +deleteProductFromSale(Integer transactionId, String productCode, int amount) : boolean
-    +applyDiscountRateToProduct(Integer transactionId, String productCode, double discountRate) : boolean
-    +applyDiscountRateToSale(Integer transactionId, double discountRate) : boolean
-    +computePointsForSale(Integer transactionId) : int
-    +endSaleTransaction(Integer transactionId) : boolean
-    +deleteSaleTransaction(Integer transactionId) : boolean
-    +getSaleTransaction(Integer transactionId) : SaleTransaction
-    +startReturnTransaction(Integer transactionId) : Integer
-    +returnProduct(Integer returnId, String productCode, int amount) : boolean
-    +endReturnTransaction(Integer returnId, boolean commit) : boolean
-    +deleteReturnTransaction(Integer returnId) : boolean
-    +receiveCashPayment(Integer transactionId, double cash) : double
-    +receiveCreditCardPayment(Integer transactionId, String creditCard) : boolean
-    +returnCashPayment(Integer returnId) : double
-    +returnCreditCardPayment(Integer returnId, String creditCard) : double
-    +recordBalanceUpdate(double toBeAdded) : boolean
-    +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
-    +computeBalance() : double
+
+    interface EZShopInterface{}
+    interface User{}
+    interface SaleTransaction{}
+    interface Customer{}
+    interface Order{}
+    interface TicketEntry{}
+    interface BalanceOperation{}
+    interface ProductType{}
 }
 
-Class User {
-    -username : String
-    -password : String
-    -role : String
-    -ID : Integer
-}
+CustomerImpl -- LoyaltyCard
+TicketEntryImpl "*" -- SaleTransactionImpl
+TicketEntryImpl "*" -- ReturnTransaction
+ReturnTransaction -- SaleTransactionImpl
+BalanceOperationImpl -- OrderImpl
+BalanceOperationImpl -- ReturnTransaction
+BalanceOperationImpl -- SaleTransactionImpl
+CreditCard -- SaleTransactionImpl
+ProductTypeImpl -- OrderImpl
+ProductTypeImpl -- TicketEntryImpl
+ProductTypeImpl -- Position
+EZShop --> FileRead 
+EZShop --> FileWrite
 
+ProductTypeImpl -up-|> ProductType
+CustomerImpl -up-|> Customer
+TicketEntryImpl -up-|> TicketEntry
+BalanceOperationImpl -up-|> BalanceOperation
+SaleTransactionImpl -up-|> SaleTransaction
+UserImpl -up-|> User
+OrderImpl -up-|> Order
+EZShop -up-|> EZShopInterface
 
-class ProductType{
-    -productCode : String
-    -description : String
-    -sellPrice : Double
-    -notes : String
-    -ID : Integer
-    -quantity : Integer
-    -position : Position
-}
+EZShop -up-> "*" UserImpl
+EZShop -up-> "*" ProductTypeImpl
+EZShop -up-> "*" OrderImpl
+EZShop -up-> "*" CustomerImpl
+EZShop -up-> "*" LoyaltyCard
+EZShop -up-> "*" BalanceOperationImpl
+EZShop -up-> "*" CreditCard
+EZShop -up-> "*" SaleTransactionImpl
+EZShop -up-> "*" ReturnTransaction
 
-class Position{
-    -aisleID : String
-    -rackID : String
-    -levelID : String
-    +Position(String aisleID, String rackID, String levelID)
-    +Position(String position)
-}
-class Order {
-    -orderID : Integer
-    -pricePerUnit : Double
-    -quantity : Integer
-    -product : ProductType
-    -status : String
-}
-
-class Customer{
-    -customerName : String
-    -customerID : Integer
-    -card : LoyaltyCard
-}
-
-class LoyaltyCard{
-    -cardID : String
-    -points : Integer
-    -customer : Customer
-}
-
-class SaleTransaction {
-    -transactionID : Integer
-    -products : List<TransactionProduct>
-    -globalDiscountRate : Double
-    -state : String
-    -date : LocalDate
-    -time : String
-    -cost : Double
-    -paymentType : String
-    -creditCard : CreditCard
-    +computeCost() : Double
-}
-
-class TransactionProduct{
-    -productCode : ProductType
-    -quantity : Integer
-    -discountRate : Double
-}
-
-class ReturnTransaction{
-    -returnID : Integer
-    -transaction : SaleTransaction
-    -products : List<TransactionProduct>
-    -state : String
-    -commit : boolean
-    -value : Double
-    +computeValue() : Double
-}
-
-class BalanceOperation{
-    -balanceId : Integer
-    -type : String
-    -amount : Double
-    -date : LocalDate
-}
-
-class CreditCard{
-    -number : String
-    -balance : Double
-    +checkValidity() : boolean
-}
-
-EZShop --> "*" User
-EZShop --> "*" ProductType
-EZShop --> "*" Order
-EZShop --> "*" Customer
-EZShop --> "*" LoyaltyCard
-EZShop --> "*" BalanceOperation
-EZShop --> "*" CreditCard
-EZShop --> "*" SaleTransaction
-EZShop --> "*" ReturnTransaction
-
-ProductType -- Order
-ProductType -- TransactionProduct
-ProductType -- Position
-Customer -- LoyaltyCard
-TransactionProduct "*" -- SaleTransaction
-TransactionProduct "*" -- ReturnTransaction
-ReturnTransaction -- SaleTransaction
-BalanceOperation -- Order
-BalanceOperation -- ReturnTransaction
-BalanceOperation -- SaleTransaction
-CreditCard -- SaleTransaction
-EZShopInterface <|-- EZShop
-FileRead <-- EZShop
-FileWrite <-- EZShop
-}
 @enduml
 ```
 
 
 # Verification traceability matrix
 
-| | EZShopInterface | EZShop | User | Customer | LoyaltyCard | BalanceOperation | ReturnTransaction | SaleTransaction | Order | TransactionProduct | ProductType | Position | CreditCard | FileWrite | FileRead |
-|--- |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|FR1 |   | X | X |   |   |   |   |   |   |   |   |   |   | X |   |
-|FR3 |   | X |   |   |   |   |   |   |   |   | X | X |   | X |   |
-|FR4 |   | X |   |   |   | X |   |   | X |   | X | X |   | X |   |
-|FR5 |   | X |   | X | X |   |   |   |   |   |   |   |   | X |   |
-|FR6 |   | X |   |   |   |   | X | X |   | X | X |   |   | X |   |
-|FR7 |   | X |   | X | X | X |   |   |   |   |   |   | X | X | X |
-|FR8 |   | X |   |   |   | X |   |   |   |   |   |   |   | X |   |
+| | EZShop | UserImpl | CustomerImpl | LoyaltyCard | BalanceOperationImpl | ReturnTransaction | SaleTransactionImpl | OrderImpl | TicketEntryImpl | ProductTypeImpl | Position | CreditCard | FileWrite | FileRead |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|FR1| X | X |   |   |   |   |   |   |   |   |   |   | X |   |
+|FR3| X |   |   |   |   |   |   |   |   | X | X |   | X |   |
+|FR4| X |   |   |   | X |   |   | X |   | X | X |   | X |   |
+|FR5| X |   | X | X |   |   |   |   |   |   |   |   | X |   |
+|FR6| X |   |   |   |   | X | X |   | X | X |   |   | X |   |
+|FR7| X |   | X | X | X |   |   |   |   |   |   | X | X | X |
+|FR8| X |   |   |   | X |   |   |   |   |   |   |   | X |   |
 
 
 
