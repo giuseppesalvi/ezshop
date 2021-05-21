@@ -24,6 +24,79 @@ Version:
 # Dependency graph 
 
      <report the here the dependency graph of the classes in EzShop, using plantuml>
+
+```plantuml
+@startuml
+class EzShop {}
+class FileWrite {}
+class FileRead {}
+class BalanceOperationImpl {}
+class CreditCard {}
+class CustomerImpl {}
+class LoyaltyCard {}
+class OrderImpl {}
+class Position {}
+class ProductTypeImpl {}
+class ReturnTransaction {}
+class SaleTransactionImpl {}
+class TicketEntryImpl {}
+class UserImpl {}
+
+FileWrite --> BalanceOperationImpl
+FileWrite --> CustomerImpl
+FileWrite --> LoyaltyCard
+FileWrite --> OrderImpl 
+FileWrite --> Position 
+FileWrite --> ProductTypeImpl 
+FileWrite --> ReturnTransaction 
+FileWrite --> SaleTransactionImpl 
+FileWrite --> UserImpl
+FileWrite --> CreditCard
+FileWrite --> TicketEntryImpl
+
+FileRead --> BalanceOperationImpl
+FileRead --> CustomerImpl
+FileRead --> LoyaltyCard
+FileRead --> OrderImpl 
+FileRead --> Position 
+FileRead --> ProductTypeImpl 
+FileRead --> ReturnTransaction 
+FileRead --> SaleTransactionImpl 
+FileRead --> UserImpl
+FileRead --> CreditCard
+FileRead --> TicketEntryImpl
+
+EzShop --> FileRead
+EzShop --> FileWrite
+EzShop --> BalanceOperationImpl
+EzShop --> CustomerImpl
+EzShop --> LoyaltyCard
+EzShop --> OrderImpl 
+EzShop --> Position 
+EzShop --> ProductTypeImpl 
+EzShop --> ReturnTransaction 
+EzShop --> SaleTransactionImpl 
+EzShop --> UserImpl
+EzShop --> CreditCard
+EzShop --> TicketEntryImpl
+
+OrderImpl --> ProductTypeImpl
+OrderImpl --> BalanceOperationImpl
+
+ProductTypeImpl --> Position
+
+CustomerImpl --> LoyaltyCard
+
+LoyaltyCard --> CustomerImpl
+
+SaleTransactionImpl --> TicketEntryImpl
+SaleTransactionImpl --> CreditCard
+SaleTransactionImpl --> BalanceOperationImpl
+
+ReturnTransaction --> TicketEntryImpl
+ReturnTransaction --> SaleTransactionImpl
+@enduml
+```
      
 # Integration approach
 
