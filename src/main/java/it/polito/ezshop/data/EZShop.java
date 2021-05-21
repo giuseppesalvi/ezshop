@@ -1106,10 +1106,12 @@ public class EZShop implements EZShopInterface {
 		
 		// Check if the quantity of product can satisfy the request
 		boolean toDelete = false;
+		boolean found = false;
 		for(TicketEntry entry : sale.getEntries()) {
 			if (entry.getBarCode().contentEquals(productCode)) {
 				if(entry.getAmount() >= amount) {
 					entry.setAmount(entry.getAmount() - amount);
+					found = true;
 					if(entry.getAmount() == 0) {
 						toDelete = true;
 					}
@@ -1119,15 +1121,18 @@ public class EZShop implements EZShopInterface {
 				}
 			}
 		}
+		
+		// Check if the product was present in the sale with enough quantity
+		if (found == false) {
+			return false;
+		}
+
 		// Delete the product from the sale transaction if the remaining amount = 0
 		// If this operation goes wrong, return false
 		if (toDelete) {
-			TicketEntry eliminated = sale.deleteEntry(productCode);
-			if (eliminated == null) {
-				return false;
+			sale.deleteEntry(productCode);
 		}
 
-		}
 		// Increase the amount of product available on the shelves
 		prod.get().setQuantity(prod.get().getQuantity() + amount);
 		if (prod.get().getEliminated() ) {
