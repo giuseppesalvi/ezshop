@@ -119,6 +119,8 @@ public class EZShop implements EZShopInterface {
 		cards.clear();
 		LoyaltyCard.idGen = 1;
 		FileWrite.writeCards(this.cards);
+
+		loggedInUser = null;
 	}
 
 	@Override
@@ -812,16 +814,17 @@ public class EZShop implements EZShopInterface {
 							&& this.cards.get(newCustomerCard).getCustomer() == null) {
 						// Double reference
 						chosen.setCard(this.cards.get(newCustomerCard));
-						this.cards.get(newCustomerCard).setCustomer(chosen);
-					}
+						//this.cards.get(newCustomerCard).setCustomer(chosen);
+					} else { return false;}
+
 				} else if (newCustomerCard.isEmpty()) {
 					// Double reference
 					chosen.getCard().setCustomer(null);
 					chosen.setCard(null);
 				} // null case does not modify anything
-
-				return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 			}
+
+			return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 		}
 
 		return false;
@@ -924,7 +927,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check card correctness
-		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
+		if (customerCard == null || !customerCard.matches("^[0-9]{10}$") || customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -949,7 +952,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check card correctness
-		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
+		if (customerCard == null || !customerCard.matches("^[0-9]{10}$") || customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
