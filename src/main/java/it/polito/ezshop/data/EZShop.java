@@ -1314,8 +1314,8 @@ public class EZShop implements EZShopInterface {
 		}
 		SaleTransactionImpl sale = this.sales.get(transactionId);
 
-		// Check if the transactionId identifies an already closed transaction
-		if (sale.getState().contentEquals("CLOSED")) {
+		// Check if the transactionId identifies an already closed or payed transaction
+		if (sale.getState().contentEquals("CLOSED") || sale.getState().contentEquals("PAYED")) {
 			return false;
 		}
 
