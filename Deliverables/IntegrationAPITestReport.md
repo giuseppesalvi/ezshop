@@ -24,6 +24,79 @@ Version:
 # Dependency graph 
 
      <report the here the dependency graph of the classes in EzShop, using plantuml>
+
+```plantuml
+@startuml
+class EzShop {}
+class FileWrite {}
+class FileRead {}
+class BalanceOperationImpl {}
+class CreditCard {}
+class CustomerImpl {}
+class LoyaltyCard {}
+class OrderImpl {}
+class Position {}
+class ProductTypeImpl {}
+class ReturnTransaction {}
+class SaleTransactionImpl {}
+class TicketEntryImpl {}
+class UserImpl {}
+
+FileWrite --> BalanceOperationImpl
+FileWrite --> CustomerImpl
+FileWrite --> LoyaltyCard
+FileWrite --> OrderImpl 
+FileWrite --> Position 
+FileWrite --> ProductTypeImpl 
+FileWrite --> ReturnTransaction 
+FileWrite --> SaleTransactionImpl 
+FileWrite --> UserImpl
+FileWrite --> CreditCard
+FileWrite --> TicketEntryImpl
+
+FileRead --> BalanceOperationImpl
+FileRead --> CustomerImpl
+FileRead --> LoyaltyCard
+FileRead --> OrderImpl 
+FileRead --> Position 
+FileRead --> ProductTypeImpl 
+FileRead --> ReturnTransaction 
+FileRead --> SaleTransactionImpl 
+FileRead --> UserImpl
+FileRead --> CreditCard
+FileRead --> TicketEntryImpl
+
+EzShop --> FileRead
+EzShop --> FileWrite
+EzShop --> BalanceOperationImpl
+EzShop --> CustomerImpl
+EzShop --> LoyaltyCard
+EzShop --> OrderImpl 
+EzShop --> Position 
+EzShop --> ProductTypeImpl 
+EzShop --> ReturnTransaction 
+EzShop --> SaleTransactionImpl 
+EzShop --> UserImpl
+EzShop --> CreditCard
+EzShop --> TicketEntryImpl
+
+OrderImpl --> ProductTypeImpl
+OrderImpl --> BalanceOperationImpl
+
+ProductTypeImpl --> Position
+
+CustomerImpl --> LoyaltyCard
+
+LoyaltyCard --> CustomerImpl
+
+SaleTransactionImpl --> TicketEntryImpl
+SaleTransactionImpl --> CreditCard
+SaleTransactionImpl --> BalanceOperationImpl
+
+ReturnTransaction --> TicketEntryImpl
+ReturnTransaction --> SaleTransactionImpl
+@enduml
+```
      
 # Integration approach
 
@@ -78,6 +151,20 @@ Version:
 |  1     |  ... |  
 |  2     |  ... |
 
+##### Scenario 3.4
+| Scenario |  Order of product type X, balance not enough |
+| ------------- |:-------------:| 
+|  Precondition     | ShopManager S exists and is logged in |
+| | Product type X exists |
+| | Order O exists | 
+|  Post condition     | Order O does not change  |
+| | X.units not changed |
+| | Balance not changed |
+| Step#        | Description  |
+|  1    |  S search for Order O |  
+|  2    |  S register payment done for O |
+|  3    |  Error: balance not enough |
+
 
 
 # Coverage of Scenarios and FR
@@ -91,12 +178,14 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Scenario ID | Functional Requirements covered | JUnit  Test(s) | 
 | ----------- | ------------------------------- | ----------- | 
-|  ..         | FRx                             |             |             
-|  ..         | FRy                             |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
-| ...         |                                 |             |             
+| 3-1 | FR4 | testIssueOrderNominalCase|             
+| 3-2 | FR4 | testPayOrderNominalCase|             
+| 3-3 | FR4 | testRecordOrderArrivalNominalCase | 
+| 3-4 | FR4 | testPayOrderBalanceNotEnough |  
+| 4-1 | FR5 | testDefineCustomerNominalCase|             
+| 4-2 | FR5 | testAttachCardToCustomerNominalCase<br />testModifyCustomerNominalCase|             
+| 4-3 | FR5 | testModifyCustomerModifyCard |             
+| 4-4 | FR5 | testModifyCustomerNominalCase|              
 
 
 
@@ -110,6 +199,6 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Non Functional Requirement | Test name |
 | -------------------------- | --------- |
-|                            |           |
+| NRF6 |  testCreateCardNominalCase         |
 
 
