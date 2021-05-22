@@ -1,10 +1,11 @@
 # Integration and API Test Documentation
 
-Authors:
+Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman 
 
-Date:
+Date: 26/05/2021
 
-Version:
+Version: 1.0.0
+
 
 # Contents
 
@@ -105,6 +106,16 @@ ReturnTransaction --> SaleTransactionImpl
     <Some steps may  correspond to unit testing (ex step1 in ex above), presented in other document UnitTestReport.md>
     <One step will  correspond to API testing>
     
+## Integration sequence adopted : Bottom up
+
+### step1: (Unit testing) 
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl
+
+### step2: 
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + FileRead + FileWrite
+
+### step3: (API testing) 
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + FileRead + FileWrite + EZShop
 
 
 #  Tests
@@ -115,22 +126,192 @@ ReturnTransaction --> SaleTransactionImpl
 ## Step 1
 | Classes  | JUnit test cases |
 |--|--|
-|||
+| BalanceOperationImpl | testGettersSettersConstructors |
+| CreditCard | testCheckValidityWithInvalidString |
+|| testCheckValidityWithCreditCardNotANumber |
+|| testCheckValidityLuhnCheckPassed |
+|| testCheckValidityLuhnCheckNotPassed |
+|| testSetNumberWithInvalidString |
+|| testSetNumberWithValidString |
+|| testSetBalanceWithNull |
+|| testSetBalanceWithValidBalance |
+|| testCheckValidityForLoop0Iterations |
+|| testCheckValidityForLoop1Iterations |
+|| testCheckValidityForLoopMultipleIterations |
+| CustomerImpl | testGettersSettersConstructors |
+| LoyaltyCard | testGettersSettersConstructors |
+| OrderImpl | testGettersSettersConstructors|
+| Position | testSetPositionWithValidString |
+|| testSetPositionWithInvalidString |
+| ProductTypeImpl | testCheckBarCodeNull |
+|| testCheckBarCodeWithLongString |
+|| testCheckBarCodeInvalidCheckSum |
+|| testCheckBarCodeValidString |
+|| testGettersSettersConstructors |
+|| testCheckBarCodeForLoopString12 |
+|| testCheckBarCodeForLoopString13 |
+|| testCheckBarCodeForLoopString14 |
+| ReturnTransaction | testGettersSettersConstructors |
+|| testAddEntryWithNull|
+|| testAddEntryWithValidInput |
+|| testDeleteEntryWithNull |
+|| testDeleteEntryWithProductNotPresent |
+|| testDeleteEntryWithProductPresent |
+|| testDeleteEntryForLoop0Iterations |
+|| testDeleteEntryForLoop1Iterations |
+|| testDeleteEntryForLoopMultipleIterations |
+| SaleTransactionImpl | testGettersSettersConstructors|
+|| testAddEntryWithNull|
+|| testAddEntryWithValidInput |
+|| testDeleteEntryWithNull |
+|| testDeleteEntryWithProductNotPresent |
+|| testDeleteEntryWithProductPresent |
+|| testDeleteEntryForLoop0Iterations |
+|| testDeleteEntryForLoop1Iterations |
+|| testDeleteEntryForLoopMultipleIterations |
+| TicketEntryImpl | testGettersSettersConstructors | 
+| UserImpl | testGettersSettersConstructors |
 
 
 ## Step 2
 | Classes  | JUnit test cases |
 |--|--|
-|||
+| FileRead | |
+| FileWrite | |
 
 
-## Step n 
-
-   
-
+## Step 3    
 | Classes  | JUnit test cases |
 |--|--|
-|||
+| EzShop | testIssueOrderNominalCase|
+| | testIssueOrderUnauthorized |
+| | testIssueOrderInvalidProductCode |
+| | testIssueOrderInvalidQuantity |
+| | testIssueOrderInvalidPricePerUnit |
+| | testIssueOrderProductNotExists |
+| | testPayOrderForNominalCase |
+| | testPayOrderForUnauthorized |
+| | testPayOrderForInvalidProductCode |
+| | testPayOrderForInvalidQuantity |
+| | testPayOrderForInvalidPricePerUnit |
+| | testPayOrderForProductNotExists |
+| | testPayOrderForBalanceNotEnough |
+| | testPayOrderNominalCase |
+| | testPayOrderUnauthorized |
+| | testPayOrderNotExists |
+| | testPayOrderInvalidOrderID |
+| | testPayOrderBalanceNotEnough |
+| | testPayOrderAlreadyReceived |
+| | testPayOrderAlreadyPayed |
+| | testRecordOrderArrivalNominalCase |
+| | testRecordOrderArrivalUnauthorized |
+| | testRecordOrderArrivalInvalidOrderID |
+| | testRecordOrderArrivalLocationNotExists |
+| | testRecordOrderArrivalAlreadyArrived |
+| | testRecordOrderArrivalNotPayed |
+| | testGetAllOrdersNominalCase |
+| | testGetAllOrdersUnauthorized |
+| | testDefineCustomerNominalCase |
+| | testDefineCustomerUnauthorized |
+| | testDefineCustomerInvalidName |
+| | testDefineCustomerAlreadyExists |
+| | testModifyCustomerNominalCase |
+| | testModifyCustomerUnauthorized |
+| | testModifyCustomerInvalidName |
+| | testModifyCustomerInvalidID |
+| | testModifyCustomerInvalidCard |
+| | testModifyCustomerCustomerNotExists |
+| | testModifyCustomerModifyCard |
+| | testDeleteCustomerNominalCase |
+| | testDeleteCustomerUnauthorized |
+| | testDeleteCustomerInvalidID |
+| | testDeleteCustomerCustomerNotExists |
+| | testGetCustomerNominalCase |
+| | testGetCustomerUnauthorized |
+| | testGetCustomerInvalidID |
+| | testGetCustomerCustomerNotExists |
+| | testGetAllCustomersNominalCase |
+| | testGetAllCustomerUnauthorized |
+| | testCreateCardNominalCase |
+| | testCreateCardUnauthorized |
+| | testAttachCardToCustomerNominalCase |
+| | testAttachCardToCustomerUnauthorized |
+| | testAttachCardToCustomerInvalidID |
+| | testAttachCardToCustomerInvalidCardID |
+| | testAttachCardToCustomerVariousErrors |
+| | testModifyPointsOnCardNominalCase |
+| | testModifyPointsOnCardUnauthorized |
+| | testModifyPointsOnCardInvalidCardID |
+| | testModifyPointsOnCardNegativeBalance |
+| | testStartSaleTransactionWithUnauthorizedUser |
+| | testStartSaleTransactionNominalCase |
+| | testAddProductToSaleWithUnauthorizedUser |
+| | testAddProductToSaleWithQuantityLessThanZero |
+| | testAddProductToSaleWithInvalidProductCode |
+| | testAddProductToSaleWithInvalidTransactionId |
+| | testAddProductToSaleProductCodeDoesNotExist |
+| | testAddProductToSaleQuantityOfProductCannotSatisfyRequest |
+| | testAddProductToSaleTransactionIdDoesNotIdentifyAnOpenTransaction |
+| | testAddProductToSaleNominalScenario |
+| | testDeleteProductFromSaleWithUnauthorizedUser |
+| | testDeleteProductFromSaleWithQuantityLessThanZero |
+| | testDeleteProductFromSaleWithInvalidProductCode |
+| | testDeleteProductFromSaleWithInvalidTransactionId |
+| | testDeleteProductFromSaleProductCodeDoesNotExist |
+| | testDeleteProductFromSaleQuantityOfProductCannotSatisfyRequest |
+| | testDeleteProductFromSaleTransactionIdDoesNotIdentifyAnOpenTransaction |
+| | testDeleteProductFromSaleTransactionNominalCase |
+| | testApplyDiscountRateToProductWithInvalidUser |
+| | testAppyDiscountRateToProductWithInvalidDiscountRate |
+| | testApplyDiscountRateToProductWithInvalidProductCode |
+| | testApplyDiscountRateToProductWithInvalidTransactionId |
+| | testApplyDiscountRateToProductProductCodeDoesNotExist |
+| | testApplyDiscountRateToProductTransactionIsNotOpen |
+| | testApplyDiscountRateToProductNominalCase |
+| | testApplyDiscountRateToSaleWithInvalidUser |
+| | testAppyDiscountRateToSaleWithInvalidDiscountRate |
+| | testApplyDiscountRateToSaleWithInvalidTransactionId |
+| | testApplyDiscountRateToSaleTransactionIsNotOpenOrClosed |
+| | testApplyDiscountRateToSaleNominalCase |
+| | testComputePointsForSaleWithUnauthorizedUser |
+| | testComputePointsForSaleWithInvalidTransactionId |
+| | testComputePointsForSaleWithNonExistingTransaction |
+| | testComputePointsForSaleNominalCase |
+| | testEndSaleTransactionWithUnauthorizedUser |
+| | testEndSaleTransactionWithInvalidTransactionId |
+| | testEndSaleTransactionWithNotOpenTransaction |
+| | testEndSaleTransactionNominalCase |
+| | testDeleteSaleTransactionWithUnauthorizedUser |
+| | testDeleteSaleTransactionWithInvalidTransactionId |
+| | testDeleteSaleTransactionWithAlreadyPayedTransaction |
+| | testDeleteSaleTransactionNominalCase |
+| | testGetSaleTransactionWithUnauthorizedUser |
+| | testGetSaleTransactionWithInvalidTransactionId |
+| | testGetSaleTransactionWithOpenTransaction |
+| | testGetSaleTransactionNominalCase |
+| | testStartReturnTransactionWithUnauthorizedUser |
+| | testStartReturnTransactionWithInvalidTransactionID |
+| | testStartReturnTransactionWithTransactionNotAvailableAndPayed |
+| | testStartReturnTransactionNominalCase |
+| | testReturnProductWithUnauthorizedUser |
+| | testReturnProductWithInvalidTransactionID |
+| | testReturnProductWithInvalidQuantity |
+| | testReturnProductWithInvalidProductCode |
+| | testReturnProductWhenTransactionDoesNotExist |
+| | testReturnProductWhenProductToBeReturnedDoesNotExist |
+| | testReturnProductWhenProductNotInTheSaleTransaction |
+| | testReturnProductWhenAmountHigherThanSoldOne |
+| | testReturnProductNominalCase |
+| | testEndReturnTransactionWithUnauthorizedUser |
+| | testEndReturnTransactionWithInvalidTransactionID |
+| | testEndReturnTransactionWithNotOpenTransaction |
+| | testEndReturnTransactionNominalCase |
+| | testDeleteReturnTransactionWithUnauthorizedUser |
+| | testDeleteReturnTransactionWithInvalidTransactionID |
+| | testDeleteReturnTransactionWithNotExistingClosedReturnTransaction |
+| | testDeleteReturnTransactionNominalCase |
+| | |
+
 
 
 
