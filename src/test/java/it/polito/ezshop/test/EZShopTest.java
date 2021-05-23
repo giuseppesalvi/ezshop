@@ -2420,4 +2420,221 @@ public class EZShopTest {
 		UUT.endSaleTransaction(saleId);
 		assertTrue(UUT.receiveCreditCardPayment(saleId,"4485370086510891"));
 	}
+
+	// --------------- end receiveCreditCardPayment --------------- //
+
+	// --------------- returnCashPayment --------------- //
+	@Test
+	public void testReturnCashPaymentUnauthenticatedUser () throws
+			UnauthorizedException {
+		UUT.reset();
+		assertThrows(UnauthorizedException.class, () ->UUT.returnCashPayment(1));
+	}
+
+	@Test
+	public void testReturnCashPaymentInvalidReturnId() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidTransactionIdException, UnauthorizedException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(0));
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(-1));
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(null));
+		// return -1 if the returnId is valid but not in the db
+		assertTrue(UUT.returnCashPayment(1) == -1);
+	}
+	@Test
+	public void	testReturnCashPaymentWithNotOpenReturnTransaction () throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductCodeException, InvalidProductIdException,
+			InvalidTransactionIdException, InvalidPaymentException,
+			InvalidQuantityException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		// add product
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		// complete a sale
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId,100);
+		// start return transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		UUT.returnProduct(retId,"012345678912",7);
+		// return transaction should be in CLOSED state before return cash
+		assertTrue(UUT.returnCashPayment(retId) == -1);
+		UUT.endReturnTransaction(retId,true);
+		UUT.returnCashPayment(retId);
+		// cannot return cash if the Transaction is not in CLOSED state
+		assertTrue(UUT.returnCashPayment(retId) == -1);
+
+	}
+
+	@Test
+	public void	testReturnCashPaymentNominalCase () throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidTransactionIdException, InvalidPaymentException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductCodeException, InvalidProductIdException, InvalidQuantityException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		// add product
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		// complete a sale
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId,100);
+		// start return transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		UUT.returnProduct(retId,"012345678912",7);
+		UUT.endReturnTransaction(retId,true);
+		// amount payed == return cash amount
+		assertTrue(UUT.returnCashPayment(retId) - 7.70 < 0.000001d);
+	}
+	// --------------- end returnCashPayment --------------- //
+
+	// --------------- returnCreditCardPayment --------------- //
+	@Test
+	public void testReturnCreditCardPaymentUnauthenticatedUser () throws
+			UnauthorizedException {
+		UUT.reset();
+		assertThrows(UnauthorizedException.class, () ->UUT.returnCreditCardPayment(1,"123"));
+	}
+
+	@Test
+	public void testReturnCreditCardPaymentInvalidReturnId() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidTransactionIdException,
+			UnauthorizedException, InvalidCreditCardException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(0,"4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(-1,"4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(null,"4485370086510891"));
+		// return -1 if the returnId is valid but not in the db
+		assertTrue(UUT.returnCreditCardPayment(1,"4485370086510891") == -1);
+	}
+	@Test
+	public void testReturnCreditCardPaymentWithInvalidCreditCard() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,null));
+		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,""));
+		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,"123"));
+	}
+	@Test
+	public void	testReturnCreditCardPaymentWithNotOpenReturnTransaction () throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductCodeException, InvalidProductIdException,
+			InvalidTransactionIdException, InvalidPaymentException,
+			InvalidQuantityException, InvalidCreditCardException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		// add product
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		// complete a sale
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId,100);
+		// start return transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		UUT.returnProduct(retId,"012345678912",7);
+		// return transaction should be in CLOSED state before return cash
+		assertTrue(UUT.returnCashPayment(retId) == -1);
+		UUT.endReturnTransaction(retId,true);
+		UUT.returnCreditCardPayment(retId,"4485370086510891");
+		// cannot return cash if the Transaction is not in CLOSED state
+		assertTrue(UUT.returnCreditCardPayment(retId,"4485370086510891") == -1);
+	}
+
+	@Test
+	public void testReturnCreditCardPaymentWithNotRegisteredCreditCard() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidCreditCardException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		// add a complete sale
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		// start return transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		UUT.returnProduct(retId,"012345678912",7);
+		UUT.endReturnTransaction(retId,true);
+		// credit card is valid but not registered
+		assertTrue(UUT.returnCreditCardPayment(retId,"5352937369048372") == -1.0);
+
+	}
+
+	@Test
+	public void testReturnCreditCardPaymentNominalCase () throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductCodeException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductIdException,
+			InvalidCreditCardException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		// add a complete sale
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		// start return transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		UUT.returnProduct(retId,"012345678912",7);
+		UUT.endReturnTransaction(retId,true);
+		// amount payed == return cash amount
+		assertTrue(UUT.returnCreditCardPayment(retId,"4485370086510891") - 7.70 < 0.000001d);
+	}
+
+
+	// --------------- end returnCreditCardPayment --------------- //
+
 }
