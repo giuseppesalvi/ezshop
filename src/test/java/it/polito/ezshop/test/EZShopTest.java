@@ -2,6 +2,7 @@ package it.polito.ezshop.test;
 
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
+import it.polito.ezshop.model.CreditCard;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -2281,5 +2282,142 @@ public class EZShopTest {
 
 	// --------------- end receiveCashPayment --------------- //
 
+	// --------------- receiveCreditCardPayment --------------- //
 
+	@Test
+	public void testReceiveCreditCardPaymentUnauthenticatedUser () throws
+	UnauthorizedException {
+		UUT.reset();
+		assertThrows(UnauthorizedException.class, () ->UUT.receiveCreditCardPayment(1,"4485370086510891"));
+	}
+	@Test
+	public void testReceiveCreditCardPaymentInvalidCard() throws
+			InvalidCreditCardException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,null));
+		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,""));
+		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,"123"));
+	}
+	@Test
+	public void testReceiveCreditCardPaymentInvalidSaleId() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		// saleId is not valid
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(0,"4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(null,"4485370086510891"));
+		// saleId does not exist
+		assertFalse(UUT.receiveCreditCardPayment(1,"4485370086510891"));
+	}
+	@Test
+	public void	testReceiveCreditCardPaymentWithNotRegisteredCreditCard() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException,
+			InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductIdException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 10);
+		// pay and close the sale
+		UUT.endSaleTransaction(saleId);
+		// credit card is valid but not registered
+		assertFalse(UUT.receiveCreditCardPayment(saleId,"5352937369048372"));
+	}
+	@Test
+	public void testReceiveCreditCardPaymentWithNotOpenSaleTransaction() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException,
+			InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductIdException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 10);
+		// pay and close the sale
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		// try to pay for the saleId that is in CLOSED state
+		assertFalse(UUT.receiveCreditCardPayment(saleId,"4485370086510891"));
+	}
+	@Test
+	public void	testReceiveCreditCardPaymentWithNotEnoughMoneyInCard() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException,
+			InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductIdException {
+
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 10);
+		// close the sale
+		UUT.endSaleTransaction(saleId);
+		// credit card is valid does not have enough money
+		assertFalse(UUT.receiveCreditCardPayment(saleId,"4716258050958645"));
+	}
+	@Test
+	public void testReceiveCreditCardPaymentNominalCase () throws
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidPasswordException, InvalidUsernameException,
+			InvalidRoleException, InvalidProductIdException,
+			InvalidQuantityException, InvalidTransactionIdException, InvalidCreditCardException {
+
+		UUT.reset();
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.endSaleTransaction(saleId);
+		assertTrue(UUT.receiveCreditCardPayment(saleId,"4485370086510891"));
+	}
 }
