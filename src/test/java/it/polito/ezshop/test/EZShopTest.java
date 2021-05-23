@@ -2201,34 +2201,6 @@ public class EZShopTest {
 	}
 
 	@Test
-	public void testReceiveCashPaymentWithDuplicateSaleId() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductIdException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
-
-		UUT.reset();
-		UUT.createUser("manager", "manager", "ShopManager");
-		UUT.login("manager", "manager");
-
-		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
-		UUT.updateQuantity(productId, 10);
-
-		Integer saleId = UUT.startSaleTransaction();
-
-		// add the product to the sales
-		UUT.addProductToSale(saleId, "012345678912", 7);
-		// end the sale and receive cash
-		//UUT.endSaleTransaction(saleId);
-		//UUT.receiveCashPayment(saleId,100);
-
-		// if try to pay for the saleId that exist
-		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(2,100)), java.util.Optional.of(-1.0));
-
-	}
-
-	@Test
 	public void testReceiveCashPaymentWithNotOpenSaleTransaction() throws
 			InvalidPasswordException, InvalidRoleException,
 			InvalidUsernameException, UnauthorizedException,
