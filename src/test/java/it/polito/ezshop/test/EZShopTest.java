@@ -2160,4 +2160,154 @@ public class EZShopTest {
 		assertEquals((Double) (1.10 * (4) + 1.30 * (12)), (Double) sale.getPrice());
 	}
 	// --------------- end deleteReturnTransaction --------------- //
+
+	// --------------- receiveCashPayment --------------- //
+	@Test
+	public void testReceiveCashPaymentUnauthorizedUser() throws
+			InvalidTransactionIdException,
+			InvalidPaymentException,
+			UnauthorizedException  {
+		UUT.reset();
+		assertThrows(UnauthorizedException.class, () -> UUT.receiveCashPayment(1,100));
+	}
+
+	@Test
+	public void testReceiveCashPaymentInvalidCashAmount() throws
+			InvalidTransactionIdException, InvalidPasswordException,
+			InvalidPaymentException, UnauthorizedException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1,-200));
+		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1,0));
+	}
+
+
+	@Test
+	public void testReceiveCashPaymentInvalidTransactionId() throws
+			InvalidTransactionIdException, InvalidPasswordException,
+			InvalidPaymentException, UnauthorizedException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(0,100));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(null,100));
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(1,100)), java.util.Optional.of(-1.0));
+	}
+
+	@Test
+	public void testReceiveCashPaymentWithDuplicateSaleId() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+
+		UUT.reset();
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sales
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		// end the sale and receive cash
+		//UUT.endSaleTransaction(saleId);
+		//UUT.receiveCashPayment(saleId,100);
+
+		// if try to pay for the saleId that exist
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(2,100)), java.util.Optional.of(-1.0));
+
+	}
+
+	@Test
+	public void testReceiveCashPaymentWithNotOpenSaleTransaction() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+
+		UUT.reset();
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");
+		UUT.updateQuantity(product2Id, 5);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.addProductToSale(saleId, "0000000000512", 1);
+		// pay and close the sale
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId,100);
+		// try to pay for the saleId that is in CLOSED state
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,100)), java.util.Optional.of(-1.0));
+	}
+
+	@Test
+	public void testReceiveCashPaymentNotEnoughCash() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+		UUT.reset();
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 2.00, "");
+		UUT.updateQuantity(productId, 10);
+
+		Integer saleId = UUT.startSaleTransaction();
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 10);
+		// try to pay with the amount of cash that is not enough
+		UUT.endSaleTransaction(saleId);
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,10)), java.util.Optional.of(-1.0));
+
+	}
+	@Test
+	public void testReceiveCashPaymentNominalCase() throws
+			InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException,
+			InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+
+		UUT.reset();
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");
+		UUT.updateQuantity(product2Id, 5);
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		UUT.addProductToSale(saleId, "012345678912", 7);
+		UUT.addProductToSale(saleId, "0000000000512", 1);
+
+		UUT.endSaleTransaction(saleId);
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,100)),java.util.Optional.of(91.0));
+		SaleTransaction sale = UUT.getSaleTransaction(saleId);
+	}
+
+	// --------------- end receiveCashPayment --------------- //
+
+
 }
