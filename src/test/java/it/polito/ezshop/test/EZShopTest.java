@@ -2,10 +2,11 @@ package it.polito.ezshop.test;
 
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
-import it.polito.ezshop.model.CreditCard;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -2636,5 +2637,120 @@ public class EZShopTest {
 
 
 	// --------------- end returnCreditCardPayment --------------- //
+	// --------------- recordBalanceUpdate --------------- //
+	@Test
+	public void testRecordBalanceUpdateUnauthorizedUser () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		// not Logged in user
+		assertThrows(UnauthorizedException.class,() -> UUT.recordBalanceUpdate(100));
+		// Logged in but the user is cashier
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+		assertThrows(UnauthorizedException.class,() -> UUT.recordBalanceUpdate(100));
+	}
+	@Test
+	public void testRecordBalanceUpdateInvalidAmountToBeAdded () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
 
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		// cannot reduce the balance when the Balance + toBeAdded < 0
+		assertFalse(UUT.recordBalanceUpdate(-200));
+	}
+
+	@Test
+	public void testRecordBalanceUpdateNominalCase () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		// add positive amount
+		assertTrue(UUT.recordBalanceUpdate(100));
+		// add negative amount
+		assertTrue(UUT.recordBalanceUpdate(-100));
+	}
+	// --------------- end recordBalanceUpdate --------------- //
+
+	// --------------- getCreditsAndDebits --------------- //
+	@Test
+	public void testGetCreditsAndDebitsUnauthorizedUser () throws
+			UnauthorizedException {
+		UUT.reset();
+		// not Logged in user
+		assertThrows(UnauthorizedException.class,() -> UUT.getCreditsAndDebits(null,null));
+	}
+	@Test
+	public void testGetCreditsAndDebitsWithNullDates () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		UUT.recordBalanceUpdate(100);
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(null,null);
+		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
+	}
+	@Test
+	public void testGetCreditsAndDebitsReversedDate () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		UUT.recordBalanceUpdate(100);
+		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
+		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(tomorrow,yesterday);
+		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
+	}
+	@Test
+	public void testGetCreditsAndDebitsNominalCase () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		UUT.recordBalanceUpdate(100);
+		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
+		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(yesterday,tomorrow);
+		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
+	}
+	// --------------- end getCreditsAndDebits --------------- //
+
+	// --------------- computeBalance --------------- //
+	@Test
+	public void testComputeBalanceUnauthorizedUser () throws
+			UnauthorizedException {
+		UUT.reset();
+
+		assertThrows(UnauthorizedException.class,() -> UUT.computeBalance());
+	}
+	@Test
+	public void testComputeBalanceNominalCase () throws
+			UnauthorizedException, InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		UUT.recordBalanceUpdate(100);
+		assertTrue(UUT.computeBalance() - 100.0 == 0);
+	}
+	// --------------- end computeBalance --------------- //
 }
