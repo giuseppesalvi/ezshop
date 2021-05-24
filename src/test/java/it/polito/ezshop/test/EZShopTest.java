@@ -3258,7 +3258,7 @@ public class EZShopTest {
 	// --------------- receiveCreditCardPayment --------------- //
 
 	@Test
-	public void testReceiveCreditCardPaymentUnauthenticatedUser() throws UnauthorizedException {
+	public void testReceiveCreditCardPaymentWithUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.receiveCreditCardPayment(1, "4485370086510891"));
 	}
@@ -3390,7 +3390,7 @@ public class EZShopTest {
 
 	// --------------- returnCashPayment --------------- //
 	@Test
-	public void testReturnCashPaymentUnauthenticatedUser() throws UnauthorizedException {
+	public void testReturnCashPaymentWithUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.returnCashPayment(1));
 	}
@@ -3468,7 +3468,7 @@ public class EZShopTest {
 
 	// --------------- returnCreditCardPayment --------------- //
 	@Test
-	public void testReturnCreditCardPaymentUnauthenticatedUser() throws UnauthorizedException {
+	public void testReturnCreditCardPaymentWithUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.returnCreditCardPayment(1, "123"));
 	}
