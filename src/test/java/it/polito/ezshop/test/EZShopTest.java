@@ -36,6 +36,366 @@ public class EZShopTest {
 		assertNotNull(UUT.login(role, role));
 	}
 
+	// --------------- reset --------------- //
+	@Test
+	public void testResetNominalCase()
+			throws UnauthorizedException, InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertEquals(UUT.getAllCustomers().size(), 0);
+		assertEquals(UUT.getAllOrders().size(), 0);
+		assertEquals(UUT.getAllProductTypes().size(), 0);
+		assertEquals(UUT.getCreditsAndDebits(null, null).size(), 0);
+		assertEquals((Double) UUT.computeBalance(), (Double) 0.);
+		assertEquals(UUT.getAllUsers().size(), 1);
+	}
+	// --------------- end reset --------------- //
+
+	// --------------- createUser--------------- //
+	@Test
+	public void testCreateUserWithInvalidUsername() {
+		UUT.reset();
+
+		assertThrows(InvalidUsernameException.class, () -> UUT.createUser(null, "admin", "Administrator"));
+		assertThrows(InvalidUsernameException.class, () -> UUT.createUser("", "admin", "Administrator"));
+	}
+
+	@Test
+	public void testCreateUserWithInvalidPassword() {
+		UUT.reset();
+
+		assertThrows(InvalidPasswordException.class, () -> UUT.createUser("admin", null, "Administrator"));
+		assertThrows(InvalidPasswordException.class, () -> UUT.createUser("admin", "", "Administrator"));
+	}
+
+	@Test
+	public void testCreateUserWithInvalidRole() {
+		UUT.reset();
+
+		assertThrows(InvalidRoleException.class, () -> UUT.createUser("admin", "admin", null));
+		assertThrows(InvalidRoleException.class, () -> UUT.createUser("admin", "admin", ""));
+		assertThrows(InvalidRoleException.class, () -> UUT.createUser("admin", "admin", "Admin"));
+	}
+
+	@Test
+	public void testCreateUserWithUsernameAlreadyUsed()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin123", "Administrator");
+		assertEquals(UUT.createUser("admin", "admin234", "Administrator"), (Integer) (-1));
+	}
+
+	@Test
+	public void testCreateUserNominalCase()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+		assertTrue(UUT.createUser("admin", "admin", "Administrator") > 0);
+		assertTrue(UUT.createUser("cashier", "cashier", "Cashier") > 0);
+		assertTrue(UUT.createUser("manager", "manager", "ShopManager") > 0);
+	}
+	// --------------- end createUser--------------- //
+
+	// --------------- deleteUser --------------- //
+	@Test
+	public void testDeleteUserWithUnauthorizedUser()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.deleteUser(1));
+
+		// cashier logged in
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+		assertThrows(UnauthorizedException.class, () -> UUT.deleteUser(1));
+
+		// manager logged in
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertThrows(UnauthorizedException.class, () -> UUT.deleteUser(1));
+	}
+
+	@Test
+	public void testDeleteUserWithInvalidUserId()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertThrows(InvalidUserIdException.class, () -> UUT.deleteUser(0));
+		assertThrows(InvalidUserIdException.class, () -> UUT.deleteUser(-1));
+		assertThrows(InvalidUserIdException.class, () -> UUT.deleteUser(null));
+	}
+
+	@Test
+	public void testDeleteUserWithNonExistingUser() throws InvalidUserIdException, UnauthorizedException,
+			InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertFalse(UUT.deleteUser(100));
+	}
+
+	@Test
+	public void testDeleteUserNominalCase() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		Integer cashier1Id = UUT.createUser("cashier1", "cashier", "Cashier");
+		Integer admin1Id = UUT.createUser("admin1", "admin", "Administrator");
+		Integer admin2Id = UUT.createUser("admin2", "admin", "Administrator");
+		Integer manager1Id = UUT.createUser("manager1", "manager1", "ShopManager");
+
+		assertEquals((Integer) UUT.getAllUsers().size(), (Integer) 5);
+
+		assertTrue(UUT.deleteUser(cashier1Id));
+		assertTrue(UUT.deleteUser(admin1Id));
+		assertTrue(UUT.deleteUser(admin2Id));
+		assertTrue(UUT.deleteUser(manager1Id));
+
+		assertEquals((Integer) UUT.getAllUsers().size(), (Integer) 1);
+	}
+	// --------------- end deleteUser --------------- //
+
+	// --------------- getAllUsers --------------- //
+	@Test
+	public void testGetAllUsersWithUnauthorizedUser()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.getAllUsers());
+
+		// cashier logged in
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+		assertThrows(UnauthorizedException.class, () -> UUT.getAllUsers());
+
+		// manager logged in
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertThrows(UnauthorizedException.class, () -> UUT.getAllUsers());
+	}
+
+	@Test
+	public void testGetAllUsersNominalCase() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		UUT.createUser("cashier1", "cashier", "Cashier");
+		UUT.createUser("admin1", "admin", "Administrator");
+		assertEquals((Integer) UUT.getAllUsers().size(), (Integer) 3);
+
+		UUT.createUser("admin2", "admin", "Administrator");
+		UUT.createUser("manager1", "manager1", "ShopManager");
+
+		assertEquals((Integer) UUT.getAllUsers().size(), (Integer) 5);
+	}
+	// --------------- end getAllUsers --------------- //
+
+	// --------------- getUser --------------- //
+	@Test
+	public void testGetUserWithUnauthorizedUser()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.getUser(1));
+
+		// cashier logged in
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+		assertThrows(UnauthorizedException.class, () -> UUT.getUser(1));
+
+		// manager logged in
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertThrows(UnauthorizedException.class, () -> UUT.getUser(1));
+	}
+
+	@Test
+	public void testGetUserWithInvalidUserId()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertThrows(InvalidUserIdException.class, () -> UUT.getUser(0));
+		assertThrows(InvalidUserIdException.class, () -> UUT.getUser(-1));
+		assertThrows(InvalidUserIdException.class, () -> UUT.getUser(null));
+	}
+
+	@Test
+	public void testGetUserWithNonExistingUser() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertNull(UUT.getUser(100));
+	}
+
+	@Test
+	public void testGetUserNominalCase() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		Integer cashier1Id = UUT.createUser("cashier1", "cashier", "Cashier");
+		assertEquals(UUT.getUser(cashier1Id).getUsername(), "cashier1");
+		assertEquals(UUT.getUser(cashier1Id).getPassword(), "cashier");
+		assertEquals(UUT.getUser(cashier1Id).getRole(), "Cashier");
+	}
+	// --------------- end getUser --------------- //
+
+	// --------------- updateUserRights --------------- //
+
+	// --------------- getUser --------------- //
+	@Test
+	public void testUpdateUserRightsWithUnauthorizedUser()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.updateUserRights(100, "ShopManager"));
+
+		// cashier logged in
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+		assertThrows(UnauthorizedException.class, () -> UUT.updateUserRights(100, "ShopManager"));
+
+		// manager logged in
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+		assertThrows(UnauthorizedException.class, () -> UUT.updateUserRights(100, "ShopManager"));
+	}
+
+	@Test
+	public void testUpdateUserRightsWithInvalidUserId()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertThrows(InvalidUserIdException.class, () -> UUT.updateUserRights(0, "Cashier"));
+		assertThrows(InvalidUserIdException.class, () -> UUT.updateUserRights(-1, "Cashier"));
+		assertThrows(InvalidUserIdException.class, () -> UUT.updateUserRights(null, "Cashier"));
+	}
+
+	@Test
+	public void testUpdateUserRightsWithInvalidRole()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		Integer cashier1Id = UUT.createUser("cashier1", "cashier", "Cashier");
+		assertThrows(InvalidRoleException.class, () -> UUT.updateUserRights(cashier1Id, ""));
+		assertThrows(InvalidRoleException.class, () -> UUT.updateUserRights(cashier1Id, null));
+		assertThrows(InvalidRoleException.class, () -> UUT.updateUserRights(cashier1Id, "adm"));
+	}
+
+	@Test
+	public void testUpdateUserRightsWithNonExistingUser() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertFalse(UUT.updateUserRights(100, "ShopManager"));
+	}
+
+	@Test
+	public void testUpdateUserRightsNominalCase() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, InvalidUserIdException, UnauthorizedException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		Integer cashier1Id = UUT.createUser("cashier1", "cashier", "Cashier");
+		assertTrue(UUT.updateUserRights(cashier1Id, "ShopManager"));
+	}
+	// --------------- end updateUserRights --------------- //
+
+	// --------------- login --------------- //
+	@Test
+	public void testLoginWithInvalidUsername() {
+		UUT.reset();
+		assertThrows(InvalidUsernameException.class, () -> UUT.login("", "abcde"));
+		assertThrows(InvalidUsernameException.class, () -> UUT.login(null, "abcde"));
+	}
+
+	@Test
+	public void testLoginWithInvalidPassword() {
+		UUT.reset();
+		assertThrows(InvalidPasswordException.class, () -> UUT.login("admin", ""));
+		assertThrows(InvalidPasswordException.class, () -> UUT.login("admin", null));
+	}
+
+	@Test
+	public void testLoginWithNonExistingUser() throws InvalidUsernameException, InvalidPasswordException {
+		UUT.reset();
+		assertNull(UUT.login("admin", "admin"));
+	}
+
+	@Test
+	public void testLoginWithWrongCredentials()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		assertNull(UUT.login("admin", "admin12345"));
+	}
+
+	@Test
+	public void testLoginNominalCase() throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.createUser("manager", "manager", "ShopManager");
+		assertNotNull(UUT.login("admin", "admin"));
+		assertNotNull(UUT.login("manager", "manager"));
+	}
+	// --------------- end login --------------- //
+
+	// --------------- logout --------------- //
+	@Test
+	public void testLogoutWithNoLoggedUser() {
+		UUT.reset();
+		assertFalse(UUT.logout());
+	}
+
+	@Test
+	public void testLogoutNominalCase()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+		assertTrue(UUT.logout());
+	}
+	// --------------- end logout --------------- //
+
 	// --------------- issueOrder --------------- //
 	@Test
 	public void testIssueOrderNominalCase() throws InvalidPasswordException, InvalidRoleException,
@@ -2165,49 +2525,42 @@ public class EZShopTest {
 
 	// --------------- receiveCashPayment --------------- //
 	@Test
-	public void testReceiveCashPaymentUnauthorizedUser() throws
-			InvalidTransactionIdException,
-			InvalidPaymentException,
-			UnauthorizedException  {
+	public void testReceiveCashPaymentUnauthorizedUser()
+			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
 		UUT.reset();
-		assertThrows(UnauthorizedException.class, () -> UUT.receiveCashPayment(1,100));
+		assertThrows(UnauthorizedException.class, () -> UUT.receiveCashPayment(1, 100));
 	}
 
 	@Test
-	public void testReceiveCashPaymentInvalidCashAmount() throws
-			InvalidTransactionIdException, InvalidPasswordException,
-			InvalidPaymentException, UnauthorizedException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testReceiveCashPaymentInvalidCashAmount()
+			throws InvalidTransactionIdException, InvalidPasswordException, InvalidPaymentException,
+			UnauthorizedException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
-		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1,-200));
-		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1,0));
+		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1, -200));
+		assertThrows(InvalidPaymentException.class, () -> UUT.receiveCashPayment(1, 0));
 	}
 
-
 	@Test
-	public void testReceiveCashPaymentInvalidTransactionId() throws
-			InvalidTransactionIdException, InvalidPasswordException,
-			InvalidPaymentException, UnauthorizedException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testReceiveCashPaymentInvalidTransactionId()
+			throws InvalidTransactionIdException, InvalidPasswordException, InvalidPaymentException,
+			UnauthorizedException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(0,100));
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(null,100));
-		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(1,100)), java.util.Optional.of(-1.0));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(0, 100));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCashPayment(null, 100));
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(1, 100)), java.util.Optional.of(-1.0));
 	}
 
 	@Test
-	public void testReceiveCashPaymentWithNotOpenSaleTransaction() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductIdException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductCodeException,
+	public void testReceiveCashPaymentWithNotOpenSaleTransaction() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException, UnauthorizedException, InvalidProductIdException,
+			InvalidQuantityException, InvalidTransactionIdException, InvalidProductCodeException,
 			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
 
 		UUT.reset();
@@ -2226,18 +2579,16 @@ public class EZShopTest {
 		UUT.addProductToSale(saleId, "0000000000512", 1);
 		// pay and close the sale
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCashPayment(saleId,100);
+		UUT.receiveCashPayment(saleId, 100);
 		// try to pay for the saleId that is in CLOSED state
-		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,100)), java.util.Optional.of(-1.0));
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId, 100)), java.util.Optional.of(-1.0));
 	}
 
 	@Test
-	public void testReceiveCashPaymentNotEnoughCash() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductIdException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+	public void testReceiveCashPaymentNotEnoughCash() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidPaymentException {
 		UUT.reset();
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
@@ -2250,16 +2601,15 @@ public class EZShopTest {
 		UUT.addProductToSale(saleId, "012345678912", 10);
 		// try to pay with the amount of cash that is not enough
 		UUT.endSaleTransaction(saleId);
-		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,10)), java.util.Optional.of(-1.0));
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId, 10)), java.util.Optional.of(-1.0));
 
 	}
+
 	@Test
-	public void testReceiveCashPaymentNominalCase() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductIdException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidPaymentException {
+	public void testReceiveCashPaymentNominalCase() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidProductIdException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductCodeException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidPaymentException {
 
 		UUT.reset();
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2277,7 +2627,7 @@ public class EZShopTest {
 		UUT.addProductToSale(saleId, "0000000000512", 1);
 
 		UUT.endSaleTransaction(saleId);
-		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId,100)),java.util.Optional.of(91.0));
+		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId, 100)), java.util.Optional.of(91.0));
 		SaleTransaction sale = UUT.getSaleTransaction(saleId);
 	}
 
@@ -2286,48 +2636,44 @@ public class EZShopTest {
 	// --------------- receiveCreditCardPayment --------------- //
 
 	@Test
-	public void testReceiveCreditCardPaymentUnauthenticatedUser () throws
-	UnauthorizedException {
+	public void testReceiveCreditCardPaymentUnauthenticatedUser() throws UnauthorizedException {
 		UUT.reset();
-		assertThrows(UnauthorizedException.class, () ->UUT.receiveCreditCardPayment(1,"4485370086510891"));
+		assertThrows(UnauthorizedException.class, () -> UUT.receiveCreditCardPayment(1, "4485370086510891"));
 	}
+
 	@Test
-	public void testReceiveCreditCardPaymentInvalidCard() throws
-			InvalidCreditCardException, InvalidPasswordException,
+	public void testReceiveCreditCardPaymentInvalidCard() throws InvalidCreditCardException, InvalidPasswordException,
 			InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,null));
-		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,""));
-		assertThrows(InvalidCreditCardException.class, () ->UUT.receiveCreditCardPayment(1,"123"));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.receiveCreditCardPayment(1, null));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.receiveCreditCardPayment(1, ""));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.receiveCreditCardPayment(1, "123"));
 	}
+
 	@Test
-	public void testReceiveCreditCardPaymentInvalidSaleId() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, InvalidCreditCardException,
-			InvalidTransactionIdException, UnauthorizedException {
+	public void testReceiveCreditCardPaymentInvalidSaleId() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidCreditCardException, InvalidTransactionIdException, UnauthorizedException {
 
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 		// saleId is not valid
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(0,"4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(null,"4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(0, "4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(null, "4485370086510891"));
 		// saleId does not exist
-		assertFalse(UUT.receiveCreditCardPayment(1,"4485370086510891"));
+		assertFalse(UUT.receiveCreditCardPayment(1, "4485370086510891"));
 	}
+
 	@Test
-	public void	testReceiveCreditCardPaymentWithNotRegisteredCreditCard() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, InvalidCreditCardException,
-			InvalidTransactionIdException, UnauthorizedException,
-			InvalidQuantityException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductIdException {
+	public void testReceiveCreditCardPaymentWithNotRegisteredCreditCard()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException, InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException {
 
 		UUT.reset();
 
@@ -2344,16 +2690,14 @@ public class EZShopTest {
 		// pay and close the sale
 		UUT.endSaleTransaction(saleId);
 		// credit card is valid but not registered
-		assertFalse(UUT.receiveCreditCardPayment(saleId,"5352937369048372"));
+		assertFalse(UUT.receiveCreditCardPayment(saleId, "5352937369048372"));
 	}
+
 	@Test
-	public void testReceiveCreditCardPaymentWithNotOpenSaleTransaction() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, InvalidCreditCardException,
-			InvalidTransactionIdException, UnauthorizedException,
-			InvalidQuantityException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductIdException {
+	public void testReceiveCreditCardPaymentWithNotOpenSaleTransaction()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException, InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException {
 
 		UUT.reset();
 
@@ -2369,18 +2713,16 @@ public class EZShopTest {
 		UUT.addProductToSale(saleId, "012345678912", 10);
 		// pay and close the sale
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
 		// try to pay for the saleId that is in CLOSED state
-		assertFalse(UUT.receiveCreditCardPayment(saleId,"4485370086510891"));
+		assertFalse(UUT.receiveCreditCardPayment(saleId, "4485370086510891"));
 	}
+
 	@Test
-	public void	testReceiveCreditCardPaymentWithNotEnoughMoneyInCard() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, InvalidCreditCardException,
-			InvalidTransactionIdException, UnauthorizedException,
-			InvalidQuantityException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductIdException {
+	public void testReceiveCreditCardPaymentWithNotEnoughMoneyInCard()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, InvalidCreditCardException,
+			InvalidTransactionIdException, UnauthorizedException, InvalidQuantityException, InvalidProductCodeException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException {
 
 		UUT.reset();
 
@@ -2397,14 +2739,13 @@ public class EZShopTest {
 		// close the sale
 		UUT.endSaleTransaction(saleId);
 		// credit card is valid does not have enough money
-		assertFalse(UUT.receiveCreditCardPayment(saleId,"4716258050958645"));
+		assertFalse(UUT.receiveCreditCardPayment(saleId, "4716258050958645"));
 	}
+
 	@Test
-	public void testReceiveCreditCardPaymentNominalCase () throws
-			UnauthorizedException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidProductCodeException,
-			InvalidPasswordException, InvalidUsernameException,
-			InvalidRoleException, InvalidProductIdException,
+	public void testReceiveCreditCardPaymentNominalCase() throws UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidPasswordException, InvalidUsernameException, InvalidRoleException, InvalidProductIdException,
 			InvalidQuantityException, InvalidTransactionIdException, InvalidCreditCardException {
 
 		UUT.reset();
@@ -2419,42 +2760,38 @@ public class EZShopTest {
 		// add the product to the sale
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		assertTrue(UUT.receiveCreditCardPayment(saleId,"4485370086510891"));
+		assertTrue(UUT.receiveCreditCardPayment(saleId, "4485370086510891"));
 	}
 
 	// --------------- end receiveCreditCardPayment --------------- //
 
 	// --------------- returnCashPayment --------------- //
 	@Test
-	public void testReturnCashPaymentUnauthenticatedUser () throws
-			UnauthorizedException {
+	public void testReturnCashPaymentUnauthenticatedUser() throws UnauthorizedException {
 		UUT.reset();
-		assertThrows(UnauthorizedException.class, () ->UUT.returnCashPayment(1));
+		assertThrows(UnauthorizedException.class, () -> UUT.returnCashPayment(1));
 	}
 
 	@Test
-	public void testReturnCashPaymentInvalidReturnId() throws
-			InvalidPasswordException, InvalidRoleException,
+	public void testReturnCashPaymentInvalidReturnId() throws InvalidPasswordException, InvalidRoleException,
 			InvalidUsernameException, InvalidTransactionIdException, UnauthorizedException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(0));
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(-1));
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCashPayment(null));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCashPayment(0));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCashPayment(-1));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCashPayment(null));
 		// return -1 if the returnId is valid but not in the db
 		assertTrue(UUT.returnCashPayment(1) == -1);
 	}
+
 	@Test
-	public void	testReturnCashPaymentWithNotOpenReturnTransaction () throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductCodeException, InvalidProductIdException,
-			InvalidTransactionIdException, InvalidPaymentException,
-			InvalidQuantityException {
+	public void testReturnCashPaymentWithNotOpenReturnTransaction() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException, UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException, InvalidProductIdException,
+			InvalidTransactionIdException, InvalidPaymentException, InvalidQuantityException {
 
 		UUT.reset();
 
@@ -2467,13 +2804,13 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCashPayment(saleId,100);
+		UUT.receiveCashPayment(saleId, 100);
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
-		UUT.returnProduct(retId,"012345678912",7);
+		UUT.returnProduct(retId, "012345678912", 7);
 		// return transaction should be in CLOSED state before return cash
 		assertTrue(UUT.returnCashPayment(retId) == -1);
-		UUT.endReturnTransaction(retId,true);
+		UUT.endReturnTransaction(retId, true);
 		UUT.returnCashPayment(retId);
 		// cannot return cash if the Transaction is not in CLOSED state
 		assertTrue(UUT.returnCashPayment(retId) == -1);
@@ -2481,12 +2818,10 @@ public class EZShopTest {
 	}
 
 	@Test
-	public void	testReturnCashPaymentNominalCase () throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidTransactionIdException, InvalidPaymentException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductCodeException, InvalidProductIdException, InvalidQuantityException {
+	public void testReturnCashPaymentNominalCase() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidTransactionIdException, InvalidPaymentException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidQuantityException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2498,11 +2833,11 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCashPayment(saleId,100);
+		UUT.receiveCashPayment(saleId, 100);
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
-		UUT.returnProduct(retId,"012345678912",7);
-		UUT.endReturnTransaction(retId,true);
+		UUT.returnProduct(retId, "012345678912", 7);
+		UUT.endReturnTransaction(retId, true);
 		// amount payed == return cash amount
 		assertTrue(UUT.returnCashPayment(retId) - 7.70 < 0.000001d);
 	}
@@ -2510,49 +2845,45 @@ public class EZShopTest {
 
 	// --------------- returnCreditCardPayment --------------- //
 	@Test
-	public void testReturnCreditCardPaymentUnauthenticatedUser () throws
-			UnauthorizedException {
+	public void testReturnCreditCardPaymentUnauthenticatedUser() throws UnauthorizedException {
 		UUT.reset();
-		assertThrows(UnauthorizedException.class, () ->UUT.returnCreditCardPayment(1,"123"));
+		assertThrows(UnauthorizedException.class, () -> UUT.returnCreditCardPayment(1, "123"));
 	}
 
 	@Test
-	public void testReturnCreditCardPaymentInvalidReturnId() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, InvalidTransactionIdException,
-			UnauthorizedException, InvalidCreditCardException {
+	public void testReturnCreditCardPaymentInvalidReturnId() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, InvalidTransactionIdException, UnauthorizedException, InvalidCreditCardException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(0,"4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(-1,"4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class,() -> UUT.returnCreditCardPayment(null,"4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(0, "4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(-1, "4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(null, "4485370086510891"));
 		// return -1 if the returnId is valid but not in the db
-		assertTrue(UUT.returnCreditCardPayment(1,"4485370086510891") == -1);
+		assertTrue(UUT.returnCreditCardPayment(1, "4485370086510891") == -1);
 	}
+
 	@Test
-	public void testReturnCreditCardPaymentWithInvalidCreditCard() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException {
+	public void testReturnCreditCardPaymentWithInvalidCreditCard()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,null));
-		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,""));
-		assertThrows(InvalidCreditCardException.class, () ->UUT.returnCreditCardPayment(1,"123"));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.returnCreditCardPayment(1, null));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.returnCreditCardPayment(1, ""));
+		assertThrows(InvalidCreditCardException.class, () -> UUT.returnCreditCardPayment(1, "123"));
 	}
+
 	@Test
-	public void	testReturnCreditCardPaymentWithNotOpenReturnTransaction () throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductCodeException, InvalidProductIdException,
-			InvalidTransactionIdException, InvalidPaymentException,
-			InvalidQuantityException, InvalidCreditCardException {
+	public void testReturnCreditCardPaymentWithNotOpenReturnTransaction()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidTransactionIdException, InvalidPaymentException, InvalidQuantityException,
+			InvalidCreditCardException {
 
 		UUT.reset();
 
@@ -2565,26 +2896,23 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCashPayment(saleId,100);
+		UUT.receiveCashPayment(saleId, 100);
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
-		UUT.returnProduct(retId,"012345678912",7);
+		UUT.returnProduct(retId, "012345678912", 7);
 		// return transaction should be in CLOSED state before return cash
 		assertTrue(UUT.returnCashPayment(retId) == -1);
-		UUT.endReturnTransaction(retId,true);
-		UUT.returnCreditCardPayment(retId,"4485370086510891");
+		UUT.endReturnTransaction(retId, true);
+		UUT.returnCreditCardPayment(retId, "4485370086510891");
 		// cannot return cash if the Transaction is not in CLOSED state
-		assertTrue(UUT.returnCreditCardPayment(retId,"4485370086510891") == -1);
+		assertTrue(UUT.returnCreditCardPayment(retId, "4485370086510891") == -1);
 	}
 
 	@Test
-	public void testReturnCreditCardPaymentWithNotRegisteredCreditCard() throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductIdException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductCodeException,
-			InvalidCreditCardException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException {
+	public void testReturnCreditCardPaymentWithNotRegisteredCreditCard() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException, UnauthorizedException, InvalidProductIdException,
+			InvalidQuantityException, InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidCreditCardException, InvalidProductDescriptionException, InvalidPricePerUnitException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2596,24 +2924,21 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
-		UUT.returnProduct(retId,"012345678912",7);
-		UUT.endReturnTransaction(retId,true);
+		UUT.returnProduct(retId, "012345678912", 7);
+		UUT.endReturnTransaction(retId, true);
 		// credit card is valid but not registered
-		assertTrue(UUT.returnCreditCardPayment(retId,"5352937369048372") == -1.0);
+		assertTrue(UUT.returnCreditCardPayment(retId, "5352937369048372") == -1.0);
 
 	}
 
 	@Test
-	public void testReturnCreditCardPaymentNominalCase () throws
-			InvalidPasswordException, InvalidRoleException,
-			InvalidUsernameException, UnauthorizedException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductCodeException, InvalidQuantityException,
-			InvalidTransactionIdException, InvalidProductIdException,
-			InvalidCreditCardException {
+	public void testReturnCreditCardPaymentNominalCase() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException, InvalidQuantityException,
+			InvalidTransactionIdException, InvalidProductIdException, InvalidCreditCardException {
 
 		UUT.reset();
 
@@ -2626,34 +2951,32 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId,"4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
-		UUT.returnProduct(retId,"012345678912",7);
-		UUT.endReturnTransaction(retId,true);
+		UUT.returnProduct(retId, "012345678912", 7);
+		UUT.endReturnTransaction(retId, true);
 		// amount payed == return cash amount
-		assertTrue(UUT.returnCreditCardPayment(retId,"4485370086510891") - 7.70 < 0.000001d);
+		assertTrue(UUT.returnCreditCardPayment(retId, "4485370086510891") - 7.70 < 0.000001d);
 	}
-
 
 	// --------------- end returnCreditCardPayment --------------- //
 	// --------------- recordBalanceUpdate --------------- //
 	@Test
-	public void testRecordBalanceUpdateUnauthorizedUser () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testRecordBalanceUpdateUnauthorizedUser()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 		// not Logged in user
-		assertThrows(UnauthorizedException.class,() -> UUT.recordBalanceUpdate(100));
+		assertThrows(UnauthorizedException.class, () -> UUT.recordBalanceUpdate(100));
 		// Logged in but the user is cashier
 		UUT.createUser("cashier", "cashier", "Cashier");
 		UUT.login("cashier", "cashier");
-		assertThrows(UnauthorizedException.class,() -> UUT.recordBalanceUpdate(100));
+		assertThrows(UnauthorizedException.class, () -> UUT.recordBalanceUpdate(100));
 	}
+
 	@Test
-	public void testRecordBalanceUpdateInvalidAmountToBeAdded () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testRecordBalanceUpdateInvalidAmountToBeAdded()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2664,9 +2987,8 @@ public class EZShopTest {
 	}
 
 	@Test
-	public void testRecordBalanceUpdateNominalCase () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testRecordBalanceUpdateNominalCase()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2681,44 +3003,28 @@ public class EZShopTest {
 
 	// --------------- getCreditsAndDebits --------------- //
 	@Test
-	public void testGetCreditsAndDebitsUnauthorizedUser () throws
-			UnauthorizedException {
+	public void testGetCreditsAndDebitsUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
 		// not Logged in user
-		assertThrows(UnauthorizedException.class,() -> UUT.getCreditsAndDebits(null,null));
+		assertThrows(UnauthorizedException.class, () -> UUT.getCreditsAndDebits(null, null));
 	}
+
 	@Test
-	public void testGetCreditsAndDebitsWithNullDates () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testGetCreditsAndDebitsWithNullDates()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		UUT.recordBalanceUpdate(100);
-		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(null,null);
-		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(null, null);
+		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
 	}
-	@Test
-	public void testGetCreditsAndDebitsReversedDate () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
-		UUT.reset();
 
-		UUT.createUser("manager", "manager", "ShopManager");
-		UUT.login("manager", "manager");
-
-		UUT.recordBalanceUpdate(100);
-		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
-		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
-		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(tomorrow,yesterday);
-		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
-	}
 	@Test
-	public void testGetCreditsAndDebitsNominalCase () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testGetCreditsAndDebitsReversedDate()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2727,23 +3033,37 @@ public class EZShopTest {
 		UUT.recordBalanceUpdate(100);
 		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
 		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
-		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(yesterday,tomorrow);
-		assertTrue(balanceOperations.get(0).getMoney()-100 == 0);
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(tomorrow, yesterday);
+		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
+	}
+
+	@Test
+	public void testGetCreditsAndDebitsNominalCase()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		UUT.recordBalanceUpdate(100);
+		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
+		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
+		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(yesterday, tomorrow);
+		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
 	}
 	// --------------- end getCreditsAndDebits --------------- //
 
 	// --------------- computeBalance --------------- //
 	@Test
-	public void testComputeBalanceUnauthorizedUser () throws
-			UnauthorizedException {
+	public void testComputeBalanceUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
 
-		assertThrows(UnauthorizedException.class,() -> UUT.computeBalance());
+		assertThrows(UnauthorizedException.class, () -> UUT.computeBalance());
 	}
+
 	@Test
-	public void testComputeBalanceNominalCase () throws
-			UnauthorizedException, InvalidPasswordException,
-			InvalidRoleException, InvalidUsernameException {
+	public void testComputeBalanceNominalCase()
+			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2753,4 +3073,5 @@ public class EZShopTest {
 		assertTrue(UUT.computeBalance() - 100.0 == 0);
 	}
 	// --------------- end computeBalance --------------- //
+
 }
