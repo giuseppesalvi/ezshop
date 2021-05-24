@@ -3260,7 +3260,7 @@ public class EZShopTest {
 	@Test
 	public void testReceiveCreditCardPaymentWithUnauthorizedUser() throws UnauthorizedException {
 		UUT.reset();
-		assertThrows(UnauthorizedException.class, () -> UUT.receiveCreditCardPayment(1, "4485370086510891"));
+		assertThrows(UnauthorizedException.class, () -> UUT.receiveCreditCardPayment(1, "1122330086610898"));
 	}
 
 	@Test
@@ -3285,10 +3285,10 @@ public class EZShopTest {
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 		// saleId is not valid
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(0, "4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(null, "4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(0, "1122330086610898"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.receiveCreditCardPayment(null, "1122330086610898"));
 		// saleId does not exist
-		assertFalse(UUT.receiveCreditCardPayment(1, "4485370086510891"));
+		assertFalse(UUT.receiveCreditCardPayment(1, "1122330086610898"));
 	}
 
 	@Test
@@ -3335,9 +3335,9 @@ public class EZShopTest {
 		UUT.addProductToSale(saleId, "012345678912", 10);
 		// pay and close the sale
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "1122330086610898");
 		// try to pay for the saleId that is in CLOSED state
-		assertFalse(UUT.receiveCreditCardPayment(saleId, "4485370086510891"));
+		assertFalse(UUT.receiveCreditCardPayment(saleId, "1122330086610898"));
 	}
 
 	@Test
@@ -3362,7 +3362,7 @@ public class EZShopTest {
 		// close the sale
 		UUT.endSaleTransaction(saleId);
 		// credit card is valid does not have enough money
-		assertFalse(UUT.receiveCreditCardPayment(saleId, "4716258050958645"));
+		assertFalse(UUT.receiveCreditCardPayment(saleId, "5550061569269694"));
 	}
 
 	@Test
@@ -3383,7 +3383,7 @@ public class EZShopTest {
 		// add the product to the sale
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		assertTrue(UUT.receiveCreditCardPayment(saleId, "4485370086510891"));
+		assertTrue(UUT.receiveCreditCardPayment(saleId, "1122330086610898"));
 	}
 
 	// --------------- end receiveCreditCardPayment --------------- //
@@ -3481,11 +3481,11 @@ public class EZShopTest {
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(0, "4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(-1, "4485370086510891"));
-		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(null, "4485370086510891"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(0, "1122330086610898"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(-1, "1122330086610898"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(null, "1122330086610898"));
 		// return -1 if the returnId is valid but not in the db
-		assertTrue(UUT.returnCreditCardPayment(1, "4485370086510891") == -1);
+		assertTrue(UUT.returnCreditCardPayment(1, "1122330086610898") == -1);
 	}
 
 	@Test
@@ -3526,9 +3526,9 @@ public class EZShopTest {
 		// return transaction should be in CLOSED state before return cash
 		assertTrue(UUT.returnCashPayment(retId) == -1);
 		UUT.endReturnTransaction(retId, true);
-		UUT.returnCreditCardPayment(retId, "4485370086510891");
+		UUT.returnCreditCardPayment(retId, "1122330086610898");
 		// cannot return cash if the Transaction is not in CLOSED state
-		assertTrue(UUT.returnCreditCardPayment(retId, "4485370086510891") == -1);
+		assertTrue(UUT.returnCreditCardPayment(retId, "1122330086610898") == -1);
 	}
 
 	@Test
@@ -3547,7 +3547,7 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "1122330086610898");
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
 		UUT.returnProduct(retId, "012345678912", 7);
@@ -3574,13 +3574,13 @@ public class EZShopTest {
 		Integer saleId = UUT.startSaleTransaction();
 		UUT.addProductToSale(saleId, "012345678912", 7);
 		UUT.endSaleTransaction(saleId);
-		UUT.receiveCreditCardPayment(saleId, "4485370086510891");
+		UUT.receiveCreditCardPayment(saleId, "1122330086610898");
 		// start return transaction
 		Integer retId = UUT.startReturnTransaction(saleId);
 		UUT.returnProduct(retId, "012345678912", 7);
 		UUT.endReturnTransaction(retId, true);
 		// amount payed == return cash amount
-		assertTrue(UUT.returnCreditCardPayment(retId, "4485370086510891") - 7.70 < 0.000001d);
+		assertTrue(UUT.returnCreditCardPayment(retId, "1122330086610898") - 7.70 < 0.000001d);
 	}
 
 	// --------------- end returnCreditCardPayment --------------- //
