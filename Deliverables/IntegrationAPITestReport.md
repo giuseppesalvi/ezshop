@@ -183,7 +183,77 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 ## Step 3    
 | Classes  | JUnit test cases |
 |--|--|
-| EzShop | testIssueOrderNominalCase|
+|   EzShop   | testResetNominalCase | 
+| | testCreateUserWithInvalidUsername |
+| | testCreateUserWithInvalidPassword |
+| | testCreateUserWithInvalidRole |
+| | testCreateUserWithUsernameAlreadyUsed |
+| | testCreateUserNominalCase |
+| | testDeleteUserWithUnauthorizedUser |
+| | testDeleteUserWithInvalidUserId |
+| | testDeleteUserWithNonExistingUser |
+| | testDeleteUserNominalCase |
+| | testGetAllUsersWithUnauthorizedUser |
+| | testGetAllUsersNominalCase |
+| | testGetUserWithUnauthorizedUser |
+| | testGetUserWithInvalidUserId |
+| | testGetUserWithNonExistingUser |
+| | testGetUserNominalCase |
+| | testUpdateUserRightsWithUnauthorizedUser |
+| | testUpdateUserRightsWithInvalidUserId |
+| | testUpdateUserRightsWithInvalidRole |
+| | testUpdateUserRightsWithNonExistingUser |
+| | testUpdateUserRightsNominalCase |
+| | testLoginWithInvalidUsername |
+| | testLoginWithInvalidPassword |
+| | testLoginWithNonExistingUser |
+| | testLoginWithWrongCredentials |
+| | testLoginNominalCase |
+| | testLogoutWithNoLoggedUser |
+| | testLogoutNominalCase |
+| | testCreateProductTypeNominalCase |
+| | testCreateProductTypeUnauthorized |
+| | testCreateProductTypeInvalidProductCode |
+| | testCreateProductTypeInvalidProductDescription |
+| | testCreateProductTypeInvalidPrice |
+| | testCreateProductTypeBarcodeAlreadyExists |
+| | testUpdateProductNominalCase |
+| | testUpdateProductUnauthorized |
+| | testUpdateProductInvalidProductCode |
+| | testUpdateProductInvalidProductDescription |
+| | testUpdateProductInvalidPrice |
+| | testUpdateProductInvalidId |
+| | testUpdateProductProductNotExists |
+| | testUpdateProductBarcodeAlreadyUsed |
+| | testDeleteProductTypeNominalCase |
+| | testDeleteProductTypeUnauthorized |
+| | testDeleteProductTypeInvalidId |
+| | testDeleteProductTypeProductNotExists |
+| | testGetAllProductTypesNominalCase |
+| | testGetAllProductTypesUnauthorized |
+| | testGetProductTypeByBarcodeNominalCase |
+| | testGetProductTypeByBarcodeUnauthorized |
+| | testGetProductTypeByBarcodeInvalidBarcode |
+| | testGetProductTypeByBarcodeProductNotExists |
+| | testGetProductTypesByDescriptionNominalCase |
+| | testGetProductTypesByDescriptionUnauthorized |
+| | testGetProductTypesByDescriptionProductNotExists |
+| | testGetProductTypesByDescriptionPartialMatch |
+| | testGetProductTypesByDescriptionNullDescription |
+| | testUpdateQuantityNominalCase |
+| | testUpdateQuantityUnauthorized |
+| | testUpdateQuantityInvalidID |
+| | testUpdateQuantityProductNotExists |
+| | testUpdateQuantityProductNegativeQuantity |
+| | testUpdateQuantityProductNoLocation |
+| | testUpdatePositionNominalCase |
+| | testUpdatePostionUnauthorized |
+| | testUpdatePositionInvalidID |
+| | testUpdatePositionProductNotExists |
+| | testUpdatePositionInvalidFormat |
+| | testUpdatePositionNotUnique |
+| | testUpdatePositionNullShouldReset |  
+| | testIssueOrderNominalCase |
 | | testIssueOrderUnauthorized |
 | | testIssueOrderInvalidProductCode |
 | | testIssueOrderInvalidQuantity |
@@ -310,10 +380,38 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testDeleteReturnTransactionWithInvalidTransactionID |
 | | testDeleteReturnTransactionWithNotExistingClosedReturnTransaction |
 | | testDeleteReturnTransactionNominalCase |
-| | |
-
-
-
+| | testReceiveCashPaymentUnauthorizedUser |
+| | testReceiveCashPaymentInvalidCashAmount |
+| | testReceiveCashPaymentInvalidTransactionId |
+| | testReceiveCashPaymentWithNotOpenSaleTransaction |
+| | testReceiveCashPaymentNotEnoughCash |
+| | testReceiveCashPaymentNominalCase |
+| | testReceiveCreditCardPaymentUnauthenticatedUser |
+| | testReceiveCreditCardPaymentInvalidCard |
+| | testReceiveCreditCardPaymentInvalidSaleId |
+| | testReceiveCreditCardPaymentWithNotRegisteredCreditCard |
+| | testReceiveCreditCardPaymentWithNotOpenSaleTransaction |
+| | testReceiveCreditCardPaymentWithNotEnoughMoneyInCard |
+| | testReceiveCreditCardPaymentNominalCase |
+| | testReturnCashPaymentUnauthenticatedUser |
+| | testReturnCashPaymentInvalidReturnId |
+| | testReturnCashPaymentWithNotOpenReturnTransaction |
+| | testReturnCashPaymentNominalCase |
+| | testReturnCreditCardPaymentUnauthenticatedUser |
+| | testReturnCreditCardPaymentInvalidReturnId |
+| | testReturnCreditCardPaymentWithInvalidCreditCard |
+| | testReturnCreditCardPaymentWithNotOpenReturnTransaction |
+| | testReturnCreditCardPaymentWithNotRegisteredCreditCard |
+| | testReturnCreditCardPaymentNominalCase |
+| | testRecordBalanceUpdateUnauthorizedUser |
+| | testRecordBalanceUpdateInvalidAmountToBeAdded |
+| | testRecordBalanceUpdateNominalCase |
+| | testGetCreditsAndDebitsUnauthorizedUser |
+| | testGetCreditsAndDebitsWithNullDates |
+| | testGetCreditsAndDebitsReversedDate |
+| | testGetCreditsAndDebitsNominalCase |
+| | testComputeBalanceUnauthorizedUser |
+| | testComputeBalanceNominalCase |
 
 
 # Scenarios
