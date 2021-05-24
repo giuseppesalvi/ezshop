@@ -319,6 +319,9 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidPricePerUnitException();
 		}
 
+		if (note == null || note.isEmpty())
+			note = description;
+
 		// Check if barcode already exists
 		if (this.products.values().stream()
 				.anyMatch(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))) {
@@ -500,7 +503,7 @@ public class EZShop implements EZShopInterface {
 
 		if (this.products.containsKey(productId) && !this.products.get(productId).getEliminated()) {
 			ProductTypeImpl chosen = this.products.get(productId);
-			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation() == null) {
+			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation().contentEquals(" - - ")) {
 				return false;
 			}
 			chosen.setQuantity(chosen.getQuantity() + toBeAdded);
@@ -527,7 +530,9 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check newPos correctness
-		if (newPos == null || (!newPos.matches("\\d+-[a-zA-Z]+-\\d+") && !newPos.isEmpty())) {
+		if (newPos == null || newPos.isEmpty()){
+			newPos = " - - ";
+		} else if (!newPos.matches("\\d+-[a-zA-Z]+-\\d+")) {
 			throw new InvalidLocationException();
 		}
 
@@ -536,7 +541,8 @@ public class EZShop implements EZShopInterface {
 			if (!chosen.getLocation().contentEquals(newPos)) {
 				// The new location differs from the original one thus we need to check if it is
 				// still unique.
-				if (this.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(newPos)))
+				String finalNewPos = newPos;
+				if (this.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(finalNewPos)))
 					return false;
 			}
 			chosen.setLocation(newPos);

@@ -1,1 +1,1 @@
-{"idgen":1,"products":[]}
+{"idgen":3,"products":[{"eliminated":false,"productCode":"012345678912","notes":"apple","quantity":4,"description":"apple","sellPrice":1.1,"position":"244-aaa-111","id":1},{"eliminated":false,"productCode":"0123456789128","notes":"orange","quantity":17,"description":"orange","sellPrice":1.4,"position":"444-aaa-111","id":2}]}

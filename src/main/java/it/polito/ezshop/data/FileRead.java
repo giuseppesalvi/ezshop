@@ -73,9 +73,9 @@ public class FileRead {
 						currProduct.get("productCode").toString(),
 						currProduct.get("description").toString(),
 						Double.parseDouble(currProduct.get("sellPrice").toString()),
-						currProduct.get("notes").toString(), //May be null
+						currProduct.get("notes").toString(),
 						Integer.parseInt(currProduct.get("quantity").toString()),
-						currProduct.get("position").toString(), //May be null
+						currProduct.get("position").toString(),
 						Boolean.parseBoolean(currProduct.get("eliminated").toString()),
 						Integer.parseInt(currProduct.get("id").toString()));
 				products.put(curr.getId(), curr);

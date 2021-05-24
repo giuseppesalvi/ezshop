@@ -2,7 +2,6 @@ package it.polito.ezshop.test;
 
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -12,12 +11,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class EZShopTest {
-	EZShopInterface UUT;
-
-	@Before
-	public void initialize() {
-		UUT = new EZShop();
-	}
+	EZShopInterface UUT = new EZShop();
 
 	private void createandlog(int level)
 			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
@@ -189,7 +183,7 @@ public class EZShopTest {
 
 	@Test
 	public void testGetAllUsersNominalCase() throws InvalidUsernameException, InvalidPasswordException,
-			InvalidRoleException, UnauthorizedException, InvalidUserIdException {
+			InvalidRoleException, UnauthorizedException {
 		UUT.reset();
 
 		UUT.createUser("admin", "admin", "Administrator");
@@ -266,8 +260,6 @@ public class EZShopTest {
 	// --------------- end getUser --------------- //
 
 	// --------------- updateUserRights --------------- //
-
-	// --------------- getUser --------------- //
 	@Test
 	public void testUpdateUserRightsWithUnauthorizedUser()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
@@ -395,6 +387,618 @@ public class EZShopTest {
 		assertTrue(UUT.logout());
 	}
 	// --------------- end logout --------------- //
+
+	// --------------- createProductType --------------- //
+	@Test
+	public void testCreateProductTypeNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1,
+				(int) UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		ProductType p = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(p);
+		assertEquals("Caffè", p.getProductDescription());
+		assertEquals("Arabica", p.getNote());
+		assertEquals(12.0, p.getPricePerUnit(), 0.0001);
+	}
+
+	@Test
+	public void testCreateProductTypeUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () ->
+				UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+	}
+
+	@Test
+	public void testCreateProductTypeInvalidProductCode() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.createProductType("Caffè", "", 12.0, "Arabica")); //null
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.createProductType("Caffè", null, 12.0, "Arabica")); //empty
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.createProductType("Caffè", "abcdefghilmno", 12.0, "Arabica")); //not a number
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.createProductType("Caffè", "6291041500214", 12.0, "Arabica")); //invalid
+	}
+
+	@Test
+	public void testCreateProductTypeInvalidProductDescription() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertThrows(InvalidProductDescriptionException.class, () ->
+				UUT.createProductType(null, "6291041500213", 12.0, "Arabica")); //null
+		assertThrows(InvalidProductDescriptionException.class, () ->
+				UUT.createProductType("", "6291041500213", 12.0, "Arabica")); //empty
+	}
+
+	@Test
+	public void testCreateProductTypeInvalidPrice() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertThrows(InvalidPricePerUnitException.class, () ->
+				UUT.createProductType("Caffè", "6291041500213", 0, "Arabica"));
+		assertThrows(InvalidPricePerUnitException.class, () ->
+				UUT.createProductType("Caffè", "6291041500213", -12.0, "Arabica"));
+	}
+
+	@Test
+	public void testCreateProductTypeBarcodeAlreadyExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1,
+				(int) UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertEquals(-1,
+				(int) UUT.createProductType("Pasta", "6291041500213", 6.0, "Rigatoni"));
+	}
+	// --------------- end createProductType --------------- //
+
+	// --------------- updateProductType --------------- //
+	@Test
+	public void testUpdateProductNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updateProduct(productID, "Pasta", "563491053110", 6.0, "Penne"));
+		ProductType p = UUT.getProductTypeByBarCode("563491053110");
+		assertEquals("Pasta", p.getProductDescription());
+		assertEquals("Penne", p.getNote());
+		assertEquals(6.0, p.getPricePerUnit(), 0.0001);
+	}
+
+	@Test
+	public void testUpdateProductUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.logout());
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "563491053110", 6.0, "Penne"));
+	}
+
+	@Test
+	public void testUpdateProductInvalidProductCode() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.updateProduct(productID, "Pasta", null, 6.0, "Penne")); //null
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "", 6.0, "Penne")); //empty
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "abcdefghilmno", 6.0, "Penne")); //not a number
+		assertThrows(InvalidProductCodeException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "6291041500214", 6.0, "Penne")); //invalid
+	}
+
+	@Test
+	public void testUpdateProductInvalidProductDescription() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductDescriptionException.class, () ->
+				UUT.updateProduct(productID, null, "563491053110", 6.0, "Penne")); //null
+		assertThrows(InvalidProductDescriptionException.class, () ->
+				UUT.updateProduct(productID, "", "563491053110", 6.0, "Penne")); //empty
+	}
+
+	@Test
+	public void testUpdateProductInvalidPrice() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidPricePerUnitException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "563491053110", 0, "Penne"));
+		assertThrows(InvalidPricePerUnitException.class, () ->
+				UUT.updateProduct(productID, "Pasta", "563491053110", -6.0, "Penne"));
+	}
+
+	@Test
+	public void testUpdateProductInvalidId() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.updateProduct(null, "Pasta", "563491053110", 6.0, "Penne"));
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.updateProduct(0, "Pasta", "563491053110", 6.0, "Penne"));
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.updateProduct(-10, "Pasta", "563491053110", 6.0, "Penne"));
+	}
+
+	@Test
+	public void testUpdateProductProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertFalse(UUT.updateProduct(productID+1, "Pasta", "563491053110", 6.0, "Penne"));
+	}
+
+	@Test
+	public void testUpdateProductBarcodeAlreadyUsed() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertNotEquals(-1, (int)UUT.createProductType("Pane", "563491053110", 0.1, "Filone"));
+		assertFalse(UUT.updateProduct(productID, "Pasta", "563491053110", 6.0, "Penne"));
+	}
+	// --------------- end updateProductType --------------- //
+
+	// --------------- deleteProductType --------------- //
+	@Test
+	public void testDeleteProductTypeNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.deleteProductType(productID));
+		assertNull(UUT.getProductTypeByBarCode("6291041500213"));
+	}
+
+	@Test
+	public void testDeleteProductTypeUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.logout());
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () ->
+				UUT.deleteProductType(productID));
+	}
+
+	@Test
+	public void testDeleteProductTypeInvalidId() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.deleteProductType(null));
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.deleteProductType(0));
+		assertThrows(InvalidProductIdException.class, () ->
+				UUT.deleteProductType(-10));
+	}
+
+	@Test
+	public void testDeleteProductTypeProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductIdException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertFalse(UUT.deleteProductType(productID+1));
+	}
+	// --------------- end deleteProductType --------------- //
+
+	// --------------- getAllProductTypes --------------- //
+	@Test
+	public void testGetAllProductTypesNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertEquals(0, UUT.getAllProductTypes().size());
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Pasta", "563491053110", 6.0, "Penne"));
+		assertEquals(2, UUT.getAllProductTypes().size());
+	}
+
+	@Test
+	public void testGetAllProductTypesUnauthorized() {
+		UUT.reset();
+		assertThrows(UnauthorizedException.class, () -> UUT.getAllProductTypes());
+	}
+	// --------------- end getAllProductTypes --------------- //
+
+	// --------------- getProductTypeByBarCode --------------- //
+	@Test
+	public void testGetProductTypeByBarcodeNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Pasta", "563491053110", 6.0, "Penne"));
+		ProductType p = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(p);
+		assertEquals("Caffè", p.getProductDescription());
+		assertEquals("Arabica", p.getNote());
+		assertEquals(12.0, p.getPricePerUnit(), 0.0001);
+	}
+
+	@Test
+	public void testGetProductTypeByBarcodeUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Pasta", "563491053110", 6.0, "Penne"));
+		UUT.logout();
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () -> UUT.getProductTypeByBarCode("563491053110"));
+	}
+
+	@Test
+	public void testGetProductTypeByBarcodeInvalidBarcode() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Pasta", "563491053110", 6.0, "Penne"));
+		assertThrows(InvalidProductCodeException.class, () -> UUT.getProductTypeByBarCode(""));
+		assertThrows(InvalidProductCodeException.class, () -> UUT.getProductTypeByBarCode(null));
+		assertThrows(InvalidProductCodeException.class, () -> UUT.getProductTypeByBarCode("abcdefghilmn"));
+		assertThrows(InvalidProductCodeException.class, () -> UUT.getProductTypeByBarCode("563491053111"));
+	}
+
+	@Test
+	public void testGetProductTypeByBarcodeProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNull(UUT.getProductTypeByBarCode("563491053110"));
+	}
+	// --------------- end getProductTypeByBarCode --------------- //
+
+	// --------------- getProductTypeByBarCode --------------- //
+	@Test
+	public void testGetProductTypesByDescriptionNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "563491053110", 6.0, "Gold"));
+		List<ProductType> p = UUT.getProductTypesByDescription("Caffè");
+		assertEquals(2, p.size());
+	}
+
+	@Test
+	public void testGetProductTypesByDescriptionUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Pasta", "563491053110", 6.0, "Penne"));
+		UUT.logout();
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () -> UUT.getProductTypesByDescription("Caffè"));
+	}
+
+	@Test
+	public void testGetProductTypesByDescriptionProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertEquals(0, UUT.getProductTypesByDescription("Pasta").size());
+	}
+
+	@Test
+	public void testGetProductTypesByDescriptionPartialMatch() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "563491053110", 6.0, "Gold"));
+		assertEquals(2, UUT.getProductTypesByDescription("C").size());
+	}
+
+	@Test
+	public void testGetProductTypesByDescriptionNullDescription() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica"));
+		assertNotEquals(-1, (int)UUT.createProductType("Caffè", "563491053110", 6.0, "Gold"));
+		assertEquals(2, UUT.getProductTypesByDescription(null).size());
+	}
+	// --------------- end getProductTypesByDescription --------------- //
+
+	// --------------- updateQuantity --------------- //
+	@Test
+	public void testUpdateQuantityNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "444-aaa-111"));
+		assertTrue(UUT.updateQuantity(productID, 12));
+		ProductType p = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(p);
+		assertEquals(12, (int)p.getQuantity());
+	}
+
+	@Test
+	public void testUpdateQuantityUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		UUT.logout();
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () -> UUT.updateQuantity(productID, 12));
+	}
+
+	@Test
+	public void testUpdateQuantityInvalidID() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductIdException.class, () -> UUT.updateQuantity(0, 12));
+		assertThrows(InvalidProductIdException.class, () -> UUT.updateQuantity(null, 12));
+		assertThrows(InvalidProductIdException.class, () -> UUT.updateQuantity(-12, 12));
+	}
+
+	@Test
+	public void testUpdateQuantityProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "444-aaa-111"));
+		assertFalse(UUT.updateQuantity(productID+1, 12));
+	}
+
+	@Test
+	public void testUpdateQuantityProductNegativeQuantity() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "444-aaa-111"));
+		assertFalse(UUT.updateQuantity(productID, -12));
+	}
+
+	@Test
+	public void testUpdateQuantityProductNoLocation() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertFalse(UUT.updateQuantity(productID, 12));
+	}
+	// --------------- end updateQuantity --------------- //
+
+	// --------------- updatePosition --------------- //
+	@Test
+	public void testUpdatePositionNominalCase() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "444-aaa-111"));
+		ProductType p = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(p);
+		assertEquals("444-aaa-111", p.getLocation());
+	}
+
+	@Test
+	public void testUpdatePostionUnauthorized() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		UUT.logout();
+		createandlog(0); //Cashier
+		assertThrows(UnauthorizedException.class, () -> UUT.updatePosition(productID, "111-aaa-222"));
+	}
+
+	@Test
+	public void testUpdatePositionInvalidID() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidProductIdException.class, () -> UUT.updatePosition(0, "111-aaa-222"));
+		assertThrows(InvalidProductIdException.class, () -> UUT.updatePosition(null, "111-aaa-222"));
+		assertThrows(InvalidProductIdException.class, () -> UUT.updatePosition(-12, "111-aaa-222"));
+	}
+
+	@Test
+	public void testUpdatePositionProductNotExists() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertFalse(UUT.updatePosition(productID+1, "444-aaa-111"));
+	}
+
+	@Test
+	public void testUpdatePositionInvalidFormat() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertThrows(InvalidLocationException.class, () -> UUT.updatePosition(productID, "aaa-aaa-111"));
+		assertThrows(InvalidLocationException.class, () -> UUT.updatePosition(productID, "444-123-111"));
+		assertThrows(InvalidLocationException.class, () -> UUT.updatePosition(productID, "444-aaa-22b"));
+		assertThrows(InvalidLocationException.class, () -> UUT.updatePosition(productID, "-aaa-111"));
+		assertThrows(InvalidLocationException.class, () -> UUT.updatePosition(productID, "444aaa111"));
+	}
+
+	@Test
+	public void testUpdatePositionNotUnique() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "123-aaa-111"));
+		int productID2 = UUT.createProductType("Caffè", "563491053110", 12.0, "Gold");
+		assertNotEquals(-1, productID2);
+		assertFalse(UUT.updatePosition(productID2, "123-aaa-111"));
+	}
+
+	@Test
+	public void testUpdatePositionNullShouldReset() throws InvalidPasswordException,
+			InvalidRoleException, InvalidUsernameException,
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidProductIdException, InvalidLocationException {
+		UUT.reset();
+		createandlog(2); //Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		assertTrue(UUT.updatePosition(productID, "123-aaa-111"));
+		ProductType p = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(p);
+		assertEquals("123-aaa-111", p.getLocation());
+
+		assertTrue(UUT.updatePosition(productID, ""));
+		assertEquals(" - - ", p.getLocation());
+
+		assertTrue(UUT.updatePosition(productID, "123-aaa-111"));
+		assertEquals("123-aaa-111", p.getLocation());
+
+		assertTrue(UUT.updatePosition(productID, null));
+		assertEquals(" - - ", p.getLocation());
+	}
+	// --------------- end updatePosition --------------- //
 
 	// --------------- issueOrder --------------- //
 	@Test
@@ -1231,8 +1835,7 @@ public class EZShopTest {
 
 	// --------------- startSaleTransaction --------------- //
 	@Test
-	public void testStartSaleTransactionWithUnauthorizedUser()
-			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+	public void testStartSaleTransactionWithUnauthorizedUser() {
 		UUT.reset();
 
 		// no logged in user
@@ -1400,13 +2003,14 @@ public class EZShopTest {
 	public void testAddProductToSaleNominalScenario()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductIdException,
 			UnauthorizedException, InvalidProductDescriptionException, InvalidProductCodeException,
-			InvalidPricePerUnitException, InvalidTransactionIdException, InvalidQuantityException {
+			InvalidPricePerUnitException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
 		UUT.updateQuantity(productId, 10);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -1417,7 +2021,8 @@ public class EZShopTest {
 		assertEquals((Integer) prod.getQuantity(), (Integer) 3);
 
 		// add another product to the same sale
-		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");
+		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
+		assertTrue(UUT.updatePosition(product2Id, "442-aaa-111"));
 		UUT.updateQuantity(product2Id, 5);
 		assertTrue(UUT.addProductToSale(saleId, "0000000000512", 1));
 		ProductType prod2 = UUT.getProductTypeByBarCode("0000000000512");
@@ -1492,7 +2097,7 @@ public class EZShopTest {
 	public void testDeleteProductFromSaleProductCodeDoesNotExist()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
 			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
-			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException {
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -1565,15 +2170,17 @@ public class EZShopTest {
 	public void testDeleteProductFromSaleTransactionNominalCase()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
 			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
-			UnauthorizedException, InvalidProductIdException, InvalidTransactionIdException, InvalidQuantityException {
+			UnauthorizedException, InvalidProductIdException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer productId1 = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId1, "444-aaa-111"));
 		UUT.updateQuantity(productId1, 10);
 		Integer productId2 = UUT.createProductType("orange", "0123456789128", 1.40, "");
+		assertTrue(UUT.updatePosition(productId2, "424-aaa-111"));
 		UUT.updateQuantity(productId2, 20);
 
 		Integer saleId1 = UUT.startSaleTransaction();
@@ -1716,15 +2323,17 @@ public class EZShopTest {
 	public void testApplyDiscountRateToProductNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, UnauthorizedException, InvalidProductIdException, InvalidProductDescriptionException,
 			InvalidProductCodeException, InvalidPricePerUnitException, InvalidTransactionIdException,
-			InvalidDiscountRateException, InvalidQuantityException {
+			InvalidDiscountRateException, InvalidQuantityException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer productId1 = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId1, "244-aaa-111"));
 		UUT.updateQuantity(productId1, 10);
 		Integer productId2 = UUT.createProductType("orange", "0123456789128", 1.40, "");
+		assertTrue(UUT.updatePosition(productId2, "444-aaa-111"));
 		UUT.updateQuantity(productId2, 20);
 
 		Integer saleId1 = UUT.startSaleTransaction();
@@ -1804,7 +2413,7 @@ public class EZShopTest {
 	public void testApplyDiscountRateToSaleNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, InvalidTransactionIdException, InvalidDiscountRateException, UnauthorizedException,
 			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
-			InvalidProductIdException, InvalidQuantityException, InvalidPaymentException {
+			InvalidProductIdException, InvalidQuantityException {
 		UUT.reset();
 
 		UUT.createUser("admin", "admin", "Administrator");
@@ -1866,7 +2475,7 @@ public class EZShopTest {
 	public void testComputePointsForSaleNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, UnauthorizedException, InvalidProductIdException, InvalidProductDescriptionException,
 			InvalidProductCodeException, InvalidPricePerUnitException, InvalidTransactionIdException,
-			InvalidQuantityException, InvalidDiscountRateException {
+			InvalidQuantityException, InvalidDiscountRateException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -1874,8 +2483,10 @@ public class EZShopTest {
 
 		Integer saleId = UUT.startSaleTransaction();
 		Integer productId1 = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId1, "444-aaa-111"));
 		UUT.updateQuantity(productId1, 10);
 		Integer productId2 = UUT.createProductType("orange", "0123456789128", 1.40, "");
+		assertTrue(UUT.updatePosition(productId2, "443-aaa-111"));
 		UUT.updateQuantity(productId2, 20);
 
 		assertEquals((Integer) UUT.computePointsForSale(saleId), (Integer) 0);
@@ -2003,7 +2614,7 @@ public class EZShopTest {
 	public void testDeleteSaleTransactionNominalCase()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, UnauthorizedException,
 			InvalidTransactionIdException, InvalidProductDescriptionException, InvalidProductCodeException,
-			InvalidPricePerUnitException, InvalidProductIdException, InvalidQuantityException {
+			InvalidPricePerUnitException, InvalidProductIdException, InvalidQuantityException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2016,8 +2627,10 @@ public class EZShopTest {
 		Integer saleId2 = UUT.startSaleTransaction();
 
 		Integer productId1 = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId1, "444-aaa-111"));
 		UUT.updateQuantity(productId1, 10);
 		Integer productId2 = UUT.createProductType("orange", "0123456789128", 1.40, "");
+		assertTrue(UUT.updatePosition(productId2, "434-aaa-111"));
 		UUT.updateQuantity(productId2, 20);
 
 		UUT.addProductToSale(saleId2, "012345678912", 4);
@@ -2296,15 +2909,17 @@ public class EZShopTest {
 	public void testReturnProductNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
 			UnauthorizedException, InvalidProductDescriptionException, InvalidPricePerUnitException,
-			InvalidProductIdException, InvalidPaymentException {
+			InvalidProductIdException, InvalidPaymentException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(prodId, "444-aaa-111"));
 		UUT.updateQuantity(prodId, 10);
 		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		assertTrue(UUT.updatePosition(prodId2, "443-aaa-111"));
 		UUT.updateQuantity(prodId2, 20);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2382,15 +2997,17 @@ public class EZShopTest {
 	public void testEndReturnTransactionNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, InvalidTransactionIdException, UnauthorizedException, InvalidProductIdException,
 			InvalidProductCodeException, InvalidQuantityException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidPaymentException {
+			InvalidPricePerUnitException, InvalidPaymentException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(prodId, "443-aaa-111"));
 		UUT.updateQuantity(prodId, 10);
 		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		assertTrue(UUT.updatePosition(prodId2, "444-aaa-111"));
 		UUT.updateQuantity(prodId2, 20);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2483,15 +3100,17 @@ public class EZShopTest {
 	public void testDeleteReturnTransactionNominalCase() throws InvalidUsernameException, InvalidPasswordException,
 			InvalidRoleException, InvalidTransactionIdException, UnauthorizedException, InvalidProductIdException,
 			InvalidProductCodeException, InvalidQuantityException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidPaymentException {
+			InvalidPricePerUnitException, InvalidPaymentException, InvalidLocationException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(prodId, "444-aaa-111"));
 		UUT.updateQuantity(prodId, 10);
 		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		assertTrue(UUT.updatePosition(prodId2, "434-aaa-111"));
 		UUT.updateQuantity(prodId2, 20);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2588,12 +3207,13 @@ public class EZShopTest {
 	public void testReceiveCashPaymentNotEnoughCash() throws InvalidPasswordException, InvalidRoleException,
 			InvalidUsernameException, UnauthorizedException, InvalidProductIdException, InvalidQuantityException,
 			InvalidTransactionIdException, InvalidProductCodeException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidPaymentException {
+			InvalidPricePerUnitException, InvalidPaymentException, InvalidLocationException {
 		UUT.reset();
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer productId = UUT.createProductType("apple", "012345678912", 2.00, "");
+		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
 		UUT.updateQuantity(productId, 10);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2609,15 +3229,17 @@ public class EZShopTest {
 	public void testReceiveCashPaymentNominalCase() throws InvalidPasswordException, InvalidRoleException,
 			InvalidUsernameException, UnauthorizedException, InvalidProductIdException, InvalidQuantityException,
 			InvalidTransactionIdException, InvalidProductCodeException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidPaymentException {
+			InvalidPricePerUnitException, InvalidPaymentException, InvalidLocationException {
 
 		UUT.reset();
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
 
 		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
 		UUT.updateQuantity(productId, 10);
 		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");
+		assertTrue(UUT.updatePosition(product2Id, "443-aaa-111"));
 		UUT.updateQuantity(product2Id, 5);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2722,7 +3344,7 @@ public class EZShopTest {
 	public void testReceiveCreditCardPaymentWithNotEnoughMoneyInCard()
 			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, InvalidCreditCardException,
 			InvalidTransactionIdException, UnauthorizedException, InvalidQuantityException, InvalidProductCodeException,
-			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException {
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException, InvalidLocationException {
 
 		UUT.reset();
 
@@ -2730,6 +3352,7 @@ public class EZShopTest {
 		UUT.login("manager", "manager");
 
 		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
 		UUT.updateQuantity(productId, 10);
 
 		Integer saleId = UUT.startSaleTransaction();
@@ -2930,7 +3553,7 @@ public class EZShopTest {
 		UUT.returnProduct(retId, "012345678912", 7);
 		UUT.endReturnTransaction(retId, true);
 		// credit card is valid but not registered
-		assertTrue(UUT.returnCreditCardPayment(retId, "5352937369048372") == -1.0);
+		assertTrue(UUT.returnCreditCardPayment(retId, "5352937369048372") == -1);
 
 	}
 

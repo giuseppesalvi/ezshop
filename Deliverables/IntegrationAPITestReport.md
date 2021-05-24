@@ -375,11 +375,10 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 <Report in the following table the coverage of the Non Functional Requirements of the application - only those that can be tested with automated testing frameworks.>
 
-
-### 
-
 | Non Functional Requirement | Test name |
 | -------------------------- | --------- |
 | NRF6 |  testCreateCardNominalCase         |
+
+###
 
 
