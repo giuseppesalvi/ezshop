@@ -2,6 +2,9 @@ package it.polito.ezshop.test;
 
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
@@ -11,7 +14,17 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class EZShopTest {
-	EZShopInterface UUT = new EZShop();
+	EZShopInterface UUT;
+	
+	@Before
+	public void initialize() {
+		UUT = new EZShop();
+	}
+	
+	@After
+	public void restore() {
+		UUT.reset();
+	}
 
 	private void createandlog(int level)
 			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
