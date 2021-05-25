@@ -103,6 +103,7 @@ public class FileReadAndFileWriteTests {
     }
     @Test
     public void testReadWriteCreditCards() {
+    	List<CreditCard> originalCreditCardList = FileRead.readCreditCards();
         List<CreditCard> currentCreditCardList = FileRead.readCreditCards();
         CreditCard card = new CreditCard("1122330086610898",100.0);
         currentCreditCardList.add(card);
@@ -110,5 +111,6 @@ public class FileReadAndFileWriteTests {
         List<CreditCard> readCreditCardList = FileRead.readCreditCards();
         assertEquals(readCreditCardList.get(readCreditCardList.size()-1).getNumber(),card.getNumber());
         UUT.reset();
+        FileWrite.writeCreditCards(originalCreditCardList);
     }
 }
