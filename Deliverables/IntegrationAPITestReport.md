@@ -176,8 +176,15 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 ## Step 2
 | Classes  | JUnit test cases |
 |--|--|
-| FileRead | |
-| FileWrite | |
+| FileRead + FileWrite | testReadAndWriteUsers |
+| | testReadWriteProducts |
+| | testReadWriteOrders |
+| | testReadWriteCustomers |
+| | testReadWriteCards |
+| | testReadWriteSales |
+| | testReadWriteReturns |
+| | testReadWriteOperations |
+| | testReadWriteCreditCards |
 
 
 ## Step 3    
@@ -457,16 +464,37 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Scenario ID | Functional Requirements covered | JUnit  Test(s) | 
 | ----------- | ------------------------------- | ----------- | 
+| 1-1 | FR3 | testCreateProductTypeNominalCase  <br /> testUpdatePositionNominalCase |
+| 1-2 | FR3 | testUpdatePositionNominalCase |
+| 1-3 | FR3 | testUpdateProductNominalCase | 
+| 2-1 | FR1 | testCreateUserNominalCase |
+| 2-2 | FR1 | testDeleteUserNominalCase | 
+| 2-3 | FR1 | testUpdateUserRightsNominalCase | 
 | 3-1 | FR4 | testIssueOrderNominalCase|             
 | 3-2 | FR4 | testPayOrderNominalCase|             
 | 3-3 | FR4 | testRecordOrderArrivalNominalCase | 
 | 3-4 | FR4 | testPayOrderBalanceNotEnough |  
 | 4-1 | FR5 | testDefineCustomerNominalCase|             
-| 4-2 | FR5 | testAttachCardToCustomerNominalCase<br />testModifyCustomerNominalCase|             
+| 4-2 | FR5 | testAttachCardToCustomerNominalCase <br />testModifyCustomerNominalCase|             
 | 4-3 | FR5 | testModifyCustomerModifyCard |             
-| 4-4 | FR5 | testModifyCustomerNominalCase|              
-
-
+| 4-4 | FR5 | testModifyCustomerNominalCase|  
+| 5-1 | FR1 | testLoginNominalCase |
+| 5-2 | FR1 | testLogoutNominalCase |
+| 6-1 | FR6,7 | testReceiveCreditCardPaymentNominalCase |
+| 6-2 | FR6 | testApplyDiscountRateToProductNominalCase | 
+| 6-3 | FR6 | testApplyDiscountRateToSaleNominalCase |
+| 6-4 | FR6 | testComputePointsForSaleNominalCase <br /> testModifyPointsOnCardNominalCase |
+| 6-5 | FR6 | testDeleteSaleTransactionNominalCase | Sale of product type X cancelled
+| 6-6 | FR6,7 | testReceiveCashPaymentNominalCase |
+| 7-1 | FR6,7 | testReceiveCreditCardPaymentNominalCase |
+| 7-2 | FR6,7 | testReceiveCreditCardPaymentInvalidCard |
+| 7-3 | FR6,7 | testReceiveCreditCardPaymentWithNotEnoughMoneyInCard |
+| 7-4 | FR6,7 | testReceiveCashPaymentNominalCase |
+| 8-1 | FR6,7 | testReturnCreditCardPaymentNominalCase |
+| 8-2 | FR6,7 | testReturnCashPaymentNominalCase |
+| 9-1 | FR8 | testGetCreditsAndDebitsNominalCase |
+| 10-1 | FR6,7 | testReturnCreditCardPaymentNominalCase |
+| 10-2 | FR6,7 | testReturnCashPaymentNominalCase |
 
 # Coverage of Non Functional Requirements
 
@@ -475,7 +503,9 @@ Report also for each of the scenarios the (one or more) API JUnit tests that cov
 
 | Non Functional Requirement | Test name |
 | -------------------------- | --------- |
-| NRF6 |  testCreateCardNominalCase         |
+| NRF4 | testCreateProductTypeNominalCase |
+| NFR5 | testReturnCreditCardPaymentNominalCase, testReceiveCreditCardPaymentNominalCase |
+| NRF6 | testCreateCardNominalCase |
 
 ###
 
