@@ -88,6 +88,8 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
+		loggedInUser = null; 
+		
 		users.clear();
 		UserImpl.idGen = 1;
 		FileWrite.writeUsers(this.users);
@@ -119,6 +121,8 @@ public class EZShop implements EZShopInterface {
 		cards.clear();
 		LoyaltyCard.idGen = 1;
 		FileWrite.writeCards(this.cards);
+
+		loggedInUser = null;
 	}
 
 	@Override
@@ -315,6 +319,9 @@ public class EZShop implements EZShopInterface {
 			throw new InvalidPricePerUnitException();
 		}
 
+		if (note == null || note.isEmpty())
+			note = description;
+
 		// Check if barcode already exists
 		if (this.products.values().stream()
 				.anyMatch(p -> (p.getBarCode().contentEquals(productCode) && !p.getEliminated()))) {
@@ -496,7 +503,7 @@ public class EZShop implements EZShopInterface {
 
 		if (this.products.containsKey(productId) && !this.products.get(productId).getEliminated()) {
 			ProductTypeImpl chosen = this.products.get(productId);
-			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation() == null) {
+			if ((chosen.getQuantity() + toBeAdded) < 0 || chosen.getLocation().contentEquals(" - - ")) {
 				return false;
 			}
 			chosen.setQuantity(chosen.getQuantity() + toBeAdded);
@@ -523,7 +530,9 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check newPos correctness
-		if (newPos == null || (!newPos.matches("\\d+-[a-zA-Z]+-\\d+") && !newPos.isEmpty())) {
+		if (newPos == null || newPos.isEmpty()){
+			newPos = " - - ";
+		} else if (!newPos.matches("\\d+-[a-zA-Z]+-\\d+")) {
 			throw new InvalidLocationException();
 		}
 
@@ -532,7 +541,8 @@ public class EZShop implements EZShopInterface {
 			if (!chosen.getLocation().contentEquals(newPos)) {
 				// The new location differs from the original one thus we need to check if it is
 				// still unique.
-				if (this.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(newPos)))
+				String finalNewPos = newPos;
+				if (this.products.values().stream().anyMatch(p -> p.getLocation().contentEquals(finalNewPos)))
 					return false;
 			}
 			chosen.setLocation(newPos);
@@ -812,16 +822,17 @@ public class EZShop implements EZShopInterface {
 							&& this.cards.get(newCustomerCard).getCustomer() == null) {
 						// Double reference
 						chosen.setCard(this.cards.get(newCustomerCard));
-						this.cards.get(newCustomerCard).setCustomer(chosen);
-					}
+						//this.cards.get(newCustomerCard).setCustomer(chosen);
+					} else { return false;}
+
 				} else if (newCustomerCard.isEmpty()) {
 					// Double reference
 					chosen.getCard().setCustomer(null);
 					chosen.setCard(null);
 				} // null case does not modify anything
-
-				return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 			}
+
+			return FileWrite.writeCustomers(this.customers) && FileWrite.writeCards(this.cards);
 		}
 
 		return false;
@@ -924,7 +935,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check card correctness
-		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
+		if (customerCard == null || !customerCard.matches("^[0-9]{10}$") || customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -949,7 +960,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		// Check card correctness
-		if (customerCard != null && !customerCard.matches("^[0-9]{10}$") && !customerCard.isEmpty()) {
+		if (customerCard == null || !customerCard.matches("^[0-9]{10}$") || customerCard.isEmpty()) {
 			throw new InvalidCustomerCardException();
 		}
 
@@ -1033,9 +1044,17 @@ public class EZShop implements EZShopInterface {
 
 		// Add the product to the sale transaction and decrease the amount of product
 		// available on the shelves
-		// If this operation goes wrong, return false
-		if (!sale.addEntry(new TicketEntryImpl(prod.get(), amount))) {
-			return false;
+		// If the product is already present in the transaction update its quantity instead 
+		boolean found = false;
+		for (TicketEntry entry : sale.getEntries()) {
+			if (entry.getBarCode().contentEquals(productCode)) {
+				entry.setAmount(entry.getAmount() + amount);
+				found = true;
+			}
+
+		}
+		if (!found) {
+			sale.addEntry(new TicketEntryImpl(prod.get(), amount));
 		}
 		prod.get().setQuantity(prod.get().getQuantity() - amount);
 
@@ -1093,14 +1112,37 @@ public class EZShop implements EZShopInterface {
 		if (!sale.getState().contentEquals("OPEN")) {
 			return false;
 		}
-
-		// Delete the product from the sale transaction and increase the amount of
-		// product available on the shelves
-		// If this operation goes wrong, return false
-		TicketEntry eliminated = sale.deleteEntry(productCode);
-		if (eliminated == null) {
+		
+		// Check if the quantity of product can satisfy the request
+		boolean toDelete = false;
+		boolean found = false;
+		for(TicketEntry entry : sale.getEntries()) {
+			if (entry.getBarCode().contentEquals(productCode)) {
+				if(entry.getAmount() >= amount) {
+					entry.setAmount(entry.getAmount() - amount);
+					found = true;
+					if(entry.getAmount() == 0) {
+						toDelete = true;
+					}
+				}
+				else {
+					return false;
+				}
+			}
+		}
+		
+		// Check if the product was present in the sale with enough quantity
+		if (found == false) {
 			return false;
 		}
+
+		// Delete the product from the sale transaction if the remaining amount = 0
+		// If this operation goes wrong, return false
+		if (toDelete) {
+			sale.deleteEntry(productCode);
+		}
+
+		// Increase the amount of product available on the shelves
 		prod.get().setQuantity(prod.get().getQuantity() + amount);
 		if (prod.get().getEliminated() ) {
 			prod.get().invertEliminated();
@@ -1281,8 +1323,8 @@ public class EZShop implements EZShopInterface {
 		}
 		SaleTransactionImpl sale = this.sales.get(transactionId);
 
-		// Check if the transactionId identifies an already closed transaction
-		if (sale.getState().contentEquals("CLOSED")) {
+		// Check if the transactionId identifies an already closed or payed transaction
+		if (sale.getState().contentEquals("CLOSED") || sale.getState().contentEquals("PAYED")) {
 			return false;
 		}
 
