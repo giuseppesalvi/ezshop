@@ -320,7 +320,7 @@ public class EZShop implements EZShopInterface {
 		}
 
 		if (note == null || note.isEmpty())
-			note = description;
+			note = "";
 
 		// Check if barcode already exists
 		if (this.products.values().stream()
