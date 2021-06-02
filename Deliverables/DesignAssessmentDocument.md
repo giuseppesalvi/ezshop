@@ -79,11 +79,21 @@ with all elements explosed, all dependencies, NO tangles; and report it here as 
 <Discuss here main differences of the current structure of your project vs the design delivered on April 30>
 <Discuss if the current structure shows weaknesses that should be fixed>
 
-The main difference between the current structure of the project and the design delivered on April 20 is that we moved the EZShop class from the model package to the data package, in order to be compliant to the initial code structure that we received later on. 
+The main difference between the current structure of the project and the design delivered on April 20 
+is that we moved the EZShop class from the model package to the data package, in order to be compliant 
+to the initial code structure that we received later on. 
 For the same reason we also changed a few class names and we included the interface classes in the diagram.
 
-One weakness of our project is the presence of tangles because the classes in the model package implement interfaces that are in the data package. To fix that we could simply move those interfaces in the model package or vice versa those classes to the data package.
+One weakness of our project is the presence of tangles because the classes in the model package implement 
+interfaces that are in the data package. 
+To fix that we could simply move those interfaces in the model package or vice versa those classes to 
+the data package.
 
-A second weakness is the presence of the fat class ezshop in the model package. The reason for this is that inside that class we have many methods (the API methods) with many lines (mainly controls over input) that could be moved in lower classes methods (getters, setters, ...). This would be possible if we changed the signature of those methods, allowing the possibility to throw exceptions or return values instead of void. We could not do that, because those methods needed to be compliant with interfaces and we were not able to change them.
+A second weakness is the presence of the fat class ezshop in the model package. 
+The reason for this is that inside that class we have many methods (the API methods) with many lines 
+(mainly controls over input) that could be moved in lower classes methods (getters, setters, ...). 
+This would be possible if we changed the signature of those methods, allowing the possibility to 
+throw exceptions or return values instead of void. We could not do that, because those methods needed 
+to be compliant with interfaces and we were not able to change them.
 
 ```
