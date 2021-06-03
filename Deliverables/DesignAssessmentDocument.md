@@ -88,6 +88,7 @@ One weakness of our project is the presence of tangles because the classes in th
 interfaces that are in the data package. 
 To fix that we could simply move those interfaces in the model package or vice versa those classes to 
 the data package.
+The following screenshots show the structural over complextity chart and the package level composition view after moving those interfaces in the model package, and, as we expected, the tangles are eliminated.
 ```
 ![Structural_over_complexity_chart_no_tangles](./structural_over_complexity_chart_no_tangles.png)
 ![Package_level_composition_view_no_tangles](./package_level_composition_view_no_tangles.png)
