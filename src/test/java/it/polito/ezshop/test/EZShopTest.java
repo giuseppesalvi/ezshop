@@ -3,6 +3,7 @@ package it.polito.ezshop.test;
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
 
+import it.polito.ezshop.model.ProductTypeImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -2047,6 +2048,133 @@ public class EZShopTest {
 	}
 	// --------------- end addProductToSale --------------- //
 
+	// --------------- addProductToSaleRFID --------------- //
+	@Test
+	public void testAddProductToSaleRFIDWithUnauthorizedUser() {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.addProductToSaleRFID(1, "012345678912"));
+
+	}
+
+	@Test
+	public void testAddProductToSaleRFIDWithInvalidProductCode()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+
+		// null product code
+		assertThrows(InvalidRFIDException.class, () -> UUT.addProductToSaleRFID(1, null));
+
+		// empty product code
+		assertThrows(InvalidRFIDException.class, () -> UUT.addProductToSaleRFID(1, ""));
+
+		// invalid productCode
+		assertThrows(InvalidRFIDException.class, () -> UUT.addProductToSaleRFID(1, "01234567891"));
+	}
+
+	@Test
+	public void testAddProductToSaleRFIDWithInvalidTransactionId()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		// null transaction id
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.addProductToSaleRFID(null, "012345678912"));
+
+		// transaction id <= 0
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.addProductToSaleRFID(0, "012345678912"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.addProductToSaleRFID(-1, "012345678912"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.addProductToSaleRFID(-2, "012345678912"));
+	}
+
+	@Test
+	public void testAddProductToSaleRFIDProductCodeDoesNotExist()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// empty list of products
+		assertFalse(UUT.addProductToSaleRFID(saleId, "000000000010"));
+	}
+
+	@Test
+	public void testAddProductToSaleRFIDTransactionIdDoesNotIdentifyAnOpenTransaction()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException,
+			InvalidPaymentException, InvalidRFIDException, InvalidLocationException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+		UUT.updatePosition(productId, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+
+		// list of sales is empty
+		assertFalse(UUT.addProductToSaleRFID(1, "012345678912"));
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// sale with saleId is closed
+		UUT.endSaleTransaction(saleId);
+		assertFalse(UUT.addProductToSaleRFID(saleId, "000000000010"));
+
+		// sale with saleId is payed
+		UUT.receiveCashPayment(saleId, 100);
+		assertFalse(UUT.addProductToSaleRFID(saleId, "000000000010"));
+	}
+
+	@Test
+	public void testAddProductToSaleRFIDNominalScenario()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductIdException,
+			UnauthorizedException, InvalidProductDescriptionException, InvalidProductCodeException,
+			InvalidPricePerUnitException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
+		UUT.updateQuantity(productId, 10);
+		UUT.updatePosition(productId, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+
+		ProductType p = UUT.getProductTypeByBarCode("012345678912");
+		assertEquals(p.getQuantity(), (Integer) 20);
+		Integer saleId = UUT.startSaleTransaction();
+
+		// add the product to the sale
+		assertTrue(UUT.addProductToSaleRFID(saleId, "000000000012"));
+		assertEquals(p.getQuantity(), (Integer) 19);
+		assertTrue(UUT.addProductToSaleRFID(saleId, "000000000011"));
+		assertEquals(p.getQuantity(), (Integer) 18);
+
+		// add the same product twice
+		assertFalse(UUT.addProductToSaleRFID(saleId, "000000000011"));
+		assertEquals(p.getQuantity(), (Integer) 18);
+	}
+	// --------------- end addProductToSaleRFID --------------- //
+
 	// --------------- deleteProductFromSale --------------- //
 	@Test
 	public void testDeleteProductFromSaleWithUnauthorizedUser() {
@@ -2215,6 +2343,142 @@ public class EZShopTest {
 		assertTrue(UUT.deleteProductFromSale(saleId2, "0123456789128", 3));
 	}
 	// --------------- end deleteProductFromSale --------------- //
+
+	// --------------- deleteProductFromSaleRFID --------------- //
+	@Test
+	public void testDeleteProductFromSaleRFIDWithUnauthorizedUser() {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.deleteProductFromSaleRFID(1, "012345678912"));
+
+	}
+
+	@Test
+	public void testDeleteProductFromSaleRFIDWithInvalidProductCode()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("cashier", "cashier", "Cashier");
+		UUT.login("cashier", "cashier");
+
+		// null product code
+		assertThrows(InvalidRFIDException.class, () -> UUT.deleteProductFromSaleRFID(1, null));
+
+		// empty product code
+		assertThrows(InvalidRFIDException.class, () -> UUT.deleteProductFromSaleRFID(1, ""));
+
+		// invalid productCode
+		assertThrows(InvalidRFIDException.class, () -> UUT.deleteProductFromSaleRFID(1, "00000000001"));
+	}
+
+	@Test
+	public void testDeleteProductFromSaleRFIDWithInvalidTransactionId()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		// null transaction id
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.deleteProductFromSaleRFID(null, "000000000010"));
+
+		// transaction id <= 0
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.deleteProductFromSaleRFID(0, "000000000010"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.deleteProductFromSaleRFID(-1, "000000000010"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.deleteProductFromSaleRFID(-2, "000000000010"));
+	}
+
+	@Test
+	public void testDeleteProductFromSaleRFIDProductCodeDoesNotExist()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidRFIDException, InvalidProductIdException, InvalidLocationException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		// empty list of products
+		assertFalse(UUT.deleteProductFromSaleRFID(saleId, "000000000010"));
+
+		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(prodId, 10);
+		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		UUT.updateQuantity(prodId2, 20);
+		UUT.updatePosition(prodId, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+
+		// product not present
+		assertFalse(UUT.deleteProductFromSaleRFID(saleId, "000000000010"));
+	}
+
+	@Test
+	public void testDeleteProductFromSaleRFIDTransactionIdDoesNotIdentifyAnOpenTransaction()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException,
+			InvalidPaymentException, InvalidRFIDException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(productId, 10);
+
+		// list of sales is empty
+		assertFalse(UUT.deleteProductFromSaleRFID(1, "012345678912"));
+
+		Integer saleId = UUT.startSaleTransaction();
+
+		UUT.addProductToSale(saleId, "012345678912", 5);
+
+		// sale with saleId is closed
+		UUT.endSaleTransaction(saleId);
+		assertFalse(UUT.deleteProductFromSaleRFID(saleId, "012345678912"));
+
+		// sale with saleId is payed
+		UUT.receiveCashPayment(saleId, 100);
+		assertFalse(UUT.deleteProductFromSaleRFID(saleId, "012345678912"));
+	}
+
+	@Test
+	public void testDeleteProductFromSaleRFIDTransactionNominalCase()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
+			UnauthorizedException, InvalidProductIdException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer productId1 = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(productId1, "444-aaa-111"));
+		UUT.updateQuantity(productId1, 10);
+		UUT.updatePosition(productId1, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+		Integer productId2 = UUT.createProductType("orange", "0123456789128", 1.40, "");
+		assertTrue(UUT.updatePosition(productId2, "424-aaa-111"));
+		UUT.updateQuantity(productId2, 20);
+
+		ProductType prod1 = UUT.getProductTypeByBarCode("012345678912");
+		assertEquals(prod1.getQuantity(), (Integer) 20);
+
+		Integer saleId1 = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId1, "012345678912", 5);
+		assertTrue(UUT.addProductToSaleRFID(saleId1, "000000000015"));
+		assertEquals(prod1.getQuantity(), (Integer) 14);
+		assertTrue(UUT.deleteProductFromSaleRFID(saleId1, "000000000015"));
+		assertEquals(prod1.getQuantity(), (Integer) 15);
+	}
+	// --------------- end deleteProductFromSaleRFID --------------- //
 
 	// --------------- applyDisocuntRateToProduct --------------- //
 	@Test
@@ -2944,6 +3208,142 @@ public class EZShopTest {
 		assertTrue(UUT.returnProduct(retId, "012345678912", 2));
 	}
 	// --------------- end returnProduct --------------- //
+
+	// --------------- returnProductRFID --------------- //
+	@Test
+	public void testReturnProductRFIDWithUnauthorizedUser() {
+		UUT.reset();
+
+		// no logged in user
+		assertThrows(UnauthorizedException.class, () -> UUT.returnProductRFID(1, "000000000010"));
+	}
+
+	@Test
+	public void testReturnProductRFIDWithInvalidTransactionID()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("admin", "admin", "Administrator");
+		UUT.login("admin", "admin");
+
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnProductRFID(null, "012345678912"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnProductRFID(0, "012345678912"));
+		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnProductRFID(-1, "012345678912"));
+	}
+
+	@Test
+	public void testReturnProductRFIDWithInvalidRFID()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		assertThrows(InvalidRFIDException.class, () -> UUT.returnProductRFID(1, null));
+		assertThrows(InvalidRFIDException.class, () -> UUT.returnProductRFID(1, ""));
+		assertThrows(InvalidRFIDException.class, () -> UUT.returnProductRFID(1, "0000000010"));
+	}
+
+	@Test
+	public void testReturnProductRFIDWhenTransactionDoesNotExist()
+			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
+			InvalidTransactionIdException, InvalidProductCodeException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(prodId, 10);
+
+		// list of returns is empty
+		assertFalse(UUT.returnProductRFID(1, "000000000010"));
+	}
+
+	@Test
+	public void testReturnProductRFIDWhenProductToBeReturnedDoesNotExist() throws InvalidUsernameException,
+			InvalidPasswordException, InvalidRoleException, InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidQuantityException, UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductIdException, InvalidPaymentException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(prodId, 10);
+
+		// product type not registered
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId, 100);
+
+		Integer retId = UUT.startReturnTransaction(saleId);
+		assertFalse(UUT.returnProductRFID(retId, "000000000009"));
+	}
+
+	@Test
+	public void testReturnProductRFIDWhenProductNotInTheSaleTransaction() throws InvalidUsernameException,
+			InvalidPasswordException, InvalidRoleException, InvalidTransactionIdException, InvalidProductCodeException,
+			InvalidQuantityException, UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductIdException, InvalidPaymentException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		UUT.updateQuantity(prodId, 10);
+		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		UUT.updateQuantity(prodId2, 20);
+		UUT.updatePosition(prodId, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 4);
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId, 100);
+
+		// product not present in the sale transaction
+		Integer retId = UUT.startReturnTransaction(saleId);
+		assertFalse(UUT.returnProductRFID(retId, "000000000010"));
+	}
+
+
+	@Test
+	public void testReturnProductRFIDNominalCase() throws InvalidUsernameException, InvalidPasswordException,
+			InvalidRoleException, InvalidTransactionIdException, InvalidProductCodeException, InvalidQuantityException,
+			UnauthorizedException, InvalidProductDescriptionException, InvalidPricePerUnitException,
+			InvalidProductIdException, InvalidPaymentException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+		UUT.reset();
+
+		UUT.createUser("manager", "manager", "ShopManager");
+		UUT.login("manager", "manager");
+
+		Integer prodId = UUT.createProductType("apple", "012345678912", 1.10, "");
+		assertTrue(UUT.updatePosition(prodId, "444-aaa-111"));
+		UUT.updateQuantity(prodId, 10);
+		Integer prodId2 = UUT.createProductType("apple", "0123456789128", 1.30, "");
+		assertTrue(UUT.updatePosition(prodId2, "443-aaa-111"));
+		UUT.updateQuantity(prodId2, 20);
+		UUT.updatePosition(prodId, "213-abc-123");
+		assertTrue(UUT.recordBalanceUpdate(100));
+		int orderId = UUT.payOrderFor("012345678912",10, 1.20 );
+		assertTrue(UUT.recordOrderArrivalRFID(orderId, "000000000010"));
+
+		Integer saleId = UUT.startSaleTransaction();
+		UUT.addProductToSale(saleId, "012345678912", 4);
+		UUT.addProductToSaleRFID(saleId, "000000000011");
+		UUT.endSaleTransaction(saleId);
+		UUT.receiveCashPayment(saleId, 100);
+
+		Integer retId = UUT.startReturnTransaction(saleId);
+		assertTrue(UUT.returnProductRFID(retId, "000000000011"));
+	}
+	// --------------- end returnProductRFID --------------- //
 
 	// --------------- endReturnTransaction --------------- //
 	@Test

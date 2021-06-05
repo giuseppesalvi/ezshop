@@ -27,8 +27,9 @@ public class ReturnTransaction {
 	}
 
 	public ReturnTransaction(Integer returnID, SaleTransactionImpl transaction, List<TicketEntryImpl> products,
-			String state, boolean commit, Double value) {
+			String state, boolean commit, Double value, List<Product> productsRFID) {
 		this.returnID = returnID;
+		this.productsRFID = productsRFID;
 		this.transaction = transaction;
 		this.products = products;
 		this.state = state;
@@ -92,13 +93,15 @@ public class ReturnTransaction {
 			// For each product add its price after discount * its quantity
 			amount += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate()) * prod.getAmount();
 		}
-		for (Product prod : productsRFID){
-			// Check if this productType has a discount
-			Optional<TicketEntryImpl> t = products.stream().filter(a -> a.getBarCode().contentEquals(prod.getProductType().getBarCode())).findFirst();
-			if (t.isPresent()) {
-				amount += prod.getProductType().getPricePerUnit() * (1.00 - t.get().getDiscountRate());
-			} else {
-				amount += prod.getProductType().getPricePerUnit();
+		if (productsRFID != null) {
+			for (Product prod : productsRFID) {
+				// Check if this productType has a discount
+				Optional<TicketEntryImpl> t = products.stream().filter(a -> a.getBarCode().contentEquals(prod.getProductType().getBarCode())).findFirst();
+				if (t.isPresent()) {
+					amount += prod.getProductType().getPricePerUnit() * (1.00 - t.get().getDiscountRate());
+				} else {
+					amount += prod.getProductType().getPricePerUnit();
+				}
 			}
 		}
 		// Apply sale DiscountRate
@@ -147,5 +150,9 @@ public class ReturnTransaction {
 
 	public List<Product> getProductsRFID() {
 		return productsRFID;
+	}
+
+	public void setProductsRFID(List<Product> productsRFID) {
+		this.productsRFID = productsRFID;
 	}
 }

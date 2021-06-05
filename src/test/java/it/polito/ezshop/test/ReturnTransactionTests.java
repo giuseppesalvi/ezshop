@@ -29,7 +29,7 @@ public class ReturnTransactionTests {
 		products.add(t1);
 		products.add(t2);
 		ReturnTransaction ret1 = new ReturnTransaction(sale1);
-		ReturnTransaction ret2 = new ReturnTransaction(10, sale1, products, "OPEN", false, 0.0);
+		ReturnTransaction ret2 = new ReturnTransaction(10, sale1, products, "OPEN", false, 0.0, null);
 		assertEquals((Integer)ret2.getReturnID(), (Integer)10);
 		assertEquals(ret1.getTransaction(), sale1);
 		ret1.setTransaction(sale2);

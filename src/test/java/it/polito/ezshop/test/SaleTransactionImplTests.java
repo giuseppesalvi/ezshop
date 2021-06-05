@@ -53,7 +53,7 @@ public class SaleTransactionImplTests {
 		sale1.setTime(nowT);
 		assertEquals(sale1.getTime(), nowT);
 		
-		SaleTransactionImpl sale2 = new SaleTransactionImpl(12, products, 0.0, "OPEN", null, null, 0.0, null, null);
+		SaleTransactionImpl sale2 = new SaleTransactionImpl(12, products, 0.0, "OPEN", null, null, 0.0, null, null, null);
 		sale2.setEntries(null);
 		assertEquals(sale2.getEntries().size(), 0);
 

@@ -29,6 +29,7 @@ public class EZShop implements EZShopInterface {
 		this.returns = FileRead.readReturns();
 		this.customers = FileRead.readCustomers();
 		this.cards = FileRead.readCards();
+		this.productsRFID = FileRead.readProductsRFID();
 		this.loggedInUser = null;
 
 		// Restore references between classes
@@ -57,6 +58,11 @@ public class EZShop implements EZShopInterface {
 			ord.setProduct(this.products.get(ord.getProduct().getId()));
 		}
 
+		// this.productsRFID -> productType
+		for (Product p: this.productsRFID.values()) {
+			p.setProductType(this.products.get(p.getProductType().getId()));
+		}
+
 		// this.sales -> productType
 		for (SaleTransactionImpl sal : this.sales.values()) {
 			List<TicketEntry> newEntries = new ArrayList<>();
@@ -68,6 +74,9 @@ public class EZShop implements EZShopInterface {
 				newEntries.add(new TicketEntryImpl(pro.get(), ent.getAmount(), ent.getDiscountRate()));
 			}
 			sal.setEntries(newEntries);
+			for (Product p: sal.getProductsRFID()){
+				p.setProductType(productsRFID.get(p.getRFID()).getProductType());
+			}
 		}
 
 		// this.returns -> productType
@@ -77,6 +86,9 @@ public class EZShop implements EZShopInterface {
 				Optional<ProductTypeImpl> pro = this.products.values().stream()
 						.filter(p -> p.getBarCode().contentEquals(ent.getBarCode())).findFirst();
 				ent.setProduct(pro.get());
+			}
+			for (Product p: ret.getProductsRFID()){
+				p.setProductType(productsRFID.get(p.getRFID()).getProductType());
 			}
 		}
 
@@ -422,7 +434,12 @@ public class EZShop implements EZShopInterface {
 			this.products.get(id).invertEliminated();
 			this.products.get(id).setQuantity(0);
 			this.products.get(id).setLocation(" - - ");
-			return FileWrite.writeProducts(this.products);
+			for (Map.Entry<String, Product> p: productsRFID.entrySet()){
+				if (p.getValue().getProductType().equals(products.get(id))){
+					productsRFID.remove(p.getKey());
+				}
+			}
+			return (FileWrite.writeProducts(this.products) && FileWrite.writeProductsRFID(this.productsRFID));
 		}
 
 		return false;

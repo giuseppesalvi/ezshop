@@ -4,15 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import it.polito.ezshop.model.BalanceOperationImpl;
-import it.polito.ezshop.model.CreditCard;
-import it.polito.ezshop.model.CustomerImpl;
-import it.polito.ezshop.model.LoyaltyCard;
-import it.polito.ezshop.model.OrderImpl;
-import it.polito.ezshop.model.ProductTypeImpl;
-import it.polito.ezshop.model.ReturnTransaction;
-import it.polito.ezshop.model.SaleTransactionImpl;
-import it.polito.ezshop.model.UserImpl;
+
+import it.polito.ezshop.model.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -200,7 +193,14 @@ public class FileWrite {
 				prodJSON.put("discountRate", prod.getDiscountRate());
 				listProductsJSON.add(prodJSON);
 			}
+			JSONArray listProductRFIDJSON = new JSONArray();
+			for (Product p: sale.getProductsRFID()){
+				JSONObject pJSON = new JSONObject();
+				pJSON.put("RFID", p.getRFID());
+				listProductRFIDJSON.add(pJSON);
+			}
 			saleJSON.put("products", listProductsJSON);
+			saleJSON.put("productsRFID", listProductRFIDJSON);
 			listSalesJSON.add(saleJSON);
 		}
 
@@ -240,7 +240,14 @@ public class FileWrite {
 				prodJSON.put("discountRate", prod.getDiscountRate());
 				listProductsJSON.add(prodJSON);
 			}
+			JSONArray listProductRFIDJSON = new JSONArray();
+			for (Product p: ret.getProductsRFID()){
+				JSONObject pJSON = new JSONObject();
+				pJSON.put("RFID", p.getRFID());
+				listProductRFIDJSON.add(pJSON);
+			}
 			retJSON.put("products", listProductsJSON);
+			retJSON.put("productsRFID", listProductRFIDJSON);
 			listReturnsJSON.add(retJSON);
 		}
 
@@ -300,4 +307,23 @@ public class FileWrite {
 		return true;
 	}
 
+	public static boolean writeProductsRFID(Map<String, Product> productsRFID){
+		JSONObject obj = new JSONObject();
+		JSONArray listProductsRFID = new JSONArray();
+		for (Product p : productsRFID.values()) {
+			JSONObject jsonProductRFID = new JSONObject();
+			jsonProductRFID.put("productId", p.getProductType().getId());
+			jsonProductRFID.put("RFID",p.getRFID());
+			listProductsRFID.add(jsonProductRFID);
+		}
+		obj.put("productsRFID", listProductsRFID);
+
+		try (FileWriter file = new FileWriter("db/productsRFID.json")) {
+			file.write(obj.toJSONString());
+		} catch (IOException e) {
+			return false;
+		}
+
+		return true;
+	}
 }
