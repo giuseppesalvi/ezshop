@@ -17,6 +17,7 @@ public class EZShop implements EZShopInterface {
 	private HashMap<Integer, ReturnTransaction> returns;
 	private HashMap<Integer, CustomerImpl> customers;
 	private HashMap<String, LoyaltyCard> cards;
+	private HashMap<String, Product> productsRFID;
 	private User loggedInUser;
 
 	public EZShop() {
@@ -1044,7 +1045,7 @@ public class EZShop implements EZShopInterface {
 
 		// Add the product to the sale transaction and decrease the amount of product
 		// available on the shelves
-		// If the product is already present in the transaction update its quantity instead 
+		// If the product is already present in the transaction update its quantity instead
 		boolean found = false;
 		for (TicketEntry entry : sale.getEntries()) {
 			if (entry.getBarCode().contentEquals(productCode)) {
@@ -1377,6 +1378,14 @@ public class EZShop implements EZShopInterface {
 			}
 		}
 
+		for (Product p: sale.getProductsRFID()){
+			p.getProductType().setQuantity(p.getProductType().getQuantity()+1);
+			if (p.getProductType().getEliminated() ) {
+				p.getProductType().invertEliminated();
+			}
+			productsRFID.put(p.getRFID(),p);
+		}
+
 		// Delete the sale from the map
 		this.sales.remove(saleNumber);
 
@@ -1563,6 +1572,15 @@ public class EZShop implements EZShopInterface {
 				}
 			}
 
+			// Increase the product quantity and add them to the map
+			for (Product p: ret.getProductsRFID()){
+				productsRFID.put(p.getRFID(), p);
+				p.getProductType().setQuantity(p.getProductType().getQuantity() + 1);
+				if (p.getProductType().getEliminated()){
+					p.getProductType().invertEliminated();
+				}
+			}
+
 			// Update the sale transaction status: decrease the number of units sold by the
 			// number of returned one
 			for (TicketEntry sold : ret.getTransaction().getEntries()) {
@@ -1571,6 +1589,11 @@ public class EZShop implements EZShopInterface {
 						sold.setAmount(sold.getAmount() - returned.getAmount());
 					}
 				}
+			}
+
+			// update transaction
+			for (Product p: ret.getProductsRFID()){
+				ret.getTransaction().deleteProductsRFID(p.getRFID());
 			}
 
 			// Recompute the final price of the sale transaction
@@ -1637,6 +1660,15 @@ public class EZShop implements EZShopInterface {
 				}
 			}
 
+			// Decrease the product quantity and add them to the map
+			for (Product p: ret.getProductsRFID()){
+				productsRFID.remove(p.getRFID());
+				p.getProductType().setQuantity(p.getProductType().getQuantity() - 1);
+				if (p.getProductType().getQuantity() == 0){
+					p.getProductType().invertEliminated();
+				}
+			}
+
 			// Update the sale transaction status: increase the number of units sold by the
 			// number of returned one
 			for (TicketEntry sold : ret.getTransaction().getEntries()) {
@@ -1645,6 +1677,11 @@ public class EZShop implements EZShopInterface {
 						sold.setAmount(sold.getAmount() + returned.getAmount());
 					}
 				}
+			}
+
+			// update sale transaction
+			for (Product p: ret.getProductsRFID()){
+				ret.getTransaction().addProductsRFID(p);
 			}
 
 			// Recompute the final price of the sale transaction
@@ -1965,31 +2002,213 @@ public class EZShop implements EZShopInterface {
     @Override
     public boolean recordOrderArrivalRFID(Integer orderId, String RFIDfrom) throws InvalidOrderIdException, UnauthorizedException, 
 InvalidLocationException, InvalidRFIDException {
-        return false;
+		// Check access rights
+		if (this.loggedInUser == null ||
+				(!this.loggedInUser.getRole().contentEquals("Administrator")
+						&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
+			throw new UnauthorizedException();
+		}
+
+		// Check id correctness
+		if (orderId == null || orderId <= 0) {
+			throw new InvalidOrderIdException();
+		}
+
+		// Check RFID correctness
+		if (RFIDfrom == null || RFIDfrom.length() != 12){
+			throw new InvalidRFIDException();
+		}
+
+		// Check presence of the specified order
+		if (!this.orders.containsKey(orderId)) {
+			return false;
+		}
+
+		OrderImpl chosen = this.orders.get(orderId);
+
+		if (chosen.getProduct().getEliminated()){
+			chosen.getProduct().invertEliminated();
+		}
+
+		// Check location of product
+		if (chosen.getProduct().getLocation() == null ||
+				chosen.getProduct().getLocation().contentEquals(" - - ")) {
+			throw new InvalidLocationException();
+		}
+
+		Integer RFIDstart = Integer.parseInt(RFIDfrom);
+		for (int i = RFIDstart; i < (RFIDstart + chosen.getQuantity()); i++) {
+			// Check RFID uniqueness
+			if (productsRFID.containsKey(String.format("%012d", i))) {
+				throw new InvalidRFIDException();
+			}
+		}
+
+		if (chosen.getStatus().contentEquals("PAYED")) {
+			// Update quantity in inventory
+			for (int i = RFIDstart; i < (RFIDstart + chosen.getQuantity()); i++) {
+				productsRFID.put(String.format("%012d", i), new Product(chosen.getProduct(), String.format("%012d", i)));
+			}
+			chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
+			chosen.setStatus("COMPLETED");
+			return FileWrite.writeOrders(this.orders) && FileWrite.writeProducts(this.products);
+		} else
+			return chosen.getStatus().contentEquals("COMPLETED");
     }
-    
 
     @Override
     public boolean addProductToSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
-    }
-    
+		// Check user role
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
+			throw new UnauthorizedException();
+		}
 
+		// Check transactionId
+		if (transactionId == null || transactionId <= 0) {
+			throw new InvalidTransactionIdException();
+		}
+
+		// Check RFID correctness
+		if (RFID == null || RFID.length() != 12){
+			throw new InvalidRFIDException();
+		}
+
+		if (!productsRFID.containsKey(RFID)) {return false;}
+
+		// Retrieve the correct product
+		ProductTypeImpl prod = productsRFID.get(RFID).getProductType();
+
+		// Check if the product exists in the map and the quantity available is enough
+		if (prod.getEliminated() || prod.getQuantity() == 0) {
+			return false;
+		}
+
+		// Check if the transactionId identifies a started transaction
+		if (!this.sales.containsKey(transactionId)) {
+			return false;
+		}
+		SaleTransactionImpl sale = this.sales.get(transactionId);
+
+		// Check if the transactionId identifies an open transaction
+		if (!sale.getState().contentEquals("OPEN")) {
+			return false;
+		}
+
+		prod.setQuantity(prod.getQuantity() - 1);
+		sale.addProductsRFID(productsRFID.get(RFID));
+		productsRFID.remove(RFID);
+
+		// Store changes in persistent memory
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
+			return false;
+		} else {
+			return true;
+		}
+    }
 
     @Override
-    public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException{
-        return false;
-    }
+    public boolean deleteProductFromSaleRFID(Integer transactionId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, InvalidQuantityException, UnauthorizedException {
+		// Check user role
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
+			throw new UnauthorizedException();
+		}
 
-    
+		// Check transactionId
+		if (transactionId == null || transactionId <= 0) {
+			throw new InvalidTransactionIdException();
+		}
+
+		// Check RFID correctness
+		if (RFID == null || RFID.length() != 12){
+			throw new InvalidRFIDException();
+		}
+
+		// Check if the transactionId identifies a started transaction
+		if (!this.sales.containsKey(transactionId)) {
+			return false;
+		}
+		SaleTransactionImpl sale = this.sales.get(transactionId);
+
+		// Check if the transactionId identifies an open transaction
+		if (!sale.getState().contentEquals("OPEN")) {
+			return false;
+		}
+
+		if (sale.getProductsRFID().stream().noneMatch(a -> a.getRFID().contentEquals(RFID))){
+			return false;
+		}
+
+		Product p = sale.deleteProductsRFID(RFID);
+
+		// Increase the amount of product available on the shelves
+		p.getProductType().setQuantity(p.getProductType().getQuantity() + 1);
+		productsRFID.put(p.getRFID(), p);
+		if (p.getProductType().getEliminated() ) {
+			p.getProductType().invertEliminated();
+		}
+
+		// Store changes in persistent memory
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
 
     @Override
     public boolean returnProductRFID(Integer returnId, String RFID) throws InvalidTransactionIdException, InvalidRFIDException, UnauthorizedException 
     {
-        return false;
+		// Check user role
+		if (this.loggedInUser == null || (!this.loggedInUser.getRole().contentEquals("Administrator")
+				&& !this.loggedInUser.getRole().contentEquals("Cashier")
+				&& !this.loggedInUser.getRole().contentEquals("ShopManager"))) {
+			throw new UnauthorizedException();
+		}
+
+		// Check returnId
+		if (returnId == null || returnId <= 0) {
+			throw new InvalidTransactionIdException();
+		}
+
+		// Check RFID correctness
+		if (RFID == null || RFID.length() != 12){
+			throw new InvalidRFIDException();
+		}
+
+		// Check if the return transaction exists
+		if (!this.returns.containsKey(returnId)) {
+			return false;
+		}
+		ReturnTransaction ret = this.returns.get(returnId);
+
+		// Check if the product to be returned is in the Sale Transaction
+		Product productSold = null;
+		for (Product e : ret.getTransaction().getProductsRFID()) {
+			if (e.getRFID().contentEquals(RFID)) {
+				productSold = e;
+			}
+		}
+		if (productSold == null) {
+			return false;
+		}
+
+
+		// Add the product in the return transaction
+		// Set its discount rate equal to the one when it was sold
+		ret.addProductsRFID(productSold);
+
+		// Note: this method doesn't update the productType quantity
+		// Store changes in persistent memory
+		if (!FileWrite.writeReturns(this.returns)) {
+			return false;
+		} else {
+			return true;
+		}
     }
-
-
 
 	@Override
 	public double computeBalance() throws UnauthorizedException {
