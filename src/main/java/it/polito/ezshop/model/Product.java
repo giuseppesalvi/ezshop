@@ -11,11 +11,6 @@ public class Product {
         this.RFID = RFID;
     }
 
-    public Product(String RFID) {
-        this.RFID = RFID;
-        this.productType = null;
-    }
-
     public ProductTypeImpl getProductType() {
         return productType;
     }

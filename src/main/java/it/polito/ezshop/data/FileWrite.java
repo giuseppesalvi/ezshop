@@ -197,6 +197,7 @@ public class FileWrite {
 			for (Product p: sale.getProductsRFID()){
 				JSONObject pJSON = new JSONObject();
 				pJSON.put("RFID", p.getRFID());
+				pJSON.put("productID", p.getProductType().getId());
 				listProductRFIDJSON.add(pJSON);
 			}
 			saleJSON.put("products", listProductsJSON);
@@ -244,6 +245,7 @@ public class FileWrite {
 			for (Product p: ret.getProductsRFID()){
 				JSONObject pJSON = new JSONObject();
 				pJSON.put("RFID", p.getRFID());
+				pJSON.put("productID", p.getProductType().getId());
 				listProductRFIDJSON.add(pJSON);
 			}
 			retJSON.put("products", listProductsJSON);

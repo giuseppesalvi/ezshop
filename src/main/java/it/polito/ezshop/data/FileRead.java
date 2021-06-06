@@ -227,7 +227,9 @@ public class FileRead {
 				List<TicketEntry> products = new ArrayList<TicketEntry>();
 				List<Product> productsRFID = new ArrayList<>();
 				for (JSONObject productRFIDJSON : (Iterable<JSONObject>) listProductsRFIDJSON) {
-					Product prod = new Product(productRFIDJSON.get("RFID").toString());
+					Product prod = new Product(
+							new ProductTypeImpl(Integer.parseInt(productRFIDJSON.get("productID").toString())),
+							productRFIDJSON.get("RFID").toString());
 					productsRFID.add(prod);
 				}
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
@@ -282,7 +284,9 @@ public class FileRead {
 				List<TicketEntryImpl> products = new ArrayList<TicketEntryImpl>();
 				List<Product> productsRFID = new ArrayList<>();
 				for (JSONObject productRFIDJSON : (Iterable<JSONObject>) listProductsRFIDJSON) {
-					Product prod = new Product(productRFIDJSON.get("RFID").toString());
+					Product prod = new Product(
+							new ProductTypeImpl(Integer.parseInt(productRFIDJSON.get("productID").toString())),
+							productRFIDJSON.get("RFID").toString());
 					productsRFID.add(prod);
 				}
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {

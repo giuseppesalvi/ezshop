@@ -3,7 +3,6 @@ package it.polito.ezshop.test;
 import it.polito.ezshop.data.*;
 import it.polito.ezshop.exceptions.*;
 
-import it.polito.ezshop.model.ProductTypeImpl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -1343,6 +1342,157 @@ public class EZShopTest {
 	}
 	// --------------- end recordOrderArrival --------------- //
 
+	// --------------- recordOrderArrivalRFID --------------- //
+	@Test
+	public void testRecordOrderArrivalRFIDNominalCase()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidQuantityException, InvalidOrderIdException, InvalidLocationException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+		assertTrue(UUT.recordBalanceUpdate(120.0));
+		assertTrue(UUT.payOrder(orderID));
+		assertEquals(0.00, UUT.computeBalance(), 0.001);
+		assertTrue(UUT.updatePosition(productID, "123-abc-123"));
+		assertTrue(UUT.recordOrderArrivalRFID(orderID, "000000000010"));
+		ProductType pr = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(pr);
+		assertEquals(12, (int) pr.getQuantity());
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDUnauthorized()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
+		UUT.reset();
+		// No user logged
+		assertThrows(UnauthorizedException.class, () -> UUT.recordOrderArrivalRFID(12, "000000000010"));
+		createandlog(0); // Cashier
+		assertThrows(UnauthorizedException.class, () -> UUT.recordOrderArrivalRFID(12, "000000000010"));
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDInvalidOrderID() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidOrderIdException, InvalidLocationException, InvalidRFIDException {
+		UUT.reset();
+		createandlog(2); // Admin
+		assertThrows(InvalidOrderIdException.class, () -> UUT.recordOrderArrivalRFID(null, "000000000010"));
+		assertThrows(InvalidOrderIdException.class, () -> UUT.recordOrderArrivalRFID(0, "000000000010"));
+		assertFalse(UUT.recordOrderArrivalRFID(12, "000000000010"));
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDInvalidRFID() throws InvalidPasswordException, InvalidRoleException,
+			InvalidUsernameException, UnauthorizedException, InvalidOrderIdException, InvalidLocationException, InvalidRFIDException, InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException, InvalidQuantityException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+		assertTrue(UUT.recordBalanceUpdate(120.0));
+		assertTrue(UUT.payOrder(orderID));
+		assertEquals(0.00, UUT.computeBalance(), 0.001);
+
+		assertThrows(InvalidOrderIdException.class, () -> UUT.recordOrderArrivalRFID(null, "000000000010"));
+		assertThrows(InvalidOrderIdException.class, () -> UUT.recordOrderArrivalRFID(0, "000000000010"));
+		assertFalse(UUT.recordOrderArrivalRFID(12, "000000000010"));
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDLocationNotExists()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidQuantityException, InvalidOrderIdException, InvalidLocationException, InvalidProductIdException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+		assertTrue(UUT.updatePosition(productID, "123-abc-123"));
+		assertTrue(UUT.recordBalanceUpdate(120.0));
+		assertTrue(UUT.payOrder(orderID));
+		assertEquals(0.00, UUT.computeBalance(), 0.001);
+		assertThrows(InvalidRFIDException.class, () -> UUT.recordOrderArrivalRFID(orderID, "00000000001"));
+		assertThrows(InvalidRFIDException.class, () -> UUT.recordOrderArrivalRFID(orderID, null));
+		assertThrows(InvalidRFIDException.class, () -> UUT.recordOrderArrivalRFID(orderID, "abcd"));
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDAlreadyArrived()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidQuantityException, InvalidOrderIdException, InvalidLocationException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+		assertTrue(UUT.recordBalanceUpdate(120.0));
+		assertTrue(UUT.payOrder(orderID));
+		assertEquals(0.00, UUT.computeBalance(), 0.001);
+		assertTrue(UUT.updatePosition(productID, "123-abc-123"));
+		assertTrue(UUT.recordOrderArrivalRFID(orderID, "000000000010"));
+		ProductType pr = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(pr);
+		assertEquals(12, (int) pr.getQuantity());
+
+		assertThrows(InvalidRFIDException.class, () -> UUT.recordOrderArrivalRFID(orderID, "000000000010"));
+		assertEquals(12, (int) pr.getQuantity()); // Quantity does not change
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDAlreadyPresent()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidQuantityException, InvalidOrderIdException, InvalidLocationException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+
+		int orderID2 = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+
+		assertTrue(UUT.recordBalanceUpdate(240.0));
+		assertTrue(UUT.payOrder(orderID));
+		assertTrue(UUT.payOrder(orderID2));
+		assertEquals(0.00, UUT.computeBalance(), 0.001);
+		assertTrue(UUT.updatePosition(productID, "123-abc-123"));
+
+		assertTrue(UUT.recordOrderArrivalRFID(orderID, "000000000010"));
+		ProductType pr = UUT.getProductTypeByBarCode("6291041500213");
+		assertNotNull(pr);
+		assertEquals(12, (int) pr.getQuantity());
+
+		assertThrows(InvalidRFIDException.class, () -> UUT.recordOrderArrivalRFID(orderID, "000000000013"));
+		assertEquals(12, (int) pr.getQuantity()); // Quantity does not change
+	}
+
+	@Test
+	public void testRecordOrderArrivalRFIDNotPayed()
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException, UnauthorizedException,
+			InvalidProductDescriptionException, InvalidPricePerUnitException, InvalidProductCodeException,
+			InvalidQuantityException, InvalidOrderIdException, InvalidLocationException, InvalidProductIdException, InvalidRFIDException {
+		UUT.reset();
+		createandlog(2); // Admin
+		int productID = UUT.createProductType("Caffè", "6291041500213", 12.0, "Arabica");
+		assertNotEquals(-1, productID);
+		int orderID = UUT.issueOrder("6291041500213", 12, 10.0);
+		assertNotEquals(-1, orderID);
+		assertTrue(UUT.recordBalanceUpdate(120.0));
+		assertTrue(UUT.updatePosition(productID, "123-abc-123"));
+		assertFalse(UUT.recordOrderArrivalRFID(orderID, "000000000010"));
+	}
+	// --------------- end recordOrderArrivalRFID --------------- //
+
 	// --------------- getAllOrders --------------- //
 	@Test
 	public void testGetAllOrdersNominalCase() throws InvalidRoleException, InvalidPasswordException,
@@ -2032,7 +2182,7 @@ public class EZShopTest {
 		// add the product to the sale
 		assertTrue(UUT.addProductToSale(saleId, "012345678912", 7));
 		ProductType prod = UUT.getProductTypeByBarCode("012345678912");
-		assertEquals((Integer) prod.getQuantity(), (Integer) 3);
+		assertEquals( prod.getQuantity(), (Integer) 3);
 
 		// add another product to the same sale
 		Integer product2Id = UUT.createProductType("orange", "0000000000512", 1.30, "");		assertTrue(UUT.updatePosition(productId, "444-aaa-111"));
@@ -2040,11 +2190,11 @@ public class EZShopTest {
 		UUT.updateQuantity(product2Id, 5);
 		assertTrue(UUT.addProductToSale(saleId, "0000000000512", 1));
 		ProductType prod2 = UUT.getProductTypeByBarCode("0000000000512");
-		assertEquals((Integer) prod2.getQuantity(), (Integer) 4);
+		assertEquals( prod2.getQuantity(), (Integer) 4);
 
 		// add the same product twice
 		assertTrue(UUT.addProductToSale(saleId, "012345678912", 2));
-		assertEquals((Integer) prod.getQuantity(), (Integer) 1);
+		assertEquals( prod.getQuantity(), (Integer) 1);
 	}
 	// --------------- end addProductToSale --------------- //
 
@@ -2096,8 +2246,7 @@ public class EZShopTest {
 	@Test
 	public void testAddProductToSaleRFIDProductCodeDoesNotExist()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
-			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
-			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException, InvalidRFIDException {
+			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidRFIDException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2115,7 +2264,7 @@ public class EZShopTest {
 			InvalidProductDescriptionException, InvalidProductCodeException, InvalidPricePerUnitException,
 			UnauthorizedException, InvalidTransactionIdException, InvalidQuantityException, InvalidProductIdException,
 			InvalidPaymentException, InvalidRFIDException, InvalidLocationException, InvalidOrderIdException {
-		UUT.reset();
+		//UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
 		UUT.login("manager", "manager");
@@ -2145,7 +2294,7 @@ public class EZShopTest {
 	public void testAddProductToSaleRFIDNominalScenario()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException, InvalidProductIdException,
 			UnauthorizedException, InvalidProductDescriptionException, InvalidProductCodeException,
-			InvalidPricePerUnitException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+			InvalidPricePerUnitException, InvalidTransactionIdException, InvalidQuantityException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException, InvalidDiscountRateException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -2168,6 +2317,10 @@ public class EZShopTest {
 		assertEquals(p.getQuantity(), (Integer) 19);
 		assertTrue(UUT.addProductToSaleRFID(saleId, "000000000011"));
 		assertEquals(p.getQuantity(), (Integer) 18);
+		assertTrue(UUT.applyDiscountRateToSale(saleId, 0.1));
+		assertTrue(UUT.endSaleTransaction(saleId));
+		assertEquals(p.getQuantity(), (Integer) 18);
+		assertEquals(UUT.getSaleTransaction(saleId).getPrice(), 1.98, 0.0001);
 
 		// add the same product twice
 		assertFalse(UUT.addProductToSaleRFID(saleId, "000000000011"));
@@ -2918,13 +3071,13 @@ public class EZShopTest {
 		ProductType prod1 = UUT.getProductTypeByBarCode("012345678912");
 		ProductType prod2 = UUT.getProductTypeByBarCode("0123456789128");
 
-		assertEquals((Integer) prod1.getQuantity(), (Integer) (10 - 4 - 3));
-		assertEquals((Integer) prod2.getQuantity(), (Integer) (20 - 13 + 1));
+		assertEquals( prod1.getQuantity(), (Integer) (10 - 4 - 3));
+		assertEquals( prod2.getQuantity(), (Integer) (20 - 13 + 1));
 
 		UUT.endSaleTransaction(saleId2);
 		assertTrue(UUT.deleteSaleTransaction(saleId2));
-		assertEquals((Integer) prod1.getQuantity(), (Integer) (10));
-		assertEquals((Integer) prod2.getQuantity(), (Integer) (20));
+		assertEquals( prod1.getQuantity(), (Integer) (10));
+		assertEquals( prod2.getQuantity(), (Integer) (20));
 	}
 	// --------------- end deleteSaleTransaction --------------- //
 
@@ -2952,7 +3105,7 @@ public class EZShopTest {
 
 	@Test
 	public void testGetSaleTransactionWithOpenTransaction() throws InvalidUsernameException, InvalidPasswordException,
-			InvalidRoleException, InvalidTransactionIdException, UnauthorizedException, InvalidPaymentException {
+			InvalidRoleException, InvalidTransactionIdException, UnauthorizedException {
 		UUT.reset();
 
 		UUT.createUser("cashier", "cashier", "Cashier");
@@ -3006,7 +3159,7 @@ public class EZShopTest {
 	@Test
 	public void testStartReturnTransactionWithTransactionNotAvailableAndPayed()
 			throws InvalidUsernameException, InvalidPasswordException, InvalidRoleException,
-			InvalidTransactionIdException, UnauthorizedException, InvalidPaymentException {
+			InvalidTransactionIdException, UnauthorizedException {
 		UUT.reset();
 
 		UUT.createUser("cashier", "cashier", "Cashier");
@@ -3264,8 +3417,8 @@ public class EZShopTest {
 	@Test
 	public void testReturnProductRFIDWhenProductToBeReturnedDoesNotExist() throws InvalidUsernameException,
 			InvalidPasswordException, InvalidRoleException, InvalidTransactionIdException, InvalidProductCodeException,
-			InvalidQuantityException, UnauthorizedException, InvalidProductDescriptionException,
-			InvalidPricePerUnitException, InvalidProductIdException, InvalidPaymentException, InvalidLocationException, InvalidRFIDException, InvalidOrderIdException {
+			UnauthorizedException, InvalidProductDescriptionException,
+			InvalidPricePerUnitException, InvalidProductIdException, InvalidPaymentException, InvalidRFIDException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -3557,16 +3710,14 @@ public class EZShopTest {
 
 	// --------------- receiveCashPayment --------------- //
 	@Test
-	public void testReceiveCashPaymentUnauthorizedUser()
-			throws InvalidTransactionIdException, InvalidPaymentException, UnauthorizedException {
+	public void testReceiveCashPaymentUnauthorizedUser() {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.receiveCashPayment(1, 100));
 	}
 
 	@Test
 	public void testReceiveCashPaymentInvalidCashAmount()
-			throws InvalidTransactionIdException, InvalidPasswordException, InvalidPaymentException,
-			UnauthorizedException, InvalidRoleException, InvalidUsernameException {
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
 		UUT.createUser("manager", "manager", "ShopManager");
@@ -3663,7 +3814,6 @@ public class EZShopTest {
 
 		UUT.endSaleTransaction(saleId);
 		assertEquals(java.util.Optional.of(UUT.receiveCashPayment(saleId, 100)), java.util.Optional.of(91.0));
-		SaleTransaction sale = UUT.getSaleTransaction(saleId);
 	}
 
 	// --------------- end receiveCashPayment --------------- //
@@ -3671,13 +3821,13 @@ public class EZShopTest {
 	// --------------- receiveCreditCardPayment --------------- //
 
 	@Test
-	public void testReceiveCreditCardPaymentWithUnauthorizedUser() throws UnauthorizedException {
+	public void testReceiveCreditCardPaymentWithUnauthorizedUser() {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.receiveCreditCardPayment(1, "1122330086610898"));
 	}
 
 	@Test
-	public void testReceiveCreditCardPaymentInvalidCard() throws InvalidCreditCardException, InvalidPasswordException,
+	public void testReceiveCreditCardPaymentInvalidCard() throws InvalidPasswordException,
 			InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 
@@ -3803,7 +3953,7 @@ public class EZShopTest {
 
 	// --------------- returnCashPayment --------------- //
 	@Test
-	public void testReturnCashPaymentWithUnauthorizedUser() throws UnauthorizedException {
+	public void testReturnCashPaymentWithUnauthorizedUser() {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.returnCashPayment(1));
 	}
@@ -3820,7 +3970,7 @@ public class EZShopTest {
 		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCashPayment(-1));
 		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCashPayment(null));
 		// return -1 if the returnId is valid but not in the db
-		assertTrue(UUT.returnCashPayment(1) == -1);
+		assertEquals(-1, UUT.returnCashPayment(1), 0.0);
 	}
 
 	@Test
@@ -3845,11 +3995,11 @@ public class EZShopTest {
 		Integer retId = UUT.startReturnTransaction(saleId);
 		UUT.returnProduct(retId, "012345678912", 7);
 		// return transaction should be in CLOSED state before return cash
-		assertTrue(UUT.returnCashPayment(retId) == -1);
+		assertEquals(-1, UUT.returnCashPayment(retId), 0.0);
 		UUT.endReturnTransaction(retId, true);
 		UUT.returnCashPayment(retId);
 		// cannot return cash if the Transaction is not in CLOSED state
-		assertTrue(UUT.returnCashPayment(retId) == -1);
+		assertEquals(-1, UUT.returnCashPayment(retId), 0.0);
 
 	}
 
@@ -3881,7 +4031,7 @@ public class EZShopTest {
 
 	// --------------- returnCreditCardPayment --------------- //
 	@Test
-	public void testReturnCreditCardPaymentWithUnauthorizedUser() throws UnauthorizedException {
+	public void testReturnCreditCardPaymentWithUnauthorizedUser() {
 		UUT.reset();
 		assertThrows(UnauthorizedException.class, () -> UUT.returnCreditCardPayment(1, "123"));
 	}
@@ -3898,7 +4048,7 @@ public class EZShopTest {
 		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(-1, "1122330086610898"));
 		assertThrows(InvalidTransactionIdException.class, () -> UUT.returnCreditCardPayment(null, "1122330086610898"));
 		// return -1 if the returnId is valid but not in the db
-		assertTrue(UUT.returnCreditCardPayment(1, "1122330086610898") == -1);
+		assertEquals(-1, UUT.returnCreditCardPayment(1, "1122330086610898"), 0.0);
 	}
 
 	@Test
@@ -3937,11 +4087,11 @@ public class EZShopTest {
 		Integer retId = UUT.startReturnTransaction(saleId);
 		UUT.returnProduct(retId, "012345678912", 7);
 		// return transaction should be in CLOSED state before return cash
-		assertTrue(UUT.returnCashPayment(retId) == -1);
+		assertEquals(-1, UUT.returnCashPayment(retId), 0.0);
 		UUT.endReturnTransaction(retId, true);
 		UUT.returnCreditCardPayment(retId, "1122330086610898");
 		// cannot return cash if the Transaction is not in CLOSED state
-		assertTrue(UUT.returnCreditCardPayment(retId, "1122330086610898") == -1);
+		assertEquals(-1, UUT.returnCreditCardPayment(retId, "1122330086610898"), 0.0);
 	}
 
 	@Test
@@ -3966,7 +4116,7 @@ public class EZShopTest {
 		UUT.returnProduct(retId, "012345678912", 7);
 		UUT.endReturnTransaction(retId, true);
 		// credit card is valid but not registered
-		assertTrue(UUT.returnCreditCardPayment(retId, "5352937369048372") == -1);
+		assertEquals(-1, UUT.returnCreditCardPayment(retId, "5352937369048372"), 0.0);
 
 	}
 
@@ -4000,7 +4150,7 @@ public class EZShopTest {
 	// --------------- recordBalanceUpdate --------------- //
 	@Test
 	public void testRecordBalanceUpdateUnauthorizedUser()
-			throws UnauthorizedException, InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
+			throws InvalidPasswordException, InvalidRoleException, InvalidUsernameException {
 		UUT.reset();
 		// not Logged in user
 		assertThrows(UnauthorizedException.class, () -> UUT.recordBalanceUpdate(100));
@@ -4039,7 +4189,7 @@ public class EZShopTest {
 
 	// --------------- getCreditsAndDebits --------------- //
 	@Test
-	public void testGetCreditsAndDebitsUnauthorizedUser() throws UnauthorizedException {
+	public void testGetCreditsAndDebitsUnauthorizedUser() {
 		UUT.reset();
 		// not Logged in user
 		assertThrows(UnauthorizedException.class, () -> UUT.getCreditsAndDebits(null, null));
@@ -4055,7 +4205,7 @@ public class EZShopTest {
 
 		UUT.recordBalanceUpdate(100);
 		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(null, null);
-		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
+		assertEquals(0, balanceOperations.get(0).getMoney() - 100, 0.0);
 	}
 
 	@Test
@@ -4070,7 +4220,7 @@ public class EZShopTest {
 		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
 		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
 		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(tomorrow, yesterday);
-		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
+		assertEquals(0, balanceOperations.get(0).getMoney() - 100, 0.0);
 	}
 
 	@Test
@@ -4085,13 +4235,13 @@ public class EZShopTest {
 		LocalDate tomorrow = LocalDate.now().plus(Period.ofDays(1));
 		LocalDate yesterday = LocalDate.now().minus(Period.ofDays(1));
 		List<BalanceOperation> balanceOperations = UUT.getCreditsAndDebits(yesterday, tomorrow);
-		assertTrue(balanceOperations.get(0).getMoney() - 100 == 0);
+		assertEquals(0, balanceOperations.get(0).getMoney() - 100, 0.0);
 	}
 	// --------------- end getCreditsAndDebits --------------- //
 
 	// --------------- computeBalance --------------- //
 	@Test
-	public void testComputeBalanceUnauthorizedUser() throws UnauthorizedException {
+	public void testComputeBalanceUnauthorizedUser() {
 		UUT.reset();
 
 		assertThrows(UnauthorizedException.class, () -> UUT.computeBalance());
@@ -4106,7 +4256,7 @@ public class EZShopTest {
 		UUT.login("manager", "manager");
 
 		UUT.recordBalanceUpdate(100);
-		assertTrue(UUT.computeBalance() - 100.0 == 0);
+		assertEquals(0, UUT.computeBalance() - 100.0, 0.0);
 	}
 	// --------------- end computeBalance --------------- //
 

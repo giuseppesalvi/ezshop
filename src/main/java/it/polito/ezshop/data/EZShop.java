@@ -75,7 +75,7 @@ public class EZShop implements EZShopInterface {
 			}
 			sal.setEntries(newEntries);
 			for (Product p: sal.getProductsRFID()){
-				p.setProductType(productsRFID.get(p.getRFID()).getProductType());
+				p.setProductType(products.get(p.getProductType().getId()));
 			}
 		}
 
@@ -88,7 +88,7 @@ public class EZShop implements EZShopInterface {
 				ent.setProduct(pro.get());
 			}
 			for (Product p: ret.getProductsRFID()){
-				p.setProductType(productsRFID.get(p.getRFID()).getProductType());
+				p.setProductType(products.get(p.getProductType().getId()));
 			}
 		}
 
@@ -101,8 +101,6 @@ public class EZShop implements EZShopInterface {
 
 	@Override
 	public void reset() {
-		loggedInUser = null; 
-		
 		users.clear();
 		UserImpl.idGen = 1;
 		FileWrite.writeUsers(this.users);
@@ -134,6 +132,9 @@ public class EZShop implements EZShopInterface {
 		cards.clear();
 		LoyaltyCard.idGen = 1;
 		FileWrite.writeCards(this.cards);
+
+		productsRFID.clear();
+		FileWrite.writeProductsRFID(this.productsRFID);
 
 		loggedInUser = null;
 	}
@@ -1407,7 +1408,8 @@ public class EZShop implements EZShopInterface {
 		this.sales.remove(saleNumber);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products) ||
+				!FileWrite.writeProductsRFID(this.productsRFID)) {
 			return false;
 		} else {
 			return true;
@@ -1621,7 +1623,7 @@ public class EZShop implements EZShopInterface {
 
 		// Store changes in persistent memory
 		if (!FileWrite.writeReturns(this.returns) || !FileWrite.writeProducts(this.products)
-				|| !FileWrite.writeSales(this.sales)) {
+				|| !FileWrite.writeSales(this.sales) || !FileWrite.writeProductsRFID(this.productsRFID)) {
 			return false;
 		} else {
 			return true;
@@ -1711,7 +1713,7 @@ public class EZShop implements EZShopInterface {
 
 		// Store changes in persistent memory
 		if (!FileWrite.writeReturns(this.returns) || !FileWrite.writeProducts(this.products)
-				|| !FileWrite.writeSales(this.sales)) {
+				|| !FileWrite.writeSales(this.sales) || !FileWrite.writeProductsRFID(this.productsRFID)) {
 			return false;
 		} else {
 			return true;
@@ -2068,7 +2070,8 @@ InvalidLocationException, InvalidRFIDException {
 			}
 			chosen.getProduct().setQuantity(chosen.getProduct().getQuantity() + chosen.getQuantity());
 			chosen.setStatus("COMPLETED");
-			return FileWrite.writeOrders(this.orders) && FileWrite.writeProducts(this.products);
+			return FileWrite.writeOrders(this.orders) && FileWrite.writeProductsRFID(this.productsRFID)
+					&& FileWrite.writeProducts(this.products);
 		} else
 			return chosen.getStatus().contentEquals("COMPLETED");
     }
@@ -2118,7 +2121,8 @@ InvalidLocationException, InvalidRFIDException {
 		productsRFID.remove(RFID);
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products) ||
+				!FileWrite.writeProductsRFID(this.productsRFID)) {
 			return false;
 		} else {
 			return true;
@@ -2169,7 +2173,8 @@ InvalidLocationException, InvalidRFIDException {
 		}
 
 		// Store changes in persistent memory
-		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products)) {
+		if (!FileWrite.writeSales(this.sales) || !FileWrite.writeProducts(this.products) ||
+				!FileWrite.writeProductsRFID(this.productsRFID)) {
 			return false;
 		} else {
 			return true;
