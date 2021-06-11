@@ -59,6 +59,10 @@ package model {
         -role : String
         -ID : Integer
     }
+    
+    class Product{
+        -RFID : String
+    }
 
 
     class ProductTypeImpl{
@@ -212,6 +216,10 @@ package data {
         +recordBalanceUpdate(double toBeAdded) : boolean
         +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
         +computeBalance() : double
+        +recordOrderArrivalRFID(Integer orderId, String RFIDfrom) : boolean
+        +addProductToSaleRFID(Integer transactionId, String RFID) : boolean
+        +deleteProductFromSaleRFID(Integer transactionId, String RFID) : boolean 
+        +returnProductRFID(Integer returnId, String RFID) : boolean
     }
 
     Class FileRead{
@@ -257,6 +265,7 @@ BalanceOperationImpl -- OrderImpl
 BalanceOperationImpl -- ReturnTransaction
 BalanceOperationImpl -- SaleTransactionImpl
 CreditCard -- SaleTransactionImpl
+Product "*" -- ProductTypeImpl
 ProductTypeImpl -- OrderImpl
 ProductTypeImpl -- TicketEntryImpl
 ProductTypeImpl -- Position
@@ -274,6 +283,7 @@ EZShop -up-|> EZShopInterface
 
 EZShop -up-> "*" UserImpl
 EZShop -up-> "*" ProductTypeImpl
+EZShop -up-> "*" Product
 EZShop -up-> "*" OrderImpl
 EZShop -up-> "*" CustomerImpl
 EZShop -up-> "*" LoyaltyCard
@@ -447,7 +457,7 @@ actor user
 participant EZShop
 participant Order
 participant FileWrite
-user -> EZShop : recordOrderArrival()
+user -> EZShop : recordOrderArrivalRFID()
 EZShop -> Order : setStatus()
 EZShop -> FileWrite : writeOrders()
 EZShop <-- FileWrite : return true
@@ -568,7 +578,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -598,7 +608,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -631,7 +641,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -665,7 +675,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -699,7 +709,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -735,7 +745,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -822,7 +832,7 @@ user -> EZShop : startReturnTransaction()
 EZShop -> ReturnTransaction : ReturnTransaction()
 EZShop <-- ReturnTransaction : ReturnTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : returnProduct()
+user -> EZShop : returnProductRFID()
 EZShop -> SaleTransaction : getProducts()
 EZShop <-- SaleTransaction : List<TransactionProduct>
 EZShop -> TransactionProduct : getQuantity()
