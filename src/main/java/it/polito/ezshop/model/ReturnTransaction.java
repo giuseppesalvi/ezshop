@@ -2,6 +2,7 @@ package it.polito.ezshop.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import it.polito.ezshop.data.TicketEntry;
 
@@ -10,6 +11,7 @@ public class ReturnTransaction {
 	private Integer returnID;
 	private SaleTransactionImpl transaction;
 	private List<TicketEntryImpl> products;
+	private List<Product> productsRFID;
 	private String state;
 	private boolean commit;
 	private Double value;
@@ -18,14 +20,16 @@ public class ReturnTransaction {
 		this.returnID = idGen++;
 		this.transaction = transaction;
 		this.products = new ArrayList<TicketEntryImpl>();
+		this.productsRFID = new ArrayList<Product>();
 		this.state = "OPEN";
 		this.commit = false;
 		this.value = 0.0;
 	}
 
 	public ReturnTransaction(Integer returnID, SaleTransactionImpl transaction, List<TicketEntryImpl> products,
-			String state, boolean commit, Double value) {
+			String state, boolean commit, Double value, List<Product> productsRFID) {
 		this.returnID = returnID;
+		this.productsRFID = productsRFID;
 		this.transaction = transaction;
 		this.products = products;
 		this.state = state;
@@ -89,6 +93,17 @@ public class ReturnTransaction {
 			// For each product add its price after discount * its quantity
 			amount += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate()) * prod.getAmount();
 		}
+		if (productsRFID != null) {
+			for (Product prod : productsRFID) {
+				// Check if this productType has a discount
+				Optional<TicketEntryImpl> t = products.stream().filter(a -> a.getBarCode().contentEquals(prod.getProductType().getBarCode())).findFirst();
+				if (t.isPresent()) {
+					amount += prod.getProductType().getPricePerUnit() * (1.00 - t.get().getDiscountRate());
+				} else {
+					amount += prod.getProductType().getPricePerUnit();
+				}
+			}
+		}
 		// Apply sale DiscountRate
 		amount = amount * (1.00 - transaction.getDiscountRate());
 		return amount;
@@ -123,4 +138,21 @@ public class ReturnTransaction {
 		return eliminated;
 	}
 
+	public boolean addProductsRFID(Product prod) {
+		if (prod == null) {
+			return false;
+		}
+		else {
+			this.productsRFID.add(prod);
+			return true;
+		}
+	}
+
+	public List<Product> getProductsRFID() {
+		return productsRFID;
+	}
+
+	public void setProductsRFID(List<Product> productsRFID) {
+		this.productsRFID = productsRFID;
+	}
 }

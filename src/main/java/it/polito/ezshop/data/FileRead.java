@@ -223,7 +223,15 @@ public class FileRead {
 			// Create each sale
 			for (JSONObject saleJSON : (Iterable<JSONObject>) listSalesJSON) {
 				JSONArray listProductsJSON = (JSONArray) saleJSON.get("products");
+				JSONArray listProductsRFIDJSON = (JSONArray) saleJSON.get("productsRFID");
 				List<TicketEntry> products = new ArrayList<TicketEntry>();
+				List<Product> productsRFID = new ArrayList<>();
+				for (JSONObject productRFIDJSON : (Iterable<JSONObject>) listProductsRFIDJSON) {
+					Product prod = new Product(
+							new ProductTypeImpl(Integer.parseInt(productRFIDJSON.get("productID").toString())),
+							productRFIDJSON.get("RFID").toString());
+					productsRFID.add(prod);
+				}
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
 					TicketEntry prod = new TicketEntryImpl(
 							// create a dummy ProductType, with just the BarCode
@@ -238,7 +246,7 @@ public class FileRead {
 						(Double) saleJSON.get("globalDiscountRate"), (String) saleJSON.get("state"),
 						(String) saleJSON.get("dateString"), (String) saleJSON.get("timeString"),
 						(Double) saleJSON.get("cost"), (String) saleJSON.get("paymentType"),
-						(String) saleJSON.get("creditCardNumber"));
+						(String) saleJSON.get("creditCardNumber"), productsRFID);
 
 				sales.put(sale.getTicketNumber(), sale);
 			}
@@ -272,7 +280,15 @@ public class FileRead {
 			// Create each return
 			for (JSONObject retJSON : (Iterable<JSONObject>) listReturnsJSON) {
 				JSONArray listProductsJSON = (JSONArray) retJSON.get("products");
+				JSONArray listProductsRFIDJSON = (JSONArray) retJSON.get("productsRFID");
 				List<TicketEntryImpl> products = new ArrayList<TicketEntryImpl>();
+				List<Product> productsRFID = new ArrayList<>();
+				for (JSONObject productRFIDJSON : (Iterable<JSONObject>) listProductsRFIDJSON) {
+					Product prod = new Product(
+							new ProductTypeImpl(Integer.parseInt(productRFIDJSON.get("productID").toString())),
+							productRFIDJSON.get("RFID").toString());
+					productsRFID.add(prod);
+				}
 				for (JSONObject productJSON : (Iterable<JSONObject>) listProductsJSON) {
 					TicketEntryImpl prod = new TicketEntryImpl(
 							// create a dummy ProductType, with just the BarCode
@@ -285,10 +301,10 @@ public class FileRead {
 				// create dummy SaleTransactionImpl, with just transactionId
 				SaleTransactionImpl saleTransaction = new SaleTransactionImpl(
 						Integer.parseInt(retJSON.get("saleTransactionID").toString()), null, null, null, null, null,
-						null, null, null);
+						null, null, null, null);
 				ReturnTransaction ret = new ReturnTransaction(Integer.parseInt(retJSON.get("returnID").toString()),
 						saleTransaction, products, (String) retJSON.get("state"), (boolean) retJSON.get("commit"),
-						(Double) retJSON.get("value"));
+						(Double) retJSON.get("value"), productsRFID);
 
 				returns.put(ret.getReturnID(), ret);
 			}
@@ -352,4 +368,32 @@ public class FileRead {
 		}
 	}
 
+	public static HashMap<String , Product> readProductsRFID() {
+		HashMap<String , Product> productsRFID = new HashMap<>();
+		JSONParser parser = new JSONParser();
+
+		try (FileReader reader = new FileReader("db/productsRFID.json")) {
+
+			// Parse the total object
+			JSONObject jsonObject = (JSONObject) parser.parse(reader);
+
+			// Retrieve the array of orders
+			JSONArray orderString = (JSONArray) jsonObject.get("productsRFID");
+
+			// Create each user
+			for (JSONObject p : (Iterable<JSONObject>) orderString) {
+				Product curr = new Product(
+						new ProductTypeImpl(Integer.parseInt(p.get("productId").toString())),
+						p.get("RFID").toString());
+				productsRFID.put(curr.getRFID(), curr);
+			}
+
+		} catch (IOException | ParseException e) {
+			// return an empty map if there is some error.
+			productsRFID.clear();
+		}
+
+		return productsRFID;
+
+	}
 }

@@ -7,12 +7,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SaleTransactionImpl implements SaleTransaction {
 	
 	public static Integer idGen = 1;
 	private Integer transactionID;
 	private List<TicketEntry> products;
+	private List<Product> productsRFID;
 	private Double globalDiscountRate;
 	private String state;
 	private LocalDate date;
@@ -24,6 +26,7 @@ public class SaleTransactionImpl implements SaleTransaction {
     public SaleTransactionImpl() {
 		this.transactionID = idGen++;
 		this.products = new ArrayList<TicketEntry>();
+		this.productsRFID = new ArrayList<Product>();
 		this.globalDiscountRate = 0.0;
 		this.state = "OPEN";
 		this.date = LocalDate.now();
@@ -35,8 +38,10 @@ public class SaleTransactionImpl implements SaleTransaction {
 
     public SaleTransactionImpl(Integer transactionId, List<TicketEntry> products,
 							   Double globalDiscountRate, String state, String dateString,
-							   String timeString, Double cost, String paymentType, String creditCard) {
+							   String timeString, Double cost, String paymentType, String creditCard,
+							   List<Product> productsRFID) {
 		this.transactionID = transactionId;
+		this.productsRFID = productsRFID;
 		this.products = products;
 		this.globalDiscountRate = globalDiscountRate;
 		this.state = state;
@@ -58,7 +63,6 @@ public class SaleTransactionImpl implements SaleTransaction {
 		else
 			this.creditCard = new CreditCard(creditCard, null);
 	}
-
 
 	@Override
     public Integer getTicketNumber() {
@@ -182,9 +186,56 @@ public class SaleTransactionImpl implements SaleTransaction {
 			// For each product add its price after discount * its quantity
 			cost += prod.getPricePerUnit() * (1.00 - prod.getDiscountRate() ) * prod.getAmount();
 		}
+		if (productsRFID != null) {
+			for (Product prod : productsRFID) {
+				// Check if this productType has a discount
+				Optional<TicketEntry> t = products.stream().filter(a -> a.getBarCode().contentEquals(prod.getProductType().getBarCode())).findFirst();
+				if (t.isPresent()) {
+					cost += prod.getProductType().getPricePerUnit() * (1.00 - t.get().getDiscountRate());
+				} else {
+					cost += prod.getProductType().getPricePerUnit();
+				}
+			}
+		}
 		// Apply sale DiscountRate
 		cost = cost * (1.00 - globalDiscountRate);
 		return cost;
 	}
-	
+
+	public void setProductsRFID(List<Product> productsRFID) {
+		this.productsRFID = productsRFID;
+	}
+
+	public List<Product> getProductsRFID() {
+		return productsRFID;
+	}
+
+	public boolean addProductsRFID(Product prod) {
+		if (prod == null) {
+			return false;
+		}
+		else {
+			this.productsRFID.add(prod);
+			return true;
+		}
+	}
+
+	public Product deleteProductsRFID(String RFID) {
+		int targetIdx = -1;
+		if (RFID == null) {
+			return null;
+		}
+		for (Product p : productsRFID) {
+			if (p.getRFID().contentEquals(RFID)) {
+				targetIdx = productsRFID.indexOf(p);
+			}
+		}
+
+		if (targetIdx == -1) {
+			return null;
+		}
+		Product eliminated = productsRFID.get(targetIdx);
+		productsRFID.remove(targetIdx);
+		return eliminated;
+	}
 }

@@ -2,9 +2,9 @@
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman 
 
-Date: 26/05/2021
+Date: 12/06/2021
 
-Version: 1.0.0
+Version: 1.1.0
 
 
 # Contents
@@ -40,6 +40,7 @@ class ReturnTransaction {}
 class SaleTransactionImpl {}
 class TicketEntryImpl {}
 class UserImpl {}
+class Product{}
 
 FileWrite --> BalanceOperationImpl
 FileWrite --> CustomerImpl
@@ -52,6 +53,7 @@ FileWrite --> SaleTransactionImpl
 FileWrite --> UserImpl
 FileWrite --> CreditCard
 FileWrite --> TicketEntryImpl
+FileWrite --> Product
 
 FileRead --> BalanceOperationImpl
 FileRead --> CustomerImpl
@@ -64,6 +66,7 @@ FileRead --> SaleTransactionImpl
 FileRead --> UserImpl
 FileRead --> CreditCard
 FileRead --> TicketEntryImpl
+FileRead --> Product
 
 EzShop --> FileRead
 EzShop --> FileWrite
@@ -78,6 +81,7 @@ EzShop --> SaleTransactionImpl
 EzShop --> UserImpl
 EzShop --> CreditCard
 EzShop --> TicketEntryImpl
+EzShop --> Product
 
 OrderImpl --> ProductTypeImpl
 OrderImpl --> BalanceOperationImpl
@@ -91,9 +95,13 @@ LoyaltyCard --> CustomerImpl
 SaleTransactionImpl --> TicketEntryImpl
 SaleTransactionImpl --> CreditCard
 SaleTransactionImpl --> BalanceOperationImpl
+SaleTransactionImpl --> Product
 
 ReturnTransaction --> TicketEntryImpl
 ReturnTransaction --> SaleTransactionImpl
+ReturnTransaction --> Product
+
+Product --> ProductTypeImpl
 @enduml
 ```
      
@@ -102,13 +110,13 @@ ReturnTransaction --> SaleTransactionImpl
 ## Integration sequence adopted : Bottom up
 
 ### step1: (Unit testing) 
-classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + Product
 
 ### step2: 
-classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + FileRead + FileWrite
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + Product + FileRead + FileWrite
 
 ### step3: (API testing) 
-classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + FileRead + FileWrite + EZShop
+classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderImpl + Position + ProductTypeImpl + ReturnTransaction + SaleTransactionImpl + TicketEntryImpl + UserImpl + Product + FileRead + FileWrite + EZShop 
 
 
 #  Tests
@@ -161,6 +169,7 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 || testDeleteEntryForLoopMultipleIterations |
 | TicketEntryImpl | testGettersSettersConstructors | 
 | UserImpl | testGettersSettersConstructors |
+| Product | testGettersSettersConstructors |
 
 
 ## Step 2
@@ -276,6 +285,14 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testRecordOrderArrivalLocationNotExists |
 | | testRecordOrderArrivalAlreadyArrived |
 | | testRecordOrderArrivalNotPayed |
+| | testRecordOrderArrivalRFIDNominalCase |
+| | testRecordOrderArrivalRFIDUnauthorized |
+| | testRecordOrderArrivalRIDInvalidOrderID |
+| | testRecordOrderArrivalRFIDInvalidRFID |
+| | testRecordOrderArrivalRFIDLocationNotExists |
+| | testRecordOrderArrivalRFIDAlreadyArrived |
+| | testRecordOrderArrivalRFIDAlreadyPresent |
+| | testRecordOrderArrivalRFIDNotPayed |
 | | testGetAllOrdersNominalCase |
 | | testGetAllOrdersUnauthorized |
 | | testDefineCustomerNominalCase |
@@ -320,6 +337,12 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testAddProductToSaleQuantityOfProductCannotSatisfyRequest |
 | | testAddProductToSaleTransactionIdDoesNotIdentifyAnOpenTransaction |
 | | testAddProductToSaleNominalScenario |
+| | testAddProductToSaleRFIDWithUnauthorizedUser |
+| | testAddProductToSaleRFIDWithInvalidProductCode |
+| | testAddProductToSaleRFIDWithInvalidTransactionId |
+| | testAddProductToSaleRFIDProductCodeDoesNotExist |
+| | testAddProductToSaleRFIDTransactionIdDoesNotIdentifyAnOpenTransaction |
+| | testAddProductToSaleRFIDNominalScenario |
 | | testDeleteProductFromSaleWithUnauthorizedUser |
 | | testDeleteProductFromSaleWithQuantityLessThanZero |
 | | testDeleteProductFromSaleWithInvalidProductCode |
@@ -328,6 +351,12 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testDeleteProductFromSaleQuantityOfProductCannotSatisfyRequest |
 | | testDeleteProductFromSaleTransactionIdDoesNotIdentifyAnOpenTransaction |
 | | testDeleteProductFromSaleTransactionNominalCase |
+| | testDeleteProductFromSaleRFIDWithUnauthorizedUser |
+| | testDeleteProductFromSaleRFIDWithInvalidProductCode |
+| | testDeleteProductFromSaleRFIDWithInvalidTransactionId |
+| | testDeleteProductFromSaleRFIDProductCodeDoesNotExist |
+| | testDeleteProductFromSaleRFIDTransactionIdDoesNotIdentifyAnOpenTransaction |
+| | testDeleteProductFromSaleRFIDTransactionNominalCase | 
 | | testApplyDiscountRateToProductWithInvalidUser |
 | | testAppyDiscountRateToProductWithInvalidDiscountRate |
 | | testApplyDiscountRateToProductWithInvalidProductCode |
@@ -369,6 +398,13 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testReturnProductWhenProductNotInTheSaleTransaction |
 | | testReturnProductWhenAmountHigherThanSoldOne |
 | | testReturnProductNominalCase |
+| | testReturnProductRFIDWithUnauthorizedUser |
+| | testReturnProductRFIDWithInvalidTransactionID |
+| | testReturnProductRFIDWithInvalidRFID |
+| | testReturnProductRFIDWhenTransactionDoesNotExist |
+| | testReturnProductRFIDWhenProductToBeReturnedDoesNotExist |
+| | testReturnProductRFIDWhenProductNotInTheSaleTransaction |
+| | testReturnProductRFIDNominalCase |
 | | testEndReturnTransactionWithUnauthorizedUser |
 | | testEndReturnTransactionWithInvalidTransactionID |
 | | testEndReturnTransactionWithNotOpenTransaction |
@@ -409,6 +445,7 @@ classes BalanceOperationImpl + CreditCard + CustomerImpl + LoyaltyCard + OrderIm
 | | testGetCreditsAndDebitsNominalCase |
 | | testComputeBalanceUnauthorizedUser |
 | | testComputeBalanceNominalCase |
+
 
 # Scenarios
 

@@ -3,9 +3,9 @@
 
 Authors: Giuseppe Salvi, Milad Beigi Harchegani, Roberto Bosio, Naeem Ur Rehman
 
-Date: 17/05/2021
+Date: 12/06/2021
 
-Version: 1.1.2
+Version: 1.2.0
 
 
 # Contents
@@ -59,6 +59,11 @@ package model {
         -role : String
         -ID : Integer
     }
+    
+    class Product{
+        -productType : ProductTypeImpl
+        -RFID : String
+    }
 
 
     class ProductTypeImpl{
@@ -71,6 +76,7 @@ package model {
         -quantity : Integer
         -position : Position
         -eliminated : boolean
+        +checkBarCode() : boolean
     }
 
     class OrderImpl{
@@ -101,6 +107,7 @@ package model {
         -{static} idGen: Integer
         -transactionID : Integer
         -products : List<TransactionProduct>
+        -productsRFID : List<Product>
         -globalDiscountRate : Double
         -state : String
         -date : LocalDate
@@ -109,10 +116,15 @@ package model {
         -paymentType : String
         -creditCard : CreditCard
         +computeCost() : Double
+        +addEntry() : boolean
+        +deleteEntry() : TicketEntry
+        +addProductsRFID() : boolean
+        +deleteProductsRFID() : Product
     }
 
+
     class TicketEntryImpl{
-        -productCode : ProductType
+        -product : ProductType
         -quantity : Integer
         -discountRate : Double
     }
@@ -126,6 +138,9 @@ package model {
         -commit : boolean
         -value : Double
         +computeValue() : Double
+        +addEntry() : boolean
+        +deleteEntry() : TicketEntry
+        +addProductsRFID() : boolean
     }
 
     class BalanceOperationImpl{
@@ -162,6 +177,7 @@ package data {
         -sales : Map<Integer,SaleTransactionImpl>
         -returns : Map<Integer,ReturnTransaction>
         -operations : Map<Integer,BalanceOperationImpl>
+        -productsRFID : Map<String, Product>
         -loggedInUser : User
         +reset() : void
         +createUser(String username, String password, String role) : Integer
@@ -212,31 +228,37 @@ package data {
         +recordBalanceUpdate(double toBeAdded) : boolean
         +getCreditsAndDebits(LocalDate from, LocalDate to) : List<BalanceOperation>
         +computeBalance() : double
+        +recordOrderArrivalRFID(Integer orderId, String RFIDfrom) : boolean
+        +addProductToSaleRFID(Integer transactionId, String RFID) : boolean
+        +deleteProductFromSaleRFID(Integer transactionId, String RFID) : boolean 
+        +returnProductRFID(Integer returnId, String RFID) : boolean
     }
 
     Class FileRead{
-        +readUsers(String fileName) : Map<Integer,UserImpl>
-        +readProducts(String fileName) : Map<Integer,ProductTypeImpl>
-        +readOrders(String fileName) : Map<Integer,OrderImpl>
-        +readCustomers(String fileName) : Map<Integer,CustomerImpl>
-        +readCards(String fileName) : Map<String,LoyaltyCard>
-        +readSales(String fileName) : Map<Integer,SaleTransactionImpl>
-        +readReturns(String fileName) : Map<Integer,ReturnTransaction>
-        +readOperations(String fileName) : Map<Integer,BalanceOperationImpl>
-        +readCreditCards(String fileName) : List<CreditCard>
+        +readUsers() : Map<Integer,UserImpl>
+        +readProducts() : Map<Integer,ProductTypeImpl>
+        +readOrders() : Map<Integer,OrderImpl>
+        +readCustomers() : Map<Integer,CustomerImpl>
+        +readCards() : Map<String,LoyaltyCard>
+        +readSales() : Map<Integer,SaleTransactionImpl>
+        +readReturns() : Map<Integer,ReturnTransaction>
+        +readOperations() : Map<Integer,BalanceOperationImpl>
+        +readCreditCards() : List<CreditCard>
+        +readProductsRFID() : Map<String, Product>
         
     }
 
     Class FileWrite{
-        +writeUsers(String fileName, Map<Integer,UserImpl>) : boolean
-        +writeProducts(String fileName, Map<Integer,ProductTypeImpl>) : boolean
-        +writeOrders(String fileName, Map<Integer,OrderImpl>) : boolean
-        +writeCustomers(String fileName, Map<Integer,CustomerImpl>) : boolean
-        +writeCards(String fileName, Map<String,LoyaltyCard>) : boolean
-        +writeSales(String fileName, Map<Integer,SaleTransactionImpl>) : boolean
-        +writeReturns(String fileName, Map<Integer,ReturnTransaction>) : boolean
-        +writeOperations(String fileName, Map<Integer,BalanceOperationImpl>) : boolean
-        +writeCreditCards(String fileName, List<CreditCard>) : boolean
+        +writeUsers(Map<Integer,UserImpl>) : boolean
+        +writeProducts(Map<Integer,ProductTypeImpl>) : boolean
+        +writeOrders(Map<Integer,OrderImpl>) : boolean
+        +writeCustomers(Map<Integer,CustomerImpl>) : boolean
+        +writeCards(Map<String,LoyaltyCard>) : boolean
+        +writeSales(Map<Integer,SaleTransactionImpl>) : boolean
+        +writeReturns(Map<Integer,ReturnTransaction>) : boolean
+        +writeOperations(Map<Integer,BalanceOperationImpl>) : boolean
+        +writeCreditCards(List<CreditCard>) : boolean
+        +writeProductsRFID(Map<String, Product> productsRFID) : boolean
     }
 
     interface EZShopInterface{}
@@ -251,12 +273,15 @@ package data {
 
 CustomerImpl -- LoyaltyCard
 TicketEntryImpl "*" -- SaleTransactionImpl
+Product "*" -- SaleTransactionImpl
 TicketEntryImpl "*" -- ReturnTransaction
+Product "*" -- ReturnTransaction
 ReturnTransaction -- SaleTransactionImpl
 BalanceOperationImpl -- OrderImpl
 BalanceOperationImpl -- ReturnTransaction
 BalanceOperationImpl -- SaleTransactionImpl
 CreditCard -- SaleTransactionImpl
+Product "*" -- ProductTypeImpl
 ProductTypeImpl -- OrderImpl
 ProductTypeImpl -- TicketEntryImpl
 ProductTypeImpl -- Position
@@ -274,6 +299,7 @@ EZShop -up-|> EZShopInterface
 
 EZShop -up-> "*" UserImpl
 EZShop -up-> "*" ProductTypeImpl
+EZShop -up-> "*" Product
 EZShop -up-> "*" OrderImpl
 EZShop -up-> "*" CustomerImpl
 EZShop -up-> "*" LoyaltyCard
@@ -447,7 +473,7 @@ actor user
 participant EZShop
 participant Order
 participant FileWrite
-user -> EZShop : recordOrderArrival()
+user -> EZShop : recordOrderArrivalRFID()
 EZShop -> Order : setStatus()
 EZShop -> FileWrite : writeOrders()
 EZShop <-- FileWrite : return true
@@ -568,7 +594,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -598,7 +624,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -631,7 +657,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -665,7 +691,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -699,7 +725,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -735,7 +761,7 @@ user -> EZShop : startSaleTransaction()
 EZShop -> SaleTransaction : SaleTransaction()
 EZShop <-- SaleTransaction : SaleTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : addProductToSale()
+user -> EZShop : addProductToSaleRFID()
 EZShop -> TransactionProduct : TransactionProduct()
 EZShop <-- TransactionProduct : return TransactionProduct
 EZShop -> ProductType : setQuantity()
@@ -822,7 +848,7 @@ user -> EZShop : startReturnTransaction()
 EZShop -> ReturnTransaction : ReturnTransaction()
 EZShop <-- ReturnTransaction : ReturnTransaction
 user <-- EZShop : return transactionID
-user -> EZShop : returnProduct()
+user -> EZShop : returnProductRFID()
 EZShop -> SaleTransaction : getProducts()
 EZShop <-- SaleTransaction : List<TransactionProduct>
 EZShop -> TransactionProduct : getQuantity()
